@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Injects the using-superpowers skill at session start (vendored from obra/superpowers).
+set -euo pipefail
+skill_md="${CLAUDE_PROJECT_DIR:-.}/.claude/skills/using-superpowers/SKILL.md"
+[ -r "$skill_md" ] || exit 0
+python3 - "$skill_md" <<'PY'
+import json, sys
+body = open(sys.argv[1], encoding="utf-8").read().strip()
+ctx = ("<EXTREMELY_IMPORTANT>\nYou have superpowers.\n\n**Below is the full content of your "
+       "'using-superpowers' skill - your introduction to using skills. For all other skills, "
+       "use the 'Skill' tool:**\n\n" + body + "\n</EXTREMELY_IMPORTANT>")
+print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": ctx}}))
+PY
