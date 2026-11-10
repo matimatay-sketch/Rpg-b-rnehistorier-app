@@ -1,0 +1,1443 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lanterneskoven</title>
+<meta name="description" content="Interaktiv fortælling for børn på 6-9 år, hvor familien læser, vælger og slår med terning sammen.">
+<meta name="theme-color" content="#fbf5e9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b26" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lanterneskoven">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grandstander:wght@500;700;800&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf5e9; --bg2:#f3e8d2; --card:#fffdf8; --ink:#2d2a3e; --ink2:#615b73; --line:#e6d9bf;
+  --accent:#e0791f; --accent-ink:#fff; --accent-soft:#fde3c4; --forest:#2f6b4f; --forest-soft:#dcefe3;
+  --gold:#c99a2e; --gold-soft:#fbefc8; --magic:#6a4fc4; --magic-soft:#ebe4fb; --bad:#b4453f;
+  --shadow:0 2px 0 rgba(60,40,10,.08), 0 8px 24px rgba(60,40,10,.08);
+  --head:"Grandstander", ui-rounded, "Comic Sans MS", system-ui, sans-serif;
+  --body:"Literata", Georgia, "Times New Roman", serif;
+  --fs:1.12rem;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141b26; --bg2:#1a2331; --card:#1f2a3a; --ink:#f1ead8; --ink2:#b9b3a3; --line:#2f3b4f;
+    --accent:#f4a547; --accent-ink:#1b1408; --accent-soft:#3d2d17; --forest:#7cc79e; --forest-soft:#1e3a2c;
+    --gold:#f2c14e; --gold-soft:#3a3018; --magic:#b5a0ff; --magic-soft:#2c2547; --bad:#f08a80;
+    --shadow:0 2px 0 rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.3);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141b26; --bg2:#1a2331; --card:#1f2a3a; --ink:#f1ead8; --ink2:#b9b3a3; --line:#2f3b4f;
+  --accent:#f4a547; --accent-ink:#1b1408; --accent-soft:#3d2d17; --forest:#7cc79e; --forest-soft:#1e3a2c;
+  --gold:#f2c14e; --gold-soft:#3a3018; --magic:#b5a0ff; --magic-soft:#2c2547; --bad:#f08a80;
+  --shadow:0 2px 0 rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.3);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:var(--fs);line-height:1.6;
+  min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+body.big{--fs:1.38rem}
+h1,h2,h3,button,.btn,.label,.chip,nav{font-family:var(--head)}
+h1{font-size:2rem;line-height:1.15;margin:.2em 0 .3em}
+h2{font-size:1.55rem;line-height:1.2;margin:.2em 0 .5em}
+h3{font-size:1.15rem;margin:.6em 0 .3em}
+p{margin:0 0 .8em}
+.wrap{max-width:860px;margin:0 auto;padding:16px 16px 48px}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 16px;max-width:860px;margin:0 auto}
+.bar .title{flex:1;font-family:var(--head);font-weight:700;font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button,.btn{font-size:1rem;font-weight:700;border:0;border-radius:14px;padding:.7em 1.1em;cursor:pointer;background:var(--bg2);color:var(--ink);
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.08);transition:transform .08s ease, filter .15s;text-decoration:none;display:inline-flex;align-items:center;gap:.4em;justify-content:center;line-height:1.2}
+button:hover{filter:brightness(1.04)} button:active{transform:translateY(1px)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button[disabled]{opacity:.5;cursor:not-allowed}
+.primary{background:var(--accent);color:var(--accent-ink)}
+.ghost{background:transparent;box-shadow:none;border:2px solid var(--line)}
+.icon{padding:.55em .7em;min-width:44px;min-height:44px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+.muted{color:var(--ink2)}
+.small{font-size:.9em}
+.center{text-align:center}
+.grid{display:grid;gap:14px}
+.hero-list{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.hero-card{display:flex;flex-direction:column;align-items:center;text-align:center;cursor:pointer;gap:4px;padding:14px;font-family:var(--head)}
+.hero-card svg{width:120px;height:150px}
+.hero-card .nm{font-weight:800;font-size:1.15rem}
+.new-card{border:3px dashed var(--line);background:transparent;box-shadow:none;min-height:220px;font-size:1.1rem;color:var(--ink2)}
+.logo{display:flex;align-items:center;gap:12px;margin:8px 0 4px}
+.logo svg{width:56px;height:56px;flex:none}
+.hint{background:var(--gold-soft);border-radius:14px;padding:12px 14px;margin:12px 0}
+/* builder */
+.builder{display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start}
+.preview{position:sticky;top:12px;text-align:center}
+.preview svg{width:100%;max-width:240px;height:auto}
+@media (max-width:680px){.builder{grid-template-columns:1fr}.preview{position:static}.preview svg{max-width:170px}}
+.opt-group{margin:0 0 14px}
+.opt-group .label{font-weight:700;margin-bottom:6px;display:block}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{padding:.5em .8em;border-radius:12px;background:var(--bg2);font-weight:600;border:2px solid transparent;font-size:.95rem}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.sw{width:40px;height:40px;border-radius:50%;padding:0;border:3px solid var(--card);box-shadow:0 0 0 2px var(--line)}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent)}
+input[type=text]{font:inherit;font-family:var(--head);font-size:1.2rem;padding:.55em .8em;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);width:100%;max-width:340px}
+input[type=text]:focus{outline:3px solid var(--accent);border-color:transparent}
+.steps{display:flex;gap:6px;margin:4px 0 14px;flex-wrap:wrap}
+.steps span{font-family:var(--head);font-size:.85rem;padding:.25em .7em;border-radius:99px;background:var(--bg2);color:var(--ink2)}
+.steps span.on{background:var(--accent);color:var(--accent-ink)}
+.trait{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.trait:last-child{border-bottom:0}
+.trait .tn{font-family:var(--head);font-weight:700}
+.trait .td{font-size:.85em;color:var(--ink2);line-height:1.3}
+.pips{display:flex;gap:4px;margin-top:4px}
+.pips i{width:18px;height:18px;border-radius:6px;background:var(--bg2);border:2px solid var(--line)}
+.pips i.f{background:var(--accent);border-color:var(--accent)}
+.pips i.m{background:var(--gold);border-color:var(--gold)}
+.pm{display:flex;gap:6px}
+.pm button{width:44px;height:44px;padding:0;font-size:1.3rem;border-radius:12px}
+.pick{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.pick button{flex-direction:column;align-items:flex-start;text-align:left;padding:14px;background:var(--card);border:2px solid var(--line);font-weight:600;gap:2px}
+.pick button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.pick .em{font-size:1.8rem;line-height:1}
+.pick .d{font-family:var(--body);font-weight:400;font-size:.88rem;color:var(--ink2)}
+/* hero page */
+.hero-top{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start}
+.hero-top svg{width:100%;max-width:200px}
+@media (max-width:600px){.hero-top{grid-template-columns:1fr;text-align:center}.hero-top svg{max-width:160px}.hero-top .row{justify-content:center}}
+.chip{display:inline-flex;align-items:center;gap:.3em;padding:.25em .7em;border-radius:99px;background:var(--bg2);font-size:.9rem;font-weight:600}
+.chip.gold{background:var(--gold-soft)} .chip.magic{background:var(--magic-soft)} .chip.forest{background:var(--forest-soft)}
+.stories{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.story{display:flex;flex-direction:column;gap:6px;text-align:left;align-items:stretch;background:var(--card);border:2px solid var(--line);padding:16px;border-radius:18px;font-weight:600}
+.story .num{font-size:.8rem;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+.story .st{font-size:1.2rem;font-weight:800}
+.story .bl{font-family:var(--body);font-weight:400;font-size:.92rem;color:var(--ink2)}
+.story.locked{opacity:.55}
+.story.special{border-color:var(--accent);background:linear-gradient(160deg,var(--accent-soft),var(--card) 60%)}
+.story .em{font-size:2rem}
+/* play */
+.scene{max-width:720px;margin:0 auto}
+.art{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:3.1rem;margin:6px auto 8px;
+  background:radial-gradient(circle,var(--gold-soft) 0%,var(--bg2) 70%);box-shadow:0 0 40px var(--gold-soft)}
+.scene h2{text-align:center}
+.text{font-size:var(--fs)}
+.text .w.hl{background:var(--gold-soft);border-radius:4px;box-shadow:0 0 0 2px var(--gold-soft)}
+.buddy{display:flex;gap:10px;align-items:flex-start;background:var(--forest-soft);border-radius:16px;padding:10px 14px;margin:14px 0;font-size:.95em}
+.buddy .em{font-size:1.8rem;line-height:1}
+.question{font-family:var(--head);font-weight:700;font-size:1.2em;margin:20px 0 10px;color:var(--accent)}
+.choices{display:grid;gap:10px}
+.choice{justify-content:space-between;text-align:left;background:var(--card);border:2px solid var(--line);padding:14px 16px;font-size:1.02em;flex-wrap:wrap;gap:6px 10px}
+.choice:hover{border-color:var(--accent)}
+.choice .tag{font-size:.8rem;font-weight:600;padding:.2em .6em;border-radius:99px;background:var(--bg2);white-space:nowrap}
+.choice.master{border-color:var(--gold);background:linear-gradient(120deg,var(--gold-soft),var(--card) 70%)}
+.choice.master .tag{background:var(--gold);color:#2b1d00}
+.choice.magic{border-color:var(--magic)} .choice.magic .tag{background:var(--magic-soft);color:var(--magic)}
+.choice.friend .tag{background:var(--forest-soft)}
+.choice.lockd{opacity:.5;cursor:not-allowed;border-style:dashed}
+.statbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:24px 0 0}
+.chance{display:flex;gap:5px;justify-content:center;margin:10px 0}
+.chance i{width:22px;height:22px;border-radius:50%;background:var(--bg2);border:2px solid var(--line)}
+.chance i.y{background:var(--forest);border-color:var(--forest)}
+.diff{display:inline-block;padding:.15em .6em;border-radius:99px;font-family:var(--head);font-weight:700;font-size:.85rem}
+.diff.nemt{background:var(--forest-soft)} .diff.middel{background:var(--gold-soft)} .diff.svaert{background:var(--accent-soft)}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(20,15,10,.55);display:grid;place-items:center;padding:16px;z-index:50;animation:fade .2s}
+.modal .card{max-width:440px;width:100%;text-align:center;max-height:92vh;overflow:auto}
+@keyframes fade{from{opacity:0}}
+.die{width:110px;height:110px;margin:10px auto;display:block}
+.die.spin{animation:wob .12s linear infinite}
+@keyframes wob{0%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.06)}100%{transform:rotate(-8deg) scale(1)}}
+.own{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:10px 0}
+.own button{padding:0;aspect-ratio:1;background:var(--card);border:2px solid var(--line)}
+.own svg{width:100%;height:100%}
+.result{font-family:var(--head);font-weight:800;font-size:1.5rem;margin:6px 0}
+.result.ok{color:var(--forest)} .result.no{color:var(--accent)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.7em 1.2em;border-radius:14px;font-family:var(--head);z-index:60;max-width:calc(100% - 32px);text-align:center;animation:fade .2s}
+.end-stars{font-size:3rem;letter-spacing:.2em}
+.setting{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.setting:last-child{border-bottom:0}
+.switch{width:58px;height:34px;border-radius:99px;padding:0;background:var(--line);position:relative;flex:none}
+.switch::after{content:"";position:absolute;top:4px;left:4px;width:26px;height:26px;border-radius:50%;background:#fff;transition:left .15s}
+.switch[aria-pressed="true"]{background:var(--forest)} .switch[aria-pressed="true"]::after{left:28px}
+#fatal{display:none}
+#fatal.on{display:block}
+.fade-in{animation:fade .3s}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<noscript><div class="wrap"><div class="card"><h2>Lanterneskoven kræver JavaScript</h2><p>Slå JavaScript til i browseren for at spille.</p></div></div></noscript>
+<div id="app" aria-live="polite"></div>
+<div id="fatal" class="wrap">
+  <div class="card">
+    <h2>Ups, skoven kunne ikke vågne 🌙</h2>
+    <p>Noget gik galt, da spillet skulle starte. Det skyldes oftest gamle gemte data i browseren.</p>
+    <p class="muted small" id="fatal-msg"></p>
+    <div class="row">
+      <button class="primary" id="fatal-reset">Nulstil gemte data og prøv igen</button>
+      <button id="fatal-reload">Prøv igen</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   Fejl-skærm: hvis noget går galt, kan de gemte data nulstilles
+   ============================================================ */
+let booted = false;
+function fatal(err){
+  try{ console.error(err); }catch(e){}
+  if(booted) return; // efter start viser vi blot en lille besked
+  const f = document.getElementById('fatal');
+  document.getElementById('app').style.display='none';
+  f.classList.add('on');
+  document.getElementById('fatal-msg').textContent = (err && err.message) ? 'Fejl: '+err.message : '';
+}
+document.getElementById('fatal-reset').onclick = function(){
+  try{ ['lk-heroes','lk-prefs','lk-welcomed'].forEach(k=>localStorage.removeItem(k)); }catch(e){}
+  location.reload();
+};
+document.getElementById('fatal-reload').onclick = ()=>location.reload();
+window.addEventListener('error', e=>{ if(!booted) fatal(e.error||new Error(e.message)); else toast('Hov, noget drillede. Prøv igen.'); });
+window.addEventListener('unhandledrejection', e=>{ if(!booted) fatal(e.reason); });
+
+/* ============================================================
+   Data om spillet
+   ============================================================ */
+const TRAITS = [
+  {k:'mod',          n:'Mod',          e:'🦁', d:'Tør prøve svære og lidt uhyggelige ting'},
+  {k:'list',         n:'List',         e:'🦊', d:'Finder smarte veje og snedige planer'},
+  {k:'venlighed',    n:'Venlighed',    e:'💛', d:'Får venner og trøster andre'},
+  {k:'fantasi',      n:'Fantasi',      e:'🌈', d:'Finder på idéer, sange og lege'},
+  {k:'humor',        n:'Humor',        e:'😄', d:'Får alle til at grine, selv grublere'},
+  {k:'nysgerrighed', n:'Nysgerrighed', e:'🔍', d:'Opdager spor og løser gåder'}
+];
+const TR = Object.fromEntries(TRAITS.map(t=>[t.k,t]));
+
+const MAGICS = {
+  gnist:     {n:'Gnistmagi',   e:'✨', d:'Laver små lys og varme gnister i mørket.'},
+  dyresprog: {n:'Dyresprog',   e:'🐾', d:'Kan tale med alle skovens dyr.'},
+  syn:       {n:'Skjulte syn', e:'👁️', d:'Kan se det, der er gemt eller usynligt.'},
+  latter:    {n:'Latterstøv',  e:'🌟', d:'Et drys, og alle må fnise.'},
+  skjold:    {n:'Lysskjold',   e:'🛡️', d:'Et varmt skjold af lys, der passer på jer.'}
+};
+
+const COMPANIONS = {
+  rasmus: {n:'Ræven Rasmus',         s:'Rasmus', e:'🦊', t:'list',
+    lines:{start:['Jeg har en plan. Eller, jeg får en om lidt.','Hvis vi er snu, kan vi klare alt.'],
+           glad:['Det var snedigt gjort!','Ha! Det kunne jeg ikke have gjort bedre selv. Næsten.'],
+           spaending:['Hmm. Der er altid en smart vej, hvis man kigger godt efter.','Lad os tænke, før vi springer. Eller springe og tænke bagefter?'],
+           uhygge:['Uhyggeligt? Pyt. Ræve er gode til mørke.','Bare hold jer tæt til min hale.'],
+           slut:['Sikke et eventyr. Jeg siger det til alle ræve, jeg kender.']}},
+  pjuske: {n:'Pindsvinet Pjuske',    s:'Pjuske', e:'🦔', t:'mod',
+    lines:{start:['Jeg er lille, men jeg har pigge OG mod!','Fremad! Bare ikke for hurtigt, mine ben er korte.'],
+           glad:['Hurra! Det var modigt!','Jeg rullede mig næsten sammen af glæde.'],
+           spaending:['Vi kan godt. Én lille fod ad gangen.','Mod er bare at være bange og gøre det alligevel.'],
+           uhygge:['Jeg ryster ikke. Det er bare mine pigge, der vinker.','Tag min pote. Eller, pas på piggene.'],
+           slut:['I var så modige i dag. Det var jeg også. Lidt.']}},
+  mira:   {n:'Musen Mira',           s:'Mira',   e:'🐭', t:'nysgerrighed',
+    lines:{start:['Hvad mon der er bag næste træ? Og det næste? Og det næste?','Jeg har mine knurhår klar til at opdage ting.'],
+           glad:['Se! Vi fandt ud af det!','Mine knurhår vidste det godt.'],
+           spaending:['Kig godt efter, der er altid et spor.','Hvorfor, hvorfor, hvorfor? Det er mit yndlingsord.'],
+           uhygge:['Pip! Nå, det var bare en skygge.','Mørke er bare et sted, vi ikke har kigget endnu.'],
+           slut:['Jeg skal skrive alt det her ned i min lille musebog.']}},
+  frode:  {n:'Frøen Frode',          s:'Frode',  e:'🐸', t:'humor',
+    lines:{start:['Kvæk! Er vi der snart? Bare for sjov, vi er lige startet.','Jeg har pakket tre vittigheder og en flue.'],
+           glad:['Kvæ-hæ-hæk! Det var godt!','Det fortjener et hop. HOP!'],
+           spaending:['Hvis alt andet slår fejl, så lav en sjov lyd. Kvæk!','Ved I, hvad frøer siger, når de er spændte? Kvæææk.'],
+           uhygge:['Uhyggeligt? Jeg er så grøn af skræk. Nå nej, jeg er altid grøn.','Når man griner, bliver mørket mindre.'],
+           slut:['Det var det sjoveste eventyr, siden jeg lærte at hoppe.']}},
+  hilde:  {n:'Hjorten Hilde',        s:'Hilde',  e:'🦌', t:'venlighed',
+    lines:{start:['Husk at være søde ved alle, vi møder.','Skoven er fuld af venner, vi ikke har mødt endnu.'],
+           glad:['Hvor var det sødt gjort.','Kan I mærke det? Skoven smiler.'],
+           spaending:['Måske er den, vi møder, bare ked af det.','Et venligt ord kan åbne mange døre.'],
+           uhygge:['Jeg er lige her. I er ikke alene.','Selv uhyggelige ting kan have brug for en ven.'],
+           slut:['I har så store hjerter. Tak, fordi I tog mig med.']}},
+  silke:  {n:'Sommerfuglen Silke',   s:'Silke',  e:'🦋', t:'fantasi',
+    lines:{start:['Forestil jer, hvad vi kan opleve i dag!','Mine vinger kilder. Det betyder eventyr.'],
+           glad:['Sikke en vidunderlig idé!','Det var magisk. Næsten som mig.'],
+           spaending:['Hvis I lukker øjnene, kan I måske se svaret.','Der er altid en idé mere, gemt et sted.'],
+           uhygge:['Jeg tænker på regnbuer, når det er mørkt.','Lad os forestille os, at mørket er et stort, blødt tæppe.'],
+           slut:['Det her eventyr skal jeg drømme om i nat.']}}
+};
+
+const FRIENDS = {
+  uffe:    {n:'Uffe uglen',        e:'🦉'},
+  esther:  {n:'Egernet Esther',    e:'🐿️'},
+  bastian: {n:'Bjørnen Bastian',   e:'🐻'},
+  tue:     {n:'Mosetrolden Tue',   e:'🧌'},
+  maane:   {n:'Månen',             e:'🌙'},
+  vind:    {n:'Vinden',            e:'🌬️'},
+  froer:   {n:'Frøkoret',          e:'🎶'},
+  karla:   {n:'Kragen Karla',      e:'🐦‍⬛'},
+  spog:    {n:'Lille Spøg',        e:'👻'},
+  edderkop:{n:'Edderkopperne',     e:'🕸️'}
+};
+
+const DIFF = {
+  nemt:   {n:'Nemt',   base:3},
+  middel: {n:'Middel', base:4},
+  svaert: {n:'Svært',  base:5}
+};
+
+/* ============================================================
+   Historierne. Hver scene:
+   t   titel        e   ikon        mood   stemning til følgesvend
+   x   tekst (streng eller funktion af helten)
+   q   spørgsmål til børnene
+   c   faste valg, eller dyn: funktion, der bygger valg
+   gain {sparks, friend}  ved ankomst
+   end  true for slutscene
+   Valg: {t, go} eller {t, roll:{tr, d, ok, no}}
+         + magic:'gnist'  (kræver magien)
+         + master:'mod'   (kræver træk på 5)
+         + friend:'uffe'  (kræver ven)
+         + cost: antal gnister der bruges
+   ============================================================ */
+const has = (h,f)=>h.friends.includes(f);
+
+const S = {
+/* ---------------- Del 1: Lanterneskoven ---------------- */
+l1:{t:'Uffe har brug for hjælp', e:'🦉', mood:'start',
+  x:`Det er aften, og solen er lige gået ned bag bakkerne. Normalt lyser hundrede små lanterner i træerne i Lanterneskoven. Men i aften er de alle sammen slukkede.
+
+Pludselig lyder der et lille »hu-hu« fra en gren. Det er Uffe uglen. Han ser bekymret ud, og hans fjer stritter i alle retninger.
+
+»Godt, I kom, {navn}!« siger Uffe. »Uden lanternerne kan de små dyr ikke finde hjem. Vil I hjælpe mig med at tænde dem igen?«`,
+  q:'Hvad vil I gøre først?',
+  c:[{t:'Spørge Uffe, hvad der er sket', go:'l1b'},{t:'Gå ind i skoven med det samme', go:'l2'}]},
+l1b:{t:'Den store blæst', e:'🍃', mood:'spaending',
+  x:`Uffe ryster på hovedet. »I nat kom der en vældig blæst. Den susede gennem alle træerne, og pust, så gik lanternerne ud. Alle sammen på én gang.«
+
+»Og det værste er,« hvisker han, »at lanternegnisterne fløj væk. Det er de små gnister, der får lanternerne til at lyse. Nu ligger de spredt rundt omkring i skoven.«
+
+»Hvis I finder gnisterne, kan vi tænde lanternerne igen.«`,
+  q:'Er I klar til at finde gnisterne?',
+  c:[{t:'Ja! Af sted ind i skoven', go:'l2'}]},
+l2:{t:'Stien deler sig', e:'🌲', mood:'spaending',
+  x:`Skoven er mørk og stille. Kun månen kaster lidt sølvlys ned mellem bladene.
+
+Snart deler stien sig i to. Til venstre kan I høre en bæk, der klukker og pludrer. Til højre vokser høje bregner, og noget derinde rasler.`,
+  q:'Hvilken vej vil I gå?',
+  c:[{t:'Til venstre, ned mod bækken', go:'l3'},{t:'Til højre, ind mellem bregnerne', go:'l4'}]},
+l3:{t:'Gnisten på bladet', e:'🍂', mood:'spaending',
+  x:`Ved bækken får I øje på noget, der blinker. En lille, gylden lanternegnist ligger på et blad midt ude i vandet. Bladet snurrer langsomt rundt.
+
+Der ligger nogle glatte sten i bækken, men de ser glatte og våde ud.`,
+  q:'Hvordan får I fat i gnisten?',
+  c:[{t:'Hoppe ud på stenene', roll:{tr:'mod', d:'middel', ok:'l3ok', no:'l3no'}},
+     {t:'Bygge en lille båd af blade og grene', roll:{tr:'fantasi', d:'middel', ok:'l3ok', no:'l3no'}},
+     {t:'Spørge ænderne, om de vil hente den', magic:'dyresprog', go:'l3and'},
+     {t:'Lave en lang gnist-kæde ud til bladet', master:'fantasi', go:'l3ok'}]},
+l3and:{t:'Ænderne hjælper', e:'🦆', mood:'glad', gain:{sparks:1},
+  x:`»Rap, rap, selvfølgelig!« siger den største and, da I spørger på dyresprog. Hun svømmer ud, tager bladet forsigtigt i næbbet og bringer det helt hen til jer.
+
+Gnisten blinker glad i jeres hænder. Den er lun, som en lille kop kakao.`,
+  q:'Hvor går I hen nu?',
+  c:[{t:'Følg stien videre op ad bakken', go:'l5'}]},
+l3ok:{t:'Fanget!', e:'✨', mood:'glad', gain:{sparks:1},
+  x:`Det lykkes! I får fat i bladet, og gnisten hopper op i jeres hænder. Den er varm og blød og blinker, som om den siger tak.
+
+Nu har I den første lanternegnist.`,
+  q:'Hvor går I hen nu?',
+  c:[{t:'Følg stien videre op ad bakken', go:'l5'}]},
+l3no:{t:'Plask!', e:'💦', mood:'glad',
+  x:`Plask! Ups. I får våde tæer, og bladet driver videre ned ad bækken. Gnisten blinker, som om den griner lidt.
+
+Men se! Bladet driver samme vej som stien. Måske kan I finde den igen senere.`,
+  q:'Hvad nu?',
+  c:[{t:'Vride sokkerne og følge stien op ad bakken', go:'l5'}]},
+l4:{t:'Nogen græder', e:'🐿️', mood:'spaending',
+  x:`Inde mellem bregnerne sidder et lille egern og snøfter. Hendes hale er helt flad af sorg.
+
+»Jeg hedder Esther,« snøfter hun. »Blæsten væltede mit forrådskammer, og nu ligger alle mine nødder spredt i mørket. Jeg kan ikke finde en eneste.«`,
+  q:'Hvordan vil I hjælpe Esther?',
+  c:[{t:'Kravle rundt og samle nødder sammen med hende', roll:{tr:'venlighed', d:'nemt', ok:'l4ok', no:'l4no'}},
+     {t:'Lave en nøddeleg, så hun bliver glad igen', roll:{tr:'humor', d:'middel', ok:'l4ok', no:'l4no'}},
+     {t:'Lave lys med Gnistmagi, så I kan se nødderne', magic:'gnist', go:'l4ok'},
+     {t:'Se de gemte nødder med Skjulte syn', magic:'syn', go:'l4ok'}]},
+l4ok:{t:'Esthers gave', e:'🌰', mood:'glad', gain:{sparks:1, friend:'esther'},
+  x:`Snart er alle nødderne samlet i en stor bunke. Esther danser rundt om dem med halen højt i vejret.
+
+»Tak, tak, tak!« råber hun. »Her, I skal have den her. Den landede i mit træ i nat.« Hun rækker jer en lille, gylden lanternegnist.
+
+Esther er nu jeres ven.`,
+  q:'Hvor går I hen nu?',
+  c:[{t:'Følg stien videre op ad bakken', go:'l5'}]},
+l4no:{t:'Næsten alle nødderne', e:'🌰', mood:'glad', gain:{friend:'esther'},
+  x:`I finder ikke alle nødderne. Faktisk finder I mest kogler, og en af dem viser sig at være en sovende bille, der bliver meget forbavset.
+
+Men Esther griner alligevel. »I er søde,« siger hun. »Det var hyggeligere at lede sammen end alene.«
+
+Esther er nu jeres ven.`,
+  q:'Hvor går I hen nu?',
+  c:[{t:'Følg stien videre op ad bakken', go:'l5'}]},
+l5:{t:'Hulen under den store eg', e:'🐻', mood:'uhygge',
+  x:`Oppe på bakken står en kæmpestor egetræ. Mellem rødderne er der en hule, og derinde lyser det svagt og gyldent. Det må være lanternegnisterne!
+
+Men foran hulen ligger en stor, brun bjørn og sover. Hun snorker så højt, at bladene ryster: »Grrr-snork. Grrr-snork.«`,
+  q:'Hvordan kommer I forbi bjørnen?',
+  c:[{t:'Liste stille forbi på tæerne', roll:{tr:'list', d:'middel', ok:'l6', no:'l5vaag'}},
+     {t:'Vække bjørnen forsigtigt og spørge pænt', roll:{tr:'venlighed', d:'middel', ok:'l5ven', no:'l5vaag'}},
+     {t:'Drysse lidt Latterstøv, så hun griner i søvne', magic:'latter', go:'l5ven'},
+     {t:'Gå modigt hen og synge en godnatsang', master:'mod', go:'l5ven'}]},
+l5vaag:{t:'Bjørnen vågner', e:'😮', mood:'uhygge',
+  x:`Knæk! En lille gren knækker under jeres fødder. Bjørnen slår øjnene op.
+
+»Hvem dér?« brummer hun med en dyb stemme. Men så ser I noget overraskende: bjørnen ryster. Hun er bange!
+
+»Er det … er det mørket, der kommer?« spørger hun med en lille stemme.`,
+  q:'Hvad siger I til bjørnen?',
+  c:[{t:'»Bare rolig, vi er venner. Vi er her for at hjælpe.«', go:'l5ven'},
+     {t:'»Er du bange for mørket? Det er vi også nogle gange.«', go:'l5ven'}]},
+l5ven:{t:'Bastian og mørket', e:'🐻', mood:'glad', gain:{friend:'bastian'},
+  x:`Bjørnen sætter sig op og gnider øjnene. »Jeg hedder Bastian,« siger hun. »Undskyld. Da lanternerne gik ud, blev jeg så bange for mørket, at jeg samlede alle gnisterne, jeg kunne finde, og gemte dem i min hule. Så havde jeg da lidt lys.«
+
+»Men nu kan de andre dyr ikke finde hjem. Det var ikke meningen.«
+
+Bastian er nu jeres ven.`,
+  q:'Hvad gør I?',
+  c:[{t:'Gå ind i hulen sammen med Bastian', go:'l6'}]},
+l6:{t:'Krukken med gnister', e:'🫙', mood:'spaending',
+  x: h=>`Inde i hulen står en stor krukke. Den er fuld af lanternegnister, der summer og blinker som en flok glade bier.${h.sparks>0?' Jeres egen gnist blinker tilbage til dem, som om den siger hej.':''}
+
+Men låget sidder helt fast. Og hvis man ryster krukken, bliver gnisterne kede af det og lyser svagere.`,
+  q:'Hvordan får I gnisterne ud?',
+  c:[{t:'Synge en sang, så gnisterne selv flyver op', roll:{tr:'fantasi', d:'nemt', ok:'l7', no:'l6no'}},
+     {t:'Undersøge låget og finde ud af, hvordan det åbnes', roll:{tr:'nysgerrighed', d:'middel', ok:'l7', no:'l6no'}},
+     {t:'Kalde på gnisterne med jeres egen Gnistmagi', magic:'gnist', go:'l7'}]},
+l6no:{t:'Fyrværkeri!', e:'🎆', mood:'glad',
+  x:`Pop! Låget springer af med et ordentligt brag, og alle gnisterne skyder op i luften på én gang, ud af hulen og op over trætoppene.
+
+Det ligner det flotteste fyrværkeri. Og så sker der noget mærkeligt: Gnisterne flyver ikke væk. De drysser ned over skoven, én i hver lanterne.`,
+  q:'Hvad gør I?',
+  c:[{t:'Løbe ud og se', go:'l7'}]},
+l7:{t:'Lanterneskoven lyser', e:'🏮', mood:'slut', gain:{sparks:2, friend:'uffe'}, end:true,
+  x: h=>`Én efter én tænder lanternerne i træerne. Først en lille rød, så en gul, så hundrede på én gang. Hele skoven lyser op i varme farver.
+
+Uffe uglen flyver en kolbøtte i luften. »Hu-hu-hurra!« råber han. »I klarede det, {navn}!«${has(h,'esther')?' Esther hopper rundt fra gren til gren og vinker med halen.':''}${has(h,'bastian')?' Og Bastian sidder i lyset og smiler. Hun er slet ikke bange mere.':''}
+
+De små dyr finder hjem, og skoven er hyggelig igen. Men da I går hjem, lægger I mærke til, at det blæser lidt. En underlig, lille blæst, der næsten lyder trist.
+
+Uffe er nu jeres ven. Og I fik to ekstra gnister med hjem.`},
+
+/* ---------------- Del 2: Månen der gemte sig ---------------- */
+m1:{t:'Hvor er månen?', e:'🌑', mood:'start',
+  x:`Det er nat i Lanterneskoven, og lanternerne lyser fint. Men da I kigger op, er der noget, der mangler. Himlen er helt sort. Månen er væk!
+
+Uffe uglen kommer flyvende. »Hu-hu! Har I set det? Uden månen kan natsommerfuglene ikke finde vej, og pindsvinene går i ring. Vi må finde hende!«`,
+  q:'Hvor vil I lede efter månen?',
+  dyn: h=>[
+    {t:'Klatre op i det højeste træ og kigge ud', roll:{tr:'mod', d:'middel', ok:'m2', no:'m2no'}},
+    {t:'Følge den sidste, tynde månestråle', go:'m4'},
+    {t:'Spørge Esther, der kan se langt fra sit træ', friend:'esther', go:'m3e'},
+    {t:'Spørge Bastian, der kender alle stier', friend:'bastian', go:'m3b'}
+  ]},
+m2:{t:'Fra toppen af træet', e:'🌳', mood:'glad',
+  x:`I klatrer højere og højere, til grenene bliver tynde og vugger. Helt oppe fra toppen kan I se ud over hele skoven.
+
+Og dér! Langt borte, bag de store skyer over Skybjerget, er der et svagt, sølvfarvet skær.`,
+  q:'Hvad gør I?',
+  c:[{t:'Klatre ned og gå mod Skybjerget', go:'m5'}]},
+m2no:{t:'Rutsjeturen', e:'🍃', mood:'glad',
+  x:`Halvvejs oppe glider en fod. Wuuush! I rutsjer ned ad stammen og lander blødt i en stor bunke mos.
+
+»Sikke en landing,« siger en lille stemme. Det er en muldvarp, der stikker hovedet op. »Leder I efter månen? Jeg så den forsvinde mod mosen. Følg den tynde stråle.«`,
+  q:'Hvad gør I?',
+  c:[{t:'Takke muldvarpen og følge strålen', go:'m4'}]},
+m3e:{t:'Esther har set noget', e:'🐿️', mood:'glad',
+  x:`Esther hopper op og ned af begejstring, da hun ser jer. »Venner! Ja, jeg så månen! Hun sad og græd lidt og gemte sig så bag skyerne over Skybjerget.«
+
+Hun viser jer en hemmelig egernsti, der går lige derhen.`,
+  q:'Vil I tage den hemmelige sti?',
+  c:[{t:'Ja, af sted mod Skybjerget', go:'m5'}]},
+m3b:{t:'På Bastians ryg', e:'🐻', mood:'glad',
+  x:`»Op på ryggen, venner,« brummer Bastian. »Jeg kender en vej over mosen, og jeg er ikke bange for mørket mere. Næsten ikke.«
+
+Bastian traver af sted gennem natten, og I holder fast i hendes bløde pels. Snart er I ved foden af Skybjerget.`,
+  q:'Hvad gør I nu?',
+  c:[{t:'Kigge op mod skyerne', go:'m5'}]},
+m4:{t:'Mosetrolden Tue', e:'🧌', mood:'uhygge',
+  x:`Månestrålen fører jer til en stor, tåget mose. Midt på stien sidder en trold med mos i håret og en frø på hovedet.
+
+»Jeg er Mosetrolden Tue,« siger han med en stemme som en rumlende mave. »Ingen kommer over min mose uden at svare på en gåde. Hør her: Hvad bliver større, jo mere man tager fra det?«`,
+  q:'Hvad vil I gøre?',
+  c:[{t:'Tænke hårdt og svare på gåden', roll:{tr:'nysgerrighed', d:'middel', ok:'m4ok', no:'m4no'}},
+     {t:'Fortælle Tue en vittighed i stedet', roll:{tr:'humor', d:'middel', ok:'m4ok', no:'m4no'}},
+     {t:'Se gennem tågen med Skjulte syn og finde en anden vej', magic:'syn', go:'m5'},
+     {t:'Spørge frøen på hans hoved om svaret', magic:'dyresprog', go:'m4ok'}]},
+m4ok:{t:'Et hul!', e:'🕳️', mood:'glad', gain:{friend:'tue'},
+  x:`»ET HUL!« råber Tue og klapper i sine store hænder, så frøen hopper. »Jo mere man graver, jo større bliver hullet. Sikke nogle kloge børn.«
+
+Han griner så meget, at mosen bobler. »I må gerne gå over min mose. Og kom tilbage en dag, så får I mosesuppe. Den smager af … mos.«
+
+Tue er nu jeres ven.`,
+  q:'Hvad gør I?',
+  c:[{t:'Gå over mosen mod Skybjerget', go:'m5'}]},
+m4no:{t:'Forkert, men sjovt', e:'😆', mood:'glad',
+  x:`»Nej!« siger Tue. Og så begynder han at grine. »Det er det sjoveste forkerte svar, jeg nogensinde har hørt. Ingen har gættet på det før.«
+
+Han tørrer en tåre væk. »I må gå over mosen alligevel. Det var hele turen værd at høre det svar. Svaret var for resten: et hul.«`,
+  q:'Hvad gør I?',
+  c:[{t:'Gå over mosen mod Skybjerget', go:'m5'}]},
+m5:{t:'Bag skyerne', e:'☁️', mood:'spaending',
+  x:`Oppe på Skybjerget er skyerne bløde som dyner. Og bag den største sky kigger et lille, sølvfarvet ansigt frem. Det er Månen!
+
+Men hun er kun halv. »Gå væk,« siger hun stille. »Jeg er ikke rund mere. Jeg er kun en halv måne. Ingen vil se på en halv måne.«`,
+  q:'Hvordan får I Månen til at komme frem igen?',
+  dyn: h=>[
+    {t:'Sige, at hun er smuk, også når hun er halv', roll:{tr:'venlighed', d:'nemt', ok:'m6', no:'m5no'}},
+    {t:'Lave sjove skyggefigurer i månelyset', roll:{tr:'humor', d:'middel', ok:'m6', no:'m5no'}},
+    {t:'Give hende en af jeres gnister, så hun kan lyse lidt ekstra', cost:1, go:'m6'},
+    {t:'Fortælle en historie om alle månens former', master:'fantasi', go:'m6'},
+    {t:'Drysse Latterstøv på skyerne', magic:'latter', go:'m6'}
+  ]},
+m5no:{t:'Hun gemmer sig mere', e:'🌫️', mood:'spaending',
+  x: h=>`Månen trækker skyen endnu tættere om sig. »I siger det bare for at være søde,« mumler hun.
+
+Så siger ${h.companion?COMPANIONS[h.companion].s:'jeres ven'} stille: »Måske skal vi ikke sige noget smart. Måske skal vi bare blive her og vente sammen med hende.«
+
+Så I sætter jer på en blød sky. Og venter.`,
+  q:'Hvad gør I?',
+  c:[{t:'Sidde stille og nynne en godnatsang til Månen', go:'m6'}]},
+m6:{t:'Månen kommer frem', e:'🌓', mood:'slut', gain:{sparks:1, friend:'maane'}, end:true,
+  x: h=>`Langsomt kommer Månen frem bag skyen. Hendes sølvlys strømmer ud over skoven, og nede i Lanterneskoven jubler dyrene.
+
+»Tak,« siger Månen. »Jeg glemte, at alle mine former er fine. Halv, hel og helt tynd.« Hun giver jer en lille, sølvfarvet månegnist.${has(h,'tue')?' Langt nede kan I høre Tue råbe hurra fra mosen.':''}
+
+Men så bliver hun alvorlig. »Jeg må fortælle jer noget. Den nat, lanternerne gik ud, så jeg Vinden. Hun susede rundt helt alene. Hun så så ensom ud.«
+
+Månen er nu jeres ven.`},
+
+/* ---------------- Del 3: Vinden der var alene ---------------- */
+v1:{t:'Et brev i blæsten', e:'✉️', mood:'start',
+  x:`En morgen kommer et brev flagrende gennem luften. Det snurrer tre gange rundt om jeres hoveder og lander lige i jeres hænder.
+
+På brevet står der med krøllede bogstaver: »Kære lanternebørn. Det var mig, der slukkede lanternerne. Det var ikke med vilje. Undskyld. Kærlig hilsen Vinden.«`,
+  q:'Hvad vil I gøre med brevet?',
+  c:[{t:'Vise brevet til Uffe', go:'v1b'},{t:'Gå ud og finde Vinden med det samme', go:'v2'}]},
+v1b:{t:'Uffe ved besked', e:'🦉', mood:'spaending',
+  x:`Uffe læser brevet to gange med sine store briller. »Hu-hu. Vinden bor oppe på Susebakken,« siger han. »Der kommer aldrig nogen. Folk siger, det blæser for meget.«
+
+»Måske,« siger Uffe stille, »er det derfor, hun er så alene.«`,
+  q:'Hvad gør I?',
+  c:[{t:'Gå op på Susebakken', go:'v2'}]},
+v2:{t:'Mod Susebakken', e:'💨', mood:'spaending',
+  x:`Jo højere I kommer op ad bakken, jo mere blæser det. Græsset bøjer sig, og jeres hår flyver i alle retninger.
+
+Pludselig kommer et kæmpe vindstød. Wuuuuush!`,
+  q:'Hvordan kommer I op mod blæsten?',
+  c:[{t:'Gå modigt lige imod blæsten', roll:{tr:'mod', d:'middel', ok:'v3', no:'v2no'}},
+     {t:'Gå i læ bag sten og buske', roll:{tr:'list', d:'nemt', ok:'v3', no:'v2no'}},
+     {t:'Lave et Lysskjold, der tager blæsten', magic:'skjold', go:'v3'},
+     {t:'Holde hinanden i hænderne og gå i kæde', master:'venlighed', go:'v3'}]},
+v2no:{t:'Ind i bladbunken', e:'🍁', mood:'glad',
+  x:`Vindstødet løfter jer en lille smule fra jorden. Wuuuush! I flyver et lille stykke og lander i en kæmpe, blød bunke blade.
+
+I griner og griner, og bladene drysser ned over jer. Og mærkeligt nok: Vinden lyder pludselig, som om den også griner lidt.`,
+  q:'Hvad gør I?',
+  c:[{t:'Børste bladene af og gå det sidste stykke', go:'v3'}]},
+v3:{t:'Vindens hjem', e:'🌬️', mood:'spaending',
+  x:`Helt oppe på toppen hvirvler en stor, blød sky rundt og rundt. Den har et ansigt, og ansigtet er trist.
+
+»Er I kommet?« siger Vinden med en stemme som en sagte susen. »Ingen kommer herop. Alle siger bare: Luk døren, det blæser.«
+
+»Den nat ville jeg bare lege. Men da jeg sukkede, fordi ingen ville lege med mig, så pustede jeg alle lanternerne ud.«`,
+  q:'Hvad siger I til Vinden?',
+  dyn: h=>[
+    {t:'Spørge, om Vinden vil være jeres ven', roll:{tr:'venlighed', d:'nemt', ok:'v4', no:'v3b'}},
+    {t:'Lade Vinden blæse jeres hår op, så I ligner pindsvin', roll:{tr:'humor', d:'nemt', ok:'v4', no:'v3b'}},
+    {t:'Spørge, hvorfor hun er så ked af det', go:'v3b'},
+    {t:'Fortælle, at Månen sender mange hilsner', friend:'maane', go:'v4'},
+    {t:'Se, hvad der gemmer sig i Vindens hvirvel', magic:'syn', go:'v3syn'}
+  ]},
+v3syn:{t:'Det skjulte i hvirvlen', e:'👁️', mood:'glad', gain:{sparks:1},
+  x:`Med Skjulte syn kan I se ind i hvirvlen. Derinde flyver alle de ting, Vinden har samlet, fordi hun var ensom: en drage uden snor, en tabt vante, en fjer fra Uffe. Og en enkelt lanternegnist.
+
+»Den har jeg gemt, fordi den lyste så hyggeligt,« siger Vinden genert. »I må få den.«`,
+  q:'Hvad gør I?',
+  c:[{t:'Takke og spørge, om hun vil lege', go:'v4'}]},
+v3b:{t:'Vindens hemmelighed', e:'💧', mood:'spaending',
+  x:`Vinden suser stille. »Jeg er overalt, men jeg hører ikke til nogen steder,« siger hun. »Fuglene har reder. Ræven har en hule. Jeg har bare … luft.«
+
+»Og jeg er bange for at blæse for hårdt, så folk bliver sure på mig igen.«`,
+  q:'Hvad gør I?',
+  c:[{t:'Sige, at hun kan høre til hos jer', go:'v4'}]},
+v4:{t:'En leg med Vinden', e:'🪁', mood:'spaending',
+  x:`Vinden vil gerne lege. Men hun er bange. »Hvad nu hvis jeg blæser for hårdt?« siger hun. »Hvad nu hvis jeg ødelægger noget igen?«`,
+  q:'Hvilken leg finder I på?',
+  c:[{t:'En leg hvor blæst er godt: drager i luften!', roll:{tr:'fantasi', d:'middel', ok:'v5', no:'v4no'}},
+     {t:'Lære Vinden at hviske i stedet for at suse', roll:{tr:'list', d:'middel', ok:'v5', no:'v4no'}},
+     {t:'Holde en prutte-konkurrence med vindlyde', master:'humor', go:'v5'},
+     {t:'Lave en dans af gnister, som Vinden kan puste rundt', magic:'gnist', go:'v5'}]},
+v4no:{t:'Dragen i træet', e:'🌳', mood:'glad',
+  x:`Ups. Dragen flyver højt, og så sidder den fast i et træ. Vinden bliver helt stille. »Se,« hvisker hun. »Nu gjorde jeg det igen.«
+
+Men så puster hun forsigtigt. Rigtig, rigtig forsigtigt. Og dragen løsner sig og daler ned i jeres hænder.
+
+»Jeg kan godt være blid,« siger Vinden forbavset.`,
+  q:'Hvad siger I?',
+  c:[{t:'»Se! Du kan godt!«', go:'v5'}]},
+v5:{t:'Vinden smiler', e:'🌬️', mood:'slut', gain:{sparks:1, friend:'vind'}, end:true,
+  x:`Resten af dagen leger I med Vinden. Hun puster drager op, hun hvisker hemmeligheder i græsset, og hun får mælkebøtter til at flyve som små faldskærme.
+
+Da solen går ned, siger Vinden: »Jeg vil gerne sige undskyld til hele skoven. Men jeg tør ikke. Hvad nu hvis de stadig er sure?«
+
+I ser på hinanden. Og så får I en idé: En fest. En stor lanternefest, hvor Vinden kan sige undskyld.
+
+Vinden er nu jeres ven.`},
+
+/* ---------------- Del 4: Lanternefesten ---------------- */
+f1:{t:'Der skal holdes fest', e:'🎉', mood:'start',
+  x:`I aften skal der være Lanternefest! Uffe har sendt invitationer ud til hele skoven. Men der er travlt. Der skal pyntes, der skal laves mad, og der skal øves musik.
+
+»Hu-hu, hvor skal I begynde?« spørger Uffe og blader i sin lange liste.`,
+  q:'Hvad vil I hjælpe med?',
+  c:[{t:'Hænge lanterner og pynt op', go:'f2a'},{t:'Bage blåbærboller', go:'f2b'},{t:'Øve sange med Frøkoret', go:'f2c'}]},
+f2a:{t:'Pynt i trætoppene', e:'🏮', mood:'spaending',
+  x:`Lanternerne skal hænge helt oppe i trætoppene, så de lyser over hele festpladsen. Men grenene er høje.`,
+  q:'Hvordan får I pynten op?',
+  dyn: h=>[
+    {t:'Klatre op med lanternerne', roll:{tr:'mod', d:'middel', ok:'f3', no:'f2ano'}},
+    {t:'Bygge en lanterne-elevator af reb og en spand', roll:{tr:'fantasi', d:'middel', ok:'f3', no:'f2ano'}},
+    {t:'Bede Bastian løfte jer op på skuldrene', friend:'bastian', go:'f3'},
+    {t:'Bede Vinden blæse lanternerne op til grenene', friend:'vind', go:'f3'}
+  ]},
+f2ano:{t:'Lidt skæv pynt', e:'😄', mood:'glad',
+  x:`Lanternerne kommer op. Lidt skævt. En af dem hænger på hovedet, og en anden sidder fast på et egern, som synes, det er meget sjovt.
+
+»Det er det fineste pynt, jeg har set,« siger Uffe. »Skævt er hyggeligt.«`,
+  q:'Er pynten klar?',
+  c:[{t:'Ja! Nu kan gæsterne komme', go:'f3'}]},
+f2b:{t:'Blåbærboller', e:'🫐', mood:'spaending',
+  x: h=>`${has(h,'esther')?'Esther':'Et lille egern'} har en gammel opskrift på blåbærboller. Men halvdelen af ordene er spist af en orm. Der står bare: »To kopper … og en knivspids … i ovnen, til de …«`,
+  q:'Hvordan finder I ud af opskriften?',
+  c:[{t:'Gætte jer frem og smage undervejs', roll:{tr:'nysgerrighed', d:'middel', ok:'f2bok', no:'f2bno'}},
+     {t:'Opfinde jeres helt egen opskrift', roll:{tr:'fantasi', d:'nemt', ok:'f2bok', no:'f2bno'}},
+     {t:'Spørge ormen, hvad den spiste', magic:'dyresprog', go:'f2bok'}]},
+f2bok:{t:'Bollerne dufter', e:'🧁', mood:'glad',
+  x:`Bollerne kommer ud af ovnen, gyldne og lune og fulde af blå bær. Hele skoven dufter af dem.
+
+Selv ormen kigger frem. »Undskyld, at jeg spiste opskriften,« siger den. »Den smagte bare så godt.«`,
+  q:'Klar til festen?',
+  c:[{t:'Ja! Bær bollerne hen til festpladsen', go:'f3'}]},
+f2bno:{t:'Mærkelige boller', e:'🥯', mood:'glad',
+  x:`Bollerne bliver … anderledes. En ligner en kanin. En ligner Uffe. En er helt blå og meget flad.
+
+Men da I smager dem, er de faktisk rigtig gode. »Kanin-bollen er min,« råber alle på én gang.`,
+  q:'Klar til festen?',
+  c:[{t:'Ja! Bær bollerne hen til festpladsen', go:'f3'}]},
+f2c:{t:'Frøkoret', e:'🐸', mood:'spaending',
+  x:`Ved dammen sidder tolv frøer og øver. »Kvæk-kvæk-kvæææk!« Det lyder … ikke helt rigtigt. Frøerne ser kede ud af det.
+
+»Vi kan ikke finde ud af festsangen,« siger den største frø. »Den er for svær.«`,
+  q:'Hvordan hjælper I Frøkoret?',
+  c:[{t:'Lave en ny, fjollet sang, der er nem at synge', roll:{tr:'humor', d:'middel', ok:'f2cok', no:'f2cno'}},
+     {t:'Øve sangen tålmodigt sammen med dem', roll:{tr:'venlighed', d:'nemt', ok:'f2cok', no:'f2cno'}},
+     {t:'Drysse Latterstøv, så de slapper af', magic:'latter', go:'f2cok'}]},
+f2cok:{t:'Sangen sidder', e:'🎶', mood:'glad', gain:{friend:'froer'},
+  x:`Til sidst synger Frøkoret så smukt, at fiskene stikker hovedet op af vandet for at lytte.
+
+»Kvæk for hjælpen!« siger frøerne i kor. Frøkoret er nu jeres ven.`,
+  q:'Klar til festen?',
+  c:[{t:'Ja! Hop hen til festpladsen', go:'f3'}]},
+f2cno:{t:'Falsk, men glad', e:'🎵', mood:'glad', gain:{friend:'froer'},
+  x:`Sangen bliver ikke smuk. Den bliver meget høj, lidt falsk og fuld af hop. Men frøerne griner så meget, at de falder i vandet.
+
+»Det er den bedste sang nogensinde,« siger de. Frøkoret er nu jeres ven.`,
+  q:'Klar til festen?',
+  c:[{t:'Ja! Hop hen til festpladsen', go:'f3'}]},
+f3:{t:'Gæsterne kommer', e:'🏮', mood:'spaending',
+  x: h=>{
+    const fr = h.friends.filter(f=>f!=='vind').map(f=>FRIENDS[f].n);
+    const list = fr.length ? 'Alle jeres venner kommer: ' + andList(fr) + '.' : 'Dyr fra hele skoven kommer.';
+    return `Lanternerne lyser, og gæsterne kommer, én efter én. ${list}
+
+Men én mangler. Bag det store træ i kanten af pladsen suser det svagt. Det er Vinden. Hun tør ikke komme frem.`;},
+  q:'Hvordan får I Vinden med til festen?',
+  dyn: h=>[
+    {t:'Gå hen og holde hende i hånden', roll:{tr:'venlighed', d:'nemt', ok:'f4', no:'f3no'}},
+    {t:'Lægge en lang gnistbro hen til hende', need:3, go:'f4'},
+    {t:'Lade Frøkoret synge en sang om Vinden', friend:'froer', go:'f4'},
+    {t:'Gå hen og sige: »Vi har savnet dig«', master:'venlighed', go:'f4'},
+    {t:'Lave et Lysskjold rundt om hende, så hun føler sig tryg', magic:'skjold', go:'f4'}
+  ]},
+f3no:{t:'For genert', e:'🌳', mood:'spaending',
+  x:`Vinden gemmer sig endnu mere bag træet. »Jeg kan ikke,« hvisker hun.
+
+Så rejser Uffe sig. »Alle sammen,« siger han. »Lad os kalde på hende. Sammen.«`,
+  q:'Hvad råber I?',
+  c:[{t:'»Vinden! Vinden! Kom og vær med!«', go:'f4'}]},
+f4:{t:'Undskyld', e:'💛', mood:'spaending',
+  x:`Vinden kommer langsomt frem i lyset. Hele skoven bliver stille.
+
+»Det var mig, der slukkede lanternerne,« siger hun med en lille stemme. »Jeg var så ensom. Undskyld.«
+
+Et øjeblik siger ingen noget. Så siger Uffe: »Vi tilgiver dig. Og nu har du jo venner.« Alle dyrene klapper.`,
+  q:'Hvad skal Vinden gøre nu?',
+  c:[{t:'Blæse lanterner op i himlen, så de bliver til stjerner', go:'f5'},
+     {t:'Danse en stor blæsedans med alle i skoven', go:'f5'}]},
+f5:{t:'Lanternefesten', e:'🎆', mood:'slut', gain:{sparks:2}, end:true,
+  x: h=>`Hele natten bliver der danset og sunget i Lanterneskoven. Vinden blæser blidt, så lanternerne svajer som små både.${has(h,'maane')?' Månen kigger ned, hel og rund, og blinker til jer.':''}${has(h,'bastian')?' Bastian danser med Uffe på tæerne.':''}${has(h,'tue')?' Tue har taget mosesuppe med. Ingen smager på den.':''}
+
+Til sidst sætter I jer i græsset og ser op på alle lanternerne. Uffe sætter sig ved siden af jer.
+
+»Tak, {navn},« siger han. »I tændte lyset i skoven. Men I tændte også lyset hos Bastian, hos Månen og hos Vinden.«
+
+Og her slutter den store fortælling om Lanterneskoven. Men skoven er her altid, hvis I vil på eventyr igen.`},
+
+/* ---------------- Halloween: Græskarnatten ---------------- */
+g1:{t:'Det lille spøgelse', e:'🎃', mood:'uhygge',
+  x:`Det er Græskarnatten. Over hele skoven lyser udskårne græskar med skæve smil. Det knirker i træerne, og en ugle siger »uhuuu«. Uhyggeligt. Men kun på den hyggelige måde.
+
+På en sten sidder et lille, hvidt spøgelse og græder. »Jeg er Lille Spøg,« hulker han. »Jeg har mistet mit bøh! Hør!« Han tager en dyb indånding og siger: »… bip.«`,
+  q:'Hvad vil I gøre?',
+  c:[{t:'Love at hjælpe Lille Spøg med at finde sit bøh', go:'g2'},
+     {t:'Prøve at lære ham et nyt bøh', roll:{tr:'humor', d:'svaert', ok:'g1ok', no:'g2'}}]},
+g1ok:{t:'Et næsten-bøh', e:'👻', mood:'glad', gain:{sparks:1},
+  x:`I øver og øver. Til sidst siger Lille Spøg: »BØ-ip!« Det er ikke et rigtigt bøh, men det er tæt på, og han griner så meget, at han bliver helt gennemsigtig.
+
+»Tak,« siger han. »Men jeg vil gerne have mit eget bøh tilbage. Det var arvet fra min oldemor.«`,
+  q:'Vil I hjælpe ham med at lede?',
+  c:[{t:'Selvfølgelig!', go:'g2'}]},
+g2:{t:'Græskarmarken', e:'🎃', mood:'uhygge',
+  x:`I går ud på den store græskarmark. Græskarrene lyser og ser på jer med deres skæve smil.
+
+På et fugleskræmsel sidder en krage og stirrer. Og ved kanten af marken står et gammelt, hult træ, hvor der kommer en mærkelig lyd fra.`,
+  q:'Hvor vil I lede?',
+  c:[{t:'Spørge kragen, om hun har set noget', roll:{tr:'list', d:'middel', ok:'g3', no:'g3no'}},
+     {t:'Tale med kragen på dyresprog', magic:'dyresprog', go:'g3'},
+     {t:'Kigge ind i det hule træ', roll:{tr:'nysgerrighed', d:'middel', ok:'g4', no:'g4no'}}]},
+g3:{t:'Kragen Karla', e:'🐦‍⬛', mood:'glad', gain:{friend:'karla'},
+  x:`»Kra! Jeg er Kragen Karla, og jeg ser ALT,« siger kragen. »Jeg så et lille bøh flyve forbi i aftes. Det sagde bøh-bøh-bøh og fløj ind i Ekkohulen.«
+
+»Hvis I finder det, må jeg så få en skinnende ting?« spørger hun. »Bare en lille én?«
+
+Kragen Karla er nu jeres ven.`,
+  q:'Hvad gør I?',
+  c:[{t:'Love Karla en blank knap og gå mod Ekkohulen', go:'g5'}]},
+g3no:{t:'Kragen er fornærmet', e:'🐦‍⬛', mood:'glad',
+  x:`»Kra! Det siger jeg ikke,« siger kragen og vender ryggen til. Men så kan hun alligevel ikke lade være: »Okay, okay. Ekkohulen. Det fløj ind i Ekkohulen. Jeg er bare dårlig til hemmeligheder.«`,
+  q:'Hvad gør I?',
+  c:[{t:'Gå mod Ekkohulen', go:'g5'}]},
+g4:{t:'Edderkoppernes strikkeklub', e:'🕸️', mood:'glad', gain:{friend:'edderkop'},
+  x:`Inde i det hule træ sidder otte små edderkopper og strikker spind. De har små briller på.
+
+»Velkommen,« siger den ældste. »Vi så et bøh suse forbi i går. Det fløj ind i Ekkohulen og sagde bøh-bøh-bøh hele vejen.« Hun strikker et lille, lysende spind til jer. »Tag det med. Det lyser i mørket.«
+
+Edderkopperne er nu jeres venner.`,
+  q:'Hvad gør I?',
+  c:[{t:'Takke og gå mod Ekkohulen', go:'g5'}]},
+g4no:{t:'BØØØH!', e:'🕷️', mood:'glad',
+  x:`I kigger ind i træet. Og så: »BØØØØH!« Ud springer en lille edderkop og griner, så hun næsten taber sine strikkepinde.
+
+»Haha, jeg fik jer!« siger hun. »Men det er ikke Lille Spøgs bøh. Hans bøh fløj ind i Ekkohulen. Der kan I høre det.«`,
+  q:'Hvad gør I, når hjertet er faldet til ro?',
+  c:[{t:'Gå mod Ekkohulen', go:'g5'}]},
+g5:{t:'Ekkohulen', e:'🦇', mood:'uhygge',
+  x:`Ekkohulen er mørk og kølig. Inde fra mørket lyder det: »Bøh … bøh … bøh …« Bøhet hopper rundt mellem væggene som en hoppebold.
+
+Lille Spøg gemmer sig bag jer. »Det er mit bøh,« hvisker han. »Men hvordan fanger man et bøh?«`,
+  q:'Hvordan fanger I bøhet?',
+  c:[{t:'Gå modigt ind i mørket og fange det', roll:{tr:'mod', d:'middel', ok:'g6', no:'g5no'}},
+     {t:'Lokke bøhet ud med en sang', roll:{tr:'fantasi', d:'middel', ok:'g6', no:'g5no'}},
+     {t:'Lyse hulen op med Gnistmagi', magic:'gnist', go:'g6'},
+     {t:'Gå ind i et Lysskjold, så I er trygge', magic:'skjold', go:'g6'},
+     {t:'Råbe jeres eget kæmpestore BØH, så bøhet kommer for at se', master:'mod', go:'g6'}]},
+g5no:{t:'Fniset', e:'😆', mood:'glad',
+  x:`Pludselig hopper bøhet lige forbi jeres næser: »BØH!« I hopper alle sammen en meter op i luften.
+
+Og så begynder I at grine. Lille Spøg griner også. Han griner så højt og så længe, at hans grin hopper rundt i hulen sammen med bøhet. Og bøhet bliver nysgerrigt og flyver lige hen til ham.`,
+  q:'Hvad sker der nu?',
+  c:[{t:'Se, hvad Lille Spøg gør', go:'g6'}]},
+g6:{t:'BØH!', e:'👻', mood:'slut', gain:{sparks:1, friend:'spog'}, end:true,
+  x:`Bøhet hopper lige ind i munden på Lille Spøg. Han tager en dyb indånding, og så:
+
+»BØØØØØØH!«
+
+Det runger ud over hele græskarmarken. Græskarrene blinker, kragerne letter, og alle i skoven råber: »Uhh, hvor er vi bange!« Og så griner de.
+
+Lille Spøg svæver i ring af glæde. »Tak, {navn}! I er de modigste og sødeste børn i hele skoven. Kom igen næste Græskarnat. Så skal jeg bøh'e jer. Men kun lidt.«
+
+Lille Spøg er nu jeres ven.`}
+};
+
+const STORIES = [
+  {id:'lanterne', part:1, title:'Lanterneskoven',      e:'🏮', start:'l1', blurb:'Uffe uglen skal have hjælp til at tænde skovens lanterner igen.'},
+  {id:'maane',    part:2, title:'Månen der gemte sig', e:'🌙', start:'m1', needs:'lanterne', blurb:'Månen er væk fra himlen. Jeres gnister og venner kan hjælpe.'},
+  {id:'vind',     part:3, title:'Vinden der var alene',e:'🌬️', start:'v1', needs:'maane', blurb:'Et brev fra Vinden: hvorfor slukkede den lanternerne?'},
+  {id:'fest',     part:4, title:'Lanternefesten',      e:'🎉', start:'f1', needs:'vind', blurb:'Skoven holder fest, så Vinden kan sige undskyld.'},
+  {id:'graeskar', part:0, title:'Græskarnatten',       e:'🎃', start:'g1', special:true, blurb:'Lille Spøg har mistet sit bøh. Uhyggeligt, men kun på den hyggelige måde.'}
+];
+const STORY = Object.fromEntries(STORIES.map(s=>[s.id,s]));
+
+/* ============================================================
+   Udseende
+   ============================================================ */
+const SKINS = ['#fde3c8','#f5c8a2','#e2aa7c','#c88956','#8f5c3c','#5e3b25'];
+const HAIRC = ['#2b1d14','#5a3a22','#a0632c','#e0b04f','#f4e1a4','#c0392b','#8e5cc4','#3fa7a0','#e3e3e3'];
+const OUTC  = ['#3f7fbf','#d9534f','#4e9a5b','#e8892b','#8e5cc4','#e06fa6','#2f4858','#e7b928'];
+const LOOK = {
+  hair:   [['kort','Kort'],['langt','Langt'],['kroller','Krøller'],['fletninger','Fletninger'],['hestehale','Hestehale'],['pigget','Pigget'],['ingen','Intet hår']],
+  face:   [['smil','😊 Smil'],['grin','😁 Grin'],['wow','😮 Wow'],['blink','😉 Blink'],['fraek','😛 Fræk']],
+  hat:    [['ingen','Ingen hat'],['trold','🧙 Troldmandshat'],['krone','👑 Krone'],['kasket','🧢 Kasket'],['krans','🌼 Blomsterkrans'],['hue','🧶 Hue'],['pirat','🏴‍☠️ Piratehat'],
+           ['heks','🎃 Heksehat'],['graeskar','🎃 Græskarhat'],['flagermus','🎃 Flagermus-ører']],
+  outfit: [['tunika','Tunika'],['kjole','Kjole'],['kappe','Kappe'],['overalls','Overalls'],['ridder','Ridderdragt']],
+  item:   [['lanterne','🏮 Lanterne'],['stav','🪄 Tryllestav'],['bog','📕 Bog'],['svaerd','🗡️ Træsværd'],['kikkert','🔭 Kikkert'],['bamse','🧸 Bamse'],['blomst','🌻 Blomst'],['intet','Ingenting']],
+  acc:    [['ingen','Intet'],['briller','👓 Briller'],['fregner','Fregner'],['plaster','🩹 Plaster'],['knurhaar','🐱 Knurhår'],['sloejfe','🎀 Sløjfe']]
+};
+const HALLOWEEN_HATS = ['heks','graeskar','flagermus'];
+
+function shade(hex, amt){
+  const n = parseInt(hex.slice(1),16); let r=n>>16, g=(n>>8)&255, b=n&255;
+  const t = amt<0?0:255, p=Math.abs(amt);
+  r=Math.round((t-r)*p+r); g=Math.round((t-g)*p+g); b=Math.round((t-b)*p+b);
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+function star(cx,cy,r,fill){
+  let p=''; for(let i=0;i<10;i++){const a=Math.PI/5*i-Math.PI/2, rr=i%2?r*.45:r; p+=(i?'L':'M')+(cx+rr*Math.cos(a)).toFixed(1)+' '+(cy+rr*Math.sin(a)).toFixed(1);}
+  return `<path d="${p}Z" fill="${fill}"/>`;
+}
+
+function heroSVG(L, label){
+  L = Object.assign({skin:0,hair:'kort',hairColor:0,face:'smil',hat:'ingen',outfit:'tunika',outfitColor:0,item:'lanterne',acc:'ingen'}, L||{});
+  const sk=SKINS[L.skin]||SKINS[0], hc=HAIRC[L.hairColor]||HAIRC[0], oc=OUTC[L.outfitColor]||OUTC[0];
+  const dk=shade(oc,-.25), ink='#3a2a22', cream='#f6eedc';
+  let s='';
+  // bag-lag
+  if(L.outfit==='kappe') s+=`<path d="M62 142 Q100 126 138 142 L164 232 Q100 240 36 232 Z" fill="${dk}"/>`;
+  if(L.hair==='langt') s+=`<path d="M54 86 Q46 150 64 174 L136 174 Q154 150 146 86 Z" fill="${hc}"/>`;
+  if(L.hair==='hestehale') s+=`<path d="M134 62 Q178 66 170 124 Q166 148 152 158 Q160 118 130 84 Z" fill="${hc}"/>`;
+  // ben og sko
+  const leg = L.outfit==='overalls'?shade(oc,-.15):shade(oc,-.45);
+  s+=`<rect x="80" y="196" width="15" height="34" rx="6" fill="${leg}"/><rect x="105" y="196" width="15" height="34" rx="6" fill="${leg}"/>`;
+  s+=`<ellipse cx="85" cy="232" rx="13" ry="7" fill="#4a3426"/><ellipse cx="115" cy="232" rx="13" ry="7" fill="#4a3426"/>`;
+  // krop
+  let sleeve=oc;
+  if(L.outfit==='tunika'){
+    s+=`<path d="M66 144 Q100 132 134 144 L142 206 Q100 214 58 206 Z" fill="${oc}"/><rect x="60" y="180" width="80" height="8" fill="${dk}"/><rect x="94" y="178" width="12" height="12" rx="2" fill="#f2c14e"/>`;
+  } else if(L.outfit==='kjole'){
+    s+=`<path d="M70 142 Q100 132 130 142 L154 216 Q100 226 46 216 Z" fill="${oc}"/>`;
+    [[80,170],[110,160],[96,192],[124,196],[70,204],[132,178]].forEach(([x,y])=>s+=`<circle cx="${x}" cy="${y}" r="4" fill="#fff" opacity=".55"/>`);
+    s+=`<path d="M78 150 Q100 160 122 150" stroke="${dk}" stroke-width="4" fill="none"/>`;
+  } else if(L.outfit==='kappe'){
+    sleeve=shade(oc,.5);
+    s+=`<path d="M68 144 Q100 134 132 144 L138 208 Q100 214 62 208 Z" fill="${sleeve}"/>`;
+    s+=`<path d="M64 142 L84 146 L76 216 L54 212 Z" fill="${oc}"/><path d="M136 142 L116 146 L124 216 L146 212 Z" fill="${oc}"/>`;
+    s+=`<circle cx="100" cy="146" r="6" fill="#f2c14e"/>`;
+  } else if(L.outfit==='overalls'){
+    sleeve=cream;
+    s+=`<path d="M66 144 Q100 132 134 144 L138 206 L62 206 Z" fill="${cream}"/>`;
+    s+=`<path d="M74 162 L126 162 L130 210 L70 210 Z" fill="${oc}"/><path d="M78 164 L70 142 M122 164 L130 142" stroke="${oc}" stroke-width="7" stroke-linecap="round"/>`;
+    s+=`<circle cx="82" cy="168" r="3.5" fill="#f2c14e"/><circle cx="118" cy="168" r="3.5" fill="#f2c14e"/><rect x="90" y="176" width="20" height="14" rx="3" fill="${dk}"/>`;
+  } else { // ridder
+    sleeve='#aeb9c4';
+    s+=`<path d="M66 144 Q100 132 134 144 L140 206 Q100 214 60 206 Z" fill="#aeb9c4"/><path d="M76 150 Q100 142 124 150 L120 176 Q100 182 80 176 Z" fill="#d3dbe2"/>`;
+    s+=`<rect x="90" y="146" width="20" height="64" fill="${oc}"/>${star(100,192,7,'#f2c14e')}`;
+  }
+  // genstand bag hånden
+  s+=itemSVG(L.item);
+  // arme og hænder
+  s+=`<path d="M72 150 Q56 172 52 194" stroke="${sleeve}" stroke-width="15" stroke-linecap="round" fill="none"/>`;
+  s+=`<path d="M128 150 Q144 172 148 194" stroke="${sleeve}" stroke-width="15" stroke-linecap="round" fill="none"/>`;
+  s+=`<circle cx="52" cy="198" r="8.5" fill="${sk}"/><circle cx="148" cy="198" r="8.5" fill="${sk}"/>`;
+  // hals og hoved
+  s+=`<rect x="92" y="126" width="16" height="18" rx="4" fill="${shade(sk,-.08)}"/>`;
+  s+=`<circle cx="57" cy="96" r="9" fill="${sk}"/><circle cx="143" cy="96" r="9" fill="${sk}"/>`;
+  s+=`<circle cx="100" cy="92" r="44" fill="${sk}"/>`;
+  s+=`<ellipse cx="77" cy="108" rx="7" ry="4.5" fill="#f28b82" opacity=".45"/><ellipse cx="123" cy="108" rx="7" ry="4.5" fill="#f28b82" opacity=".45"/>`;
+  // ansigt
+  const eye=(x,r=4.8)=>`<circle cx="${x}" cy="94" r="${r}" fill="${ink}"/><circle cx="${x+1.6}" cy="92.4" r="1.5" fill="#fff"/>`;
+  if(L.face==='smil') s+=eye(84)+eye(116)+`<path d="M87 110 Q100 121 113 110" stroke="${ink}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  else if(L.face==='grin') s+=eye(84)+eye(116)+`<path d="M84 108 Q100 128 116 108 Z" fill="${ink}"/><path d="M92 116 Q100 122 108 116 Q100 126 92 116Z" fill="#e8737a"/>`;
+  else if(L.face==='wow') s+=`<circle cx="84" cy="94" r="7" fill="#fff"/><circle cx="116" cy="94" r="7" fill="#fff"/>`+eye(84,4)+eye(116,4)+`<ellipse cx="100" cy="114" rx="6" ry="7.5" fill="${ink}"/>`;
+  else if(L.face==='blink') s+=eye(84)+`<path d="M110 95 Q116 89 122 95" stroke="${ink}" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M87 110 Q100 121 113 110" stroke="${ink}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  else s+=`<path d="M78 94 Q84 89 90 94" stroke="${ink}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`+eye(116)+`<path d="M87 110 Q100 116 113 110" stroke="${ink}" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M95 112 L95 120 Q100 126 105 120 L105 112 Z" fill="#e8737a"/>`;
+  s+=`<path d="M98 100 Q100 104 102 100" stroke="${shade(sk,-.3)}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+  // hår foran
+  const cap=`<path d="M56 92 Q52 44 100 42 Q148 44 144 92 Q138 68 120 62 Q106 76 84 68 Q66 72 56 92 Z" fill="${hc}"/>`;
+  if(['kort','langt','hestehale','fletninger'].includes(L.hair)) s+=cap;
+  if(L.hair==='kroller') [[58,86],[60,68],[71,54],[86,45],[103,42],[120,46],[134,57],[142,72],[143,88],[96,58],[78,64],[116,62]].forEach(([x,y])=>s+=`<circle cx="${x}" cy="${y}" r="12" fill="${hc}"/>`);
+  if(L.hair==='pigget') s+=`<path d="M56 90 L58 56 L72 64 L78 38 L92 56 L102 30 L112 54 L126 36 L130 60 L144 54 L144 90 Q126 66 100 66 Q76 66 56 90Z" fill="${hc}"/>`;
+  if(L.hair==='fletninger') [[54,118],[52,134],[52,150],[146,118],[148,134],[148,150]].forEach(([x,y])=>s+=`<circle cx="${x}" cy="${y}" r="9" fill="${hc}"/>`), s+=`<circle cx="52" cy="162" r="5" fill="${OUTC[5]}"/><circle cx="148" cy="162" r="5" fill="${OUTC[5]}"/>`;
+  // tilbehør
+  if(L.acc==='briller') s+=`<g fill="none" stroke="${ink}" stroke-width="3"><circle cx="84" cy="94" r="11"/><circle cx="116" cy="94" r="11"/><path d="M95 93 Q100 89 105 93"/></g>`;
+  if(L.acc==='fregner') [[72,102],[78,106],[74,110],[122,102],[128,106],[126,110]].forEach(([x,y])=>s+=`<circle cx="${x}" cy="${y}" r="1.6" fill="${shade(sk,-.45)}"/>`);
+  if(L.acc==='plaster') s+=`<g transform="rotate(-25 124 106)"><rect x="114" y="102" width="20" height="8" rx="3" fill="#f3c99a"/><rect x="121" y="102" width="6" height="8" fill="#e6b27c"/></g>`;
+  if(L.acc==='knurhaar') s+=`<g stroke="${ink}" stroke-width="2" stroke-linecap="round"><path d="M80 104 L64 100 M80 108 L64 110 M120 104 L136 100 M120 108 L136 110"/></g><circle cx="100" cy="101" r="3" fill="${ink}"/>`;
+  if(L.acc==='sloejfe') s+=`<g transform="translate(134 58)"><path d="M0 0 L-14 -10 L-14 10 Z M0 0 L14 -10 L14 10 Z" fill="${OUTC[5]}"/><circle r="4" fill="${shade(OUTC[5],-.2)}"/></g>`;
+  // hat
+  s+=hatSVG(L.hat);
+  const title = label ? `<title>${esc(label)}</title>` : '';
+  return `<svg viewBox="0 -30 200 272" xmlns="http://www.w3.org/2000/svg" role="img" ${label?'':'aria-hidden="true"'}>${title}${s}</svg>`;
+}
+function hatSVG(h){
+  switch(h){
+    case 'trold': return `<path d="M62 60 L104 -22 L138 60 Z" fill="#4b3f9e"/><ellipse cx="100" cy="60" rx="56" ry="10" fill="#3a2f80"/>${star(98,30,7,'#f2c14e')}${star(114,8,5,'#f2c14e')}${star(86,48,4,'#f2c14e')}`;
+    case 'krone': return `<path d="M64 58 L64 24 L82 40 L100 14 L118 40 L136 24 L136 58 Z" fill="#f2c14e" stroke="#c99a2e" stroke-width="2.5" stroke-linejoin="round"/><circle cx="100" cy="46" r="5" fill="#d9534f"/><circle cx="80" cy="50" r="3.5" fill="#3f7fbf"/><circle cx="120" cy="50" r="3.5" fill="#4e9a5b"/>`;
+    case 'kasket': return `<path d="M56 68 Q56 28 100 28 Q144 28 144 68 Z" fill="#3f7fbf"/><path d="M98 66 Q150 58 170 70 Q144 78 98 72 Z" fill="#2c5d8f"/><circle cx="100" cy="28" r="5" fill="#2c5d8f"/>`;
+    case 'krans': { let o=''; [[58,72],[68,58],[82,49],[100,46],[118,49],[132,58],[142,72]].forEach(([x,y],i)=>{const c=['#f28b82','#f2c14e','#fff','#c6a0f2'][i%4];o+=`<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<circle cx="${(6*Math.cos(a*Math.PI/180)).toFixed(1)}" cy="${(6*Math.sin(a*Math.PI/180)).toFixed(1)}" r="5" fill="${c}"/>`).join('')}<circle r="3.5" fill="#e8892b"/></g>`;}); return `<path d="M56 74 Q100 36 144 74" stroke="#4e9a5b" stroke-width="6" fill="none"/>`+o; }
+    case 'hue': return `<path d="M54 72 Q54 22 100 20 Q146 22 146 72 Z" fill="#d9534f"/><path d="M70 30 L70 70 M85 22 L85 70 M100 20 L100 70 M115 22 L115 70 M130 30 L130 70" stroke="#b03a36" stroke-width="2"/><rect x="52" y="62" width="96" height="16" rx="8" fill="#b03a36"/><circle cx="100" cy="16" r="12" fill="#fff"/>`;
+    case 'pirat': return `<path d="M42 66 Q100 2 158 66 Q100 50 42 66 Z" fill="#26232b"/><circle cx="100" cy="42" r="7" fill="#fff"/><circle cx="97.5" cy="41" r="1.6" fill="#26232b"/><circle cx="102.5" cy="41" r="1.6" fill="#26232b"/><path d="M92 54 L108 48 M92 48 L108 54" stroke="#fff" stroke-width="2.5"/>`;
+    case 'heks': return `<path d="M68 60 Q88 30 94 0 Q98 -24 136 -20 Q112 -10 112 18 Q116 44 132 60 Z" fill="#2b2140"/><ellipse cx="100" cy="60" rx="60" ry="11" fill="#1d1630"/><rect x="72" y="44" width="58" height="10" fill="#8e5cc4"/><rect x="94" y="42" width="14" height="14" rx="2" fill="none" stroke="#f2c14e" stroke-width="3"/>`;
+    case 'graeskar': return `<ellipse cx="100" cy="44" rx="46" ry="28" fill="#e8892b"/><path d="M78 20 Q70 44 78 70 M122 20 Q130 44 122 70 M100 16 L100 72" stroke="#c96d16" stroke-width="3" fill="none"/><rect x="95" y="6" width="10" height="14" rx="3" fill="#4e7a3a"/><path d="M80 40 L88 32 L94 42 Z M106 42 L112 32 L120 40 Z" fill="#5a3410"/><path d="M84 54 L90 58 L96 54 L102 58 L108 54 L114 58 L116 52 Q100 62 84 52 Z" fill="#5a3410"/>`;
+    case 'flagermus': return `<path d="M58 70 Q100 30 142 70" stroke="#26232b" stroke-width="6" fill="none"/><path d="M100 30 Q78 6 52 18 Q66 22 62 32 Q74 26 78 36 Q86 28 100 40 Q114 28 122 36 Q126 26 138 32 Q134 22 148 18 Q122 6 100 30Z" fill="#26232b"/><ellipse cx="100" cy="34" rx="9" ry="11" fill="#26232b"/><path d="M93 26 L95 16 L99 25 Z M107 26 L105 16 L101 25 Z" fill="#26232b"/><circle cx="96.5" cy="32" r="1.8" fill="#f2c14e"/><circle cx="103.5" cy="32" r="1.8" fill="#f2c14e"/>`;
+    default: return '';
+  }
+}
+function itemSVG(it){
+  switch(it){
+    case 'lanterne': return `<circle cx="150" cy="218" r="22" fill="#ffd36b" opacity=".3"/><path d="M142 204 Q150 192 158 204" stroke="#5a4636" stroke-width="3" fill="none"/><rect x="139" y="204" width="22" height="28" rx="4" fill="#5a4636"/><rect x="143" y="208" width="14" height="20" rx="3" fill="#ffd36b"/><circle cx="150" cy="218" r="4" fill="#fff6d0"/>`;
+    case 'stav': return `<path d="M150 236 L150 140" stroke="#8b5a2b" stroke-width="6" stroke-linecap="round"/>${star(150,132,13,'#f2c14e')}<circle cx="164" cy="122" r="2" fill="#f2c14e"/><circle cx="138" cy="118" r="1.6" fill="#f2c14e"/>`;
+    case 'bog': return `<g transform="rotate(-12 150 206)"><rect x="136" y="188" width="30" height="36" rx="3" fill="#b03a36"/><rect x="140" y="191" width="3" height="30" fill="#7d2723"/>${star(154,206,6,'#f2c14e')}</g>`;
+    case 'svaerd': return `<path d="M146 192 L146 132 L150 124 L154 132 L154 192 Z" fill="#d9b38c" stroke="#a37b52" stroke-width="2"/><rect x="138" y="190" width="24" height="6" rx="2" fill="#8b5a2b"/><rect x="146" y="196" width="8" height="18" rx="2" fill="#8b5a2b"/>`;
+    case 'kikkert': return `<rect x="140" y="182" width="12" height="28" rx="3" fill="#5a4636"/><rect x="154" y="182" width="12" height="28" rx="3" fill="#5a4636"/><rect x="138" y="178" width="16" height="7" rx="2" fill="#c99a2e"/><rect x="152" y="178" width="16" height="7" rx="2" fill="#c99a2e"/>`;
+    case 'bamse': return `<circle cx="160" cy="210" r="13" fill="#b07a4f"/><circle cx="160" cy="190" r="11" fill="#b07a4f"/><circle cx="152" cy="181" r="4.5" fill="#b07a4f"/><circle cx="168" cy="181" r="4.5" fill="#b07a4f"/><circle cx="156.5" cy="189" r="1.6" fill="#3a2a22"/><circle cx="163.5" cy="189" r="1.6" fill="#3a2a22"/><ellipse cx="160" cy="194" rx="4" ry="3" fill="#e0c09a"/>`;
+    case 'blomst': return `<path d="M150 236 Q152 200 150 160" stroke="#4e9a5b" stroke-width="4" fill="none"/><path d="M150 200 Q164 192 168 200 Q160 208 150 204Z" fill="#4e9a5b"/>${[0,45,90,135,180,225,270,315].map(a=>`<ellipse cx="${(150+11*Math.cos(a*Math.PI/180)).toFixed(1)}" cy="${(152+11*Math.sin(a*Math.PI/180)).toFixed(1)}" rx="6" ry="6" fill="#f2c14e"/>`).join('')}<circle cx="150" cy="152" r="7" fill="#8b5a2b"/>`;
+    default: return '';
+  }
+}
+function dieSVG(n, color){
+  const P={1:[[50,50]],2:[[28,28],[72,72]],3:[[28,28],[50,50],[72,72]],4:[[28,28],[72,28],[28,72],[72,72]],5:[[28,28],[72,28],[50,50],[28,72],[72,72]],6:[[28,26],[72,26],[28,50],[72,50],[28,74],[72,74]]};
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="6" y="6" width="88" height="88" rx="20" fill="${color||'#fffdf8'}" stroke="#d6c7a8" stroke-width="4"/>${(P[n]||[]).map(([x,y])=>`<circle cx="${x}" cy="${y}" r="9" fill="#2d2a3e"/>`).join('')}</svg>`;
+}
+const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="26" fill="#ffd36b" opacity=".35"/><path d="M24 14 Q32 4 40 14" stroke="#5a4636" stroke-width="3" fill="none"/><rect x="20" y="14" width="24" height="6" rx="2" fill="#5a4636"/><path d="M20 20 L44 20 L46 48 L18 48 Z" fill="#e0791f"/><path d="M24 24 L40 24 L41 44 L23 44 Z" fill="#ffd36b"/><circle cx="32" cy="34" r="5" fill="#fff6d0"/><rect x="18" y="48" width="28" height="6" rx="2" fill="#5a4636"/></svg>`;
+
+/* ============================================================
+   Lager
+   ============================================================ */
+const store = {
+  get(k, def){ let raw=null; try{ raw=localStorage.getItem(k); }catch(e){ return def; } if(raw==null) return def; return JSON.parse(raw); },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){ toast('Kunne ikke gemme. Er browserens lager fuldt?'); } }
+};
+let heroes = store.get('lk-heroes', []);
+if(!Array.isArray(heroes)) throw new Error('De gemte helte kunne ikke læses');
+heroes = heroes.map(fixHero);
+let prefs = Object.assign({big:false, rate:0.9, autoRead:false, ownDie:false, theme:'auto'}, store.get('lk-prefs', {}));
+let welcomed = !!store.get('lk-welcomed', false);
+function saveHeroes(){ store.set('lk-heroes', heroes); }
+function savePrefs(){ store.set('lk-prefs', prefs); applyPrefs(); }
+function fixHero(h){
+  if(!h || typeof h!=='object' || !h.id) throw new Error('En gemt helt er ødelagt');
+  const tr = {}; TRAITS.forEach(t=>tr[t.k]=clamp(+((h.traits||{})[t.k])||1,1,5));
+  return Object.assign({name:'Helt', look:{}, magic:[], companion:null, adv:0, points:0, sparks:0, friends:[], done:{}, progress:null, pendingMagic:false}, h, {traits:tr,
+    magic:Array.isArray(h.magic)?h.magic.filter(m=>MAGICS[m]):[], friends:Array.isArray(h.friends)?h.friends.filter(f=>FRIENDS[f]):[]});
+}
+function applyPrefs(){
+  document.body.classList.toggle('big', !!prefs.big);
+  if(prefs.theme==='auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', prefs.theme);
+}
+
+/* ============================================================
+   Hjælpere
+   ============================================================ */
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function andList(a){ return a.length<2 ? a.join('') : a.slice(0,-1).join(', ')+' og '+a[a.length-1]; }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function level(h){ return 1 + Math.floor(h.adv/2); }
+function pick(arr, seed){ let x=0; for(const c of seed) x=(x*31+c.charCodeAt(0))>>>0; return arr[x%arr.length]; }
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(), 2600); }
+function heroById(id){ return heroes.find(h=>h.id===id); }
+function fill(str, h){ const c = h.companion?COMPANIONS[h.companion].s:'jeres ven'; return str.replace(/\{navn\}/g, h.name).replace(/\{ven\}/g, c); }
+function bonusFor(h, tr, magic){
+  const v = h.traits[tr]||1; let b = v>=4?2 : v>=2?1 : 0; const parts=[];
+  if(b) parts.push(`${TR[tr].n} ${v}: +${b}`);
+  if(h.companion && COMPANIONS[h.companion].t===tr){ b+=1; parts.push(`${COMPANIONS[h.companion].s}: +1`); }
+  return {b, parts};
+}
+// Nemt = 3+, Middel = 4+, Svært = 5+ uden bonus. Bonus trækker fra, men man skal altid mindst slå 2.
+function needOf(h, roll){ const {b,parts}=bonusFor(h, roll.tr); return {tn:clamp(DIFF[roll.d].base - b, 2, 6), parts}; }
+function storyUnlocked(h, st){ return !st.needs || h.done[st.needs]; }
+
+/* ============================================================
+   Oplæsning
+   ============================================================ */
+const speech = {
+  ok: 'speechSynthesis' in window && typeof SpeechSynthesisUtterance!=='undefined',
+  voice:null, spans:[], map:[], active:false,
+  pickVoice(){ if(!this.ok) return; const vs=speechSynthesis.getVoices(); this.voice = vs.find(v=>/^da(-|_|$)/i.test(v.lang)) || null; },
+  stop(){ if(!this.ok) return; this.active=false; try{ speechSynthesis.cancel(); }catch(e){} this.clear(); updateReadBtn(); },
+  clear(){ document.querySelectorAll('.w.hl').forEach(e=>e.classList.remove('hl')); },
+  read(){
+    if(!this.ok){ toast('Din browser kan ikke læse højt.'); return; }
+    this.stop();
+    const spans=[...document.querySelectorAll('.say .w')]; let str='', map=[];
+    spans.forEach((sp,i)=>{ map.push(str.length); str += sp.textContent + (sp.dataset.br?'\n':' '); });
+    if(!str.trim()) return;
+    const u = new SpeechSynthesisUtterance(str);
+    u.lang='da-DK'; if(this.voice) u.voice=this.voice; u.rate=prefs.rate||0.9;
+    u.onboundary = e=>{ if(e.name && e.name!=='word') return; let i=0; while(i+1<map.length && map[i+1]<=e.charIndex) i++; this.clear(); spans[i] && spans[i].classList.add('hl'); };
+    u.onend = u.onerror = ()=>{ this.active=false; this.clear(); updateReadBtn(); };
+    this.active=true; updateReadBtn();
+    speechSynthesis.speak(u);
+  }
+};
+if(speech.ok){ speech.pickVoice(); try{ speechSynthesis.addEventListener('voiceschanged', ()=>speech.pickVoice()); }catch(e){} }
+function updateReadBtn(){ const b=document.getElementById('readbtn'); if(b){ b.textContent = speech.active?'⏹ Stop':'🔊 Læs højt'; b.setAttribute('aria-pressed', speech.active); } }
+function words(text){
+  // gør teksten til ord-spans, så oplæsningen kan fremhæve dem
+  return text.split(/\n\s*\n/).map(p=>{
+    const ws = p.trim().split(/\s+/);
+    return '<p>'+ws.map((w,i)=>`<span class="w"${i===ws.length-1?' data-br="1"':''}>${esc(w)}</span>`).join(' ')+'</p>';
+  }).join('');
+}
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+const app = document.getElementById('app');
+let view = {name:'home'};
+let draft = null;      // helt under opbygning
+let pendingRoll = null;
+function go(name, params, replace){
+  speech.stop();
+  view = Object.assign({name}, params||{});
+  try{ history[replace?'replaceState':'pushState'](view, ''); }catch(e){}
+  render(); window.scrollTo(0,0);
+}
+window.addEventListener('popstate', e=>{ speech.stop(); closeModal(); view = (e.state && e.state.name) ? e.state : {name:'home'}; render(); });
+
+function render(){
+  const r = VIEWS[view.name] || VIEWS.home;
+  app.innerHTML = r(view);
+  app.classList.remove('fade-in'); void app.offsetWidth; app.classList.add('fade-in');
+  const f = app.querySelector('[autofocus]'); if(f) f.focus();
+}
+
+/* ---------- velkomst og forside ---------- */
+const VIEWS = {};
+VIEWS.home = ()=>{
+  if(!welcomed) return welcomeView();
+  return `<div class="wrap">
+    <div class="row" style="justify-content:space-between">
+      <div class="logo">${LOGO}<div><h1 style="margin:0">Lanterneskoven</h1><div class="muted small">Eventyr til at læse sammen</div></div></div>
+      <div class="row">
+        ${installEvt?`<button data-act="install">📲 Installér app</button>`:''}
+        <button class="icon ghost" data-act="go" data-to="settings" aria-label="Indstillinger">⚙️</button>
+      </div>
+    </div>
+    <h2 style="margin-top:18px">Vælg jeres helt</h2>
+    <div class="grid hero-list">
+      ${heroes.map(h=>`<button class="card hero-card" data-act="go" data-to="hero" data-id="${h.id}">${heroSVG(h.look)}<span class="nm">${esc(h.name)}</span><span class="muted small">Level ${level(h)} · ✨ ${h.sparks}</span></button>`).join('')}
+      <button class="card hero-card new-card" data-act="newhero"><span style="font-size:2.4rem">＋</span>Ny helt</button>
+    </div>
+    ${heroes.length?'':`<p class="hint">Start med at lave en helt sammen. Det tager fem minutter, og børnene bestemmer.</p>`}
+  </div>`;
+};
+function welcomeView(){
+  return `<div class="wrap" style="max-width:640px">
+    <div class="center">${LOGO.replace('<svg','<svg style="width:96px;height:96px"')}<h1>Velkommen til Lanterneskoven</h1>
+    <p class="muted">Et lille rollespil i en historiebog, til børn på 6-9 år og de voksne, der læser med.</p></div>
+    <div class="card">
+      <h3>Sådan spiller I</h3>
+      <p>📖 <b>Én læser højt.</b> Den voksne eller et stort barn læser, mens de andre lytter.</p>
+      <p>🤔 <b>Alle vælger vej.</b> Hver side slutter med et spørgsmål. Snak om det, og vælg sammen.</p>
+      <p>🎲 <b>Terningen går rundt.</b> Når noget er svært, slår I. Siden viser chancen først, og et dårligt kast er aldrig en blindgyde.</p>
+      <p>🌙 <b>Stop, når I vil.</b> Hvert eventyr har en god slutning, og spillet husker, hvor I kom til.</p>
+      <p class="muted small" style="margin:0">Skærmen er bogen, ikke legetøjet. Alt gemmes kun her på enheden.</p>
+    </div>
+    <p class="center" style="margin-top:18px"><button class="primary" data-act="welcome" autofocus>Lad os begynde 🏮</button></p>
+  </div>`;
+}
+
+/* ---------- heltebygger ---------- */
+VIEWS.build = (v)=>{
+  if(!draft) return VIEWS.home();
+  const step = v.step||1;
+  const steps = ['Udseende','Kræfter','Magi og ven'];
+  const head = `<div class="bar"><button class="icon ghost" data-act="back" aria-label="Tilbage">←</button><div class="title">Ny helt</div></div>
+  <div class="wrap" style="padding-top:0"><div class="steps">${steps.map((s,i)=>`<span class="${i+1===step?'on':''}">${i+1}. ${s}</span>`).join('')}</div>`;
+  let body='';
+  if(step===1){
+    const og=(key,label,list)=>`<div class="opt-group"><span class="label">${label}</span><div class="opts">${list.map(([k,n])=>`<button class="opt" data-act="look" data-k="${key}" data-v="${k}" aria-pressed="${draft.look[key]===k}">${n}</button>`).join('')}</div></div>`;
+    const sw=(key,label,cols)=>`<div class="opt-group"><span class="label">${label}</span><div class="opts">${cols.map((c,i)=>`<button class="sw" style="background:${c}" data-act="look" data-k="${key}" data-v="${i}" aria-pressed="${draft.look[key]===i}" aria-label="${label} ${i+1}"></button>`).join('')}</div></div>`;
+    body = `<div class="builder">
+      <div class="preview card" id="preview">${heroSVG(draft.look)}<div><button data-act="randomlook">🎲 Tilfældig</button></div></div>
+      <div>
+        <div class="opt-group"><label class="label" for="hname">Hvad hedder helten?</label><input id="hname" type="text" maxlength="24" value="${esc(draft.name)}" placeholder="Fx Ida den Modige" autocomplete="off"></div>
+        ${sw('skin','Hudfarve',SKINS)}
+        ${og('face','Ansigt',LOOK.face)}
+        ${og('hair','Frisure',LOOK.hair)}
+        ${sw('hairColor','Hårfarve',HAIRC)}
+        ${og('hat','Hat',LOOK.hat)}
+        ${og('outfit','Tøj',LOOK.outfit)}
+        ${sw('outfitColor','Farve på tøjet',OUTC)}
+        ${og('acc','Tilbehør',LOOK.acc)}
+        ${og('item','Ting at have med',LOOK.item)}
+        <div class="row" style="margin-top:16px"><button class="primary" data-act="step" data-s="2">Videre til kræfter →</button></div>
+      </div></div>`;
+  } else if(step===2){
+    const left = draftPoints();
+    body = `<div class="builder"><div class="preview card">${heroSVG(draft.look)}<div class="nm" style="font-family:var(--head);font-weight:800">${esc(draft.name)}</div></div>
+      <div><p>Alle kræfter starter på 1. I har <b>6 point</b> at fordele. Ingen kraft kan være højere end 4 fra start, men efter hvert eventyr får helten et nyt point. Når en kraft når 5, åbner der sig ⭐ <b>Mester-valg</b> i historierne.</p>
+      <div class="hint" style="font-family:var(--head);font-weight:700">Point tilbage: <span id="ptsleft">${left}</span></div>
+      <div class="card">${TRAITS.map(t=>traitRow(draft.traits[t.k], t, 'dtrait', left>0 && draft.traits[t.k]<4, draft.traits[t.k]>1)).join('')}</div>
+      <div class="row" style="margin-top:16px"><button data-act="step" data-s="1">← Udseende</button><button class="primary" data-act="step" data-s="3">Videre →</button></div>
+      ${left>0?'<p class="muted small">I kan godt gå videre uden at bruge alle point. De gemmes til senere.</p>':''}
+      </div></div>`;
+  } else {
+    body = `<h3>Vælg en magi</h3><div class="pick">${Object.entries(MAGICS).map(([k,m])=>`<button data-act="dmagic" data-v="${k}" aria-pressed="${draft.magic[0]===k}"><span class="em">${m.e}</span><span>${m.n}</span><span class="d">${m.d}</span></button>`).join('')}</div>
+      <h3 style="margin-top:22px">Vælg en følgesvend</h3><p class="muted small">Følgesvenden giver +1 på terningen, når I bruger dens kraft, og siger lidt undervejs.</p>
+      <div class="pick">${Object.entries(COMPANIONS).map(([k,c])=>`<button data-act="dcomp" data-v="${k}" aria-pressed="${draft.companion===k}"><span class="em">${c.e}</span><span>${c.n}</span><span class="d">+1 til ${TR[c.t].n}</span></button>`).join('')}</div>
+      <div class="row" style="margin-top:20px"><button data-act="step" data-s="2">← Kræfter</button><button class="primary" data-act="finishhero">Færdig! Mød jeres helt ✨</button></div>`;
+  }
+  return head + body + '</div>';
+};
+function traitRow(v, t, act, canUp, canDown){
+  return `<div class="trait"><span style="font-size:1.6rem">${t.e}</span><div><div class="tn">${t.n}</div><div class="td">${t.d}</div>
+    <div class="pips">${[1,2,3,4,5].map(i=>`<i class="${i<=v?(i===5?'m':'f'):''}"></i>`).join('')}</div></div>
+    <div class="pm">${act==='dtrait'?`<button data-act="${act}" data-k="${t.k}" data-d="-1" ${canDown?'':'disabled'} aria-label="Mindre ${t.n}">−</button>`:''}${canUp!==null?`<button class="primary" data-act="${act}" data-k="${t.k}" data-d="1" ${canUp?'':'disabled'} aria-label="Mere ${t.n}">+</button>`:''}</div></div>`;
+}
+function draftPoints(){ return 6 - TRAITS.reduce((a,t)=>a+draft.traits[t.k]-1,0); }
+function randomLook(){
+  const r=a=>a[Math.floor(Math.random()*a.length)];
+  return {skin:Math.floor(Math.random()*SKINS.length), face:r(LOOK.face)[0], hair:r(LOOK.hair)[0], hairColor:Math.floor(Math.random()*HAIRC.length),
+    hat:r(LOOK.hat)[0], outfit:r(LOOK.outfit)[0], outfitColor:Math.floor(Math.random()*OUTC.length), acc:r(LOOK.acc)[0], item:r(LOOK.item)[0]};
+}
+
+/* ---------- heltens side ---------- */
+VIEWS.hero = (v)=>{
+  const h = heroById(v.id); if(!h) return VIEWS.home();
+  const lvl = level(h), next = 2 - (h.adv%2);
+  const cur = h.progress && STORY[h.progress.story];
+  return `<div class="bar"><button class="icon ghost" data-act="go" data-to="home" aria-label="Til forsiden">←</button><div class="title">${esc(h.name)}</div>
+    <button class="icon ghost" data-act="go" data-to="settings" aria-label="Indstillinger">⚙️</button></div>
+  <div class="wrap" style="padding-top:0">
+    <div class="hero-top">
+      <div>${heroSVG(h.look, h.name)}</div>
+      <div>
+        <h1 style="margin-top:0">${esc(h.name)}</h1>
+        <div class="row" style="margin-bottom:10px">
+          <span class="chip gold">⭐ Level ${lvl}</span>
+          <span class="chip gold">✨ ${h.sparks} ${h.sparks===1?'gnist':'gnister'}</span>
+          ${h.magic.map(m=>`<span class="chip magic">${MAGICS[m].e} ${MAGICS[m].n}</span>`).join('')}
+          ${h.companion?`<span class="chip forest">${COMPANIONS[h.companion].e} ${COMPANIONS[h.companion].n}</span>`:''}
+        </div>
+        <p class="muted small">${h.adv} ${h.adv===1?'eventyr':'eventyr'} klaret. ${next===1?'Ét':'To'} eventyr mere til level ${lvl+1}.${lvl<3&&!h.pendingMagic?' På level 3 kan helten lære en ekstra magi.':''}</p>
+        ${h.pendingMagic?`<div class="hint"><b>Level 3!</b> ${esc(h.name)} kan lære en ny magi. <button class="primary" data-act="go" data-to="magic" data-id="${h.id}">Vælg magi ✨</button></div>`:''}
+        ${cur?`<div class="hint"><b>I er midt i »${cur.title}«.</b><div class="row" style="margin-top:8px"><button class="primary" data-act="continue" data-id="${h.id}">Fortsæt historien →</button></div></div>`:''}
+      </div>
+    </div>
+
+    <h2 style="margin-top:24px">Eventyr</h2>
+    <div class="grid stories">
+      ${STORIES.map(st=>{
+        const lock = !storyUnlocked(h, st), done = h.done[st.id];
+        return `<button class="story ${lock?'locked':''} ${st.special?'special':''}" data-act="start" data-id="${h.id}" data-s="${st.id}" ${lock?'aria-disabled="true"':''}>
+          <span class="em">${lock?'🔒':st.e}</span>
+          <span class="num">${st.special?'Halloween-special':'Del '+st.part}${done?' · klaret ✓':''}</span>
+          <span class="st">${st.title}</span>
+          <span class="bl">${lock?'Klar »'+STORY[st.needs].title+'« først.':st.blurb}</span>
+        </button>`;}).join('')}
+    </div>
+
+    <h2 style="margin-top:28px">Kræfter</h2>
+    ${h.points>0?`<div class="hint"><b>${h.points} ${h.points===1?'nyt point':'nye point'}!</b> Tryk på + for at gøre en kraft stærkere.</div>`:''}
+    <div class="card">${TRAITS.map(t=>traitRow(h.traits[t.k], t, 'htrait', h.points>0 ? h.traits[t.k]<5 : null, false)).join('')}</div>
+
+    <h2 style="margin-top:28px">Skovens venner</h2>
+    ${h.friends.length?`<div class="row">${h.friends.map(f=>`<span class="chip forest" style="font-size:1rem;padding:.4em .9em">${FRIENDS[f].e} ${FRIENDS[f].n}</span>`).join('')}</div>`:'<p class="muted">Ingen endnu. Dem møder I på eventyrene.</p>'}
+
+    <div class="row" style="margin-top:32px">
+      <button class="ghost" data-act="editlook" data-id="${h.id}">✏️ Skift udseende</button>
+      <button class="ghost" data-act="delhero" data-id="${h.id}">🗑️ Slet helt</button>
+    </div>
+  </div>`;
+};
+VIEWS.magic = (v)=>{
+  const h = heroById(v.id); if(!h) return VIEWS.home();
+  return `<div class="bar"><button class="icon ghost" data-act="go" data-to="hero" data-id="${h.id}" aria-label="Tilbage">←</button><div class="title">Ny magi</div></div>
+  <div class="wrap" style="padding-top:0"><h2>${esc(h.name)} er nået til level 3!</h2><p>Vælg en magi mere. Den kan bruges i alle eventyr fra nu af.</p>
+  <div class="pick">${Object.entries(MAGICS).filter(([k])=>!h.magic.includes(k)).map(([k,m])=>`<button data-act="learnmagic" data-id="${h.id}" data-v="${k}"><span class="em">${m.e}</span><span>${m.n}</span><span class="d">${m.d}</span></button>`).join('')}</div></div>`;
+};
+
+/* ---------- spillet ---------- */
+VIEWS.play = (v)=>{
+  const h = heroById(v.id); if(!h || !h.progress) return VIEWS.hero(v);
+  const st = STORY[h.progress.story], sc = S[h.progress.scene];
+  if(!sc){ h.progress=null; saveHeroes(); return VIEWS.hero(v); }
+  const text = fill(typeof sc.x==='function'?sc.x(h):sc.x, h);
+  const comp = h.companion && COMPANIONS[h.companion];
+  const line = comp ? pick(comp.lines[sc.mood]||comp.lines.spaending, sc.t+h.id) : '';
+  let choices='';
+  if(sc.end){
+    choices = `<button class="choice primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);justify-content:center" data-act="finish" data-id="${h.id}">Afslut eventyret ✨</button>`;
+  } else {
+    choices = choicesFor(h, sc).map((c,i)=>choiceBtn(h, c, i)).join('');
+  }
+  return `<div class="bar"><button class="icon ghost" data-act="go" data-to="hero" data-id="${h.id}" aria-label="Til helten">←</button>
+    <div class="title">${st.e} ${st.title}</div>
+    ${speech.ok?`<button id="readbtn" data-act="read" aria-pressed="false">🔊 Læs højt</button>`:''}
+    <button class="icon ghost" data-act="bigtext" aria-label="Stor skrift" aria-pressed="${!!prefs.big}">Aa</button></div>
+  <article class="wrap scene" style="padding-top:0">
+    <div class="art" aria-hidden="true">${sc.e||'🌲'}</div>
+    <h2 class="say">${words(sc.t)}</h2>
+    <div class="text say">${words(text)}</div>
+    ${comp?`<aside class="buddy"><span class="em">${comp.e}</span><div><b>${comp.s}:</b> ${esc(line)}</div></aside>`:''}
+    ${sc.end?'':`<p class="question say">${words('❓ '+sc.q)}</p>`}
+    <div class="choices">${choices}</div>
+    <div class="statbar"><span class="chip gold">✨ ${h.sparks}</span><span class="chip forest">🤝 ${h.friends.length} ${h.friends.length===1?'ven':'venner'}</span><span class="chip">⭐ Level ${level(h)}</span></div>
+  </article>`;
+};
+function choicesFor(h, sc){
+  const list = sc.dyn ? sc.dyn(h) : sc.c;
+  return list.filter(c=>{
+    if(c.magic && !h.magic.includes(c.magic)) return false;
+    if(c.friend && !has(h,c.friend)) return false;
+    if(c.cost && h.sparks < c.cost) return false;
+    if(c.need && h.sparks < c.need) return false;
+    return true;
+  });
+}
+function choiceBtn(h, c, i){
+  let cls='choice', tag='', dis='';
+  if(c.master){
+    const ok = h.traits[c.master]>=5;
+    cls += ' master' + (ok?'':' lockd');
+    tag = ok ? `⭐ Mester-valg · ${TR[c.master].n}` : `⭐ Kræver ${TR[c.master].n} 5`;
+    if(!ok) dis='disabled';
+  } else if(c.magic){ cls+=' magic'; tag=`${MAGICS[c.magic].e} ${MAGICS[c.magic].n}`; }
+  else if(c.friend){ cls+=' friend'; tag=`${FRIENDS[c.friend].e} ${FRIENDS[c.friend].n}`; }
+  else if(c.cost){ cls+=' friend'; tag=`✨ Bruger ${c.cost} ${c.cost===1?'gnist':'gnister'}`; }
+  else if(c.need){ cls+=' friend'; tag=`✨ ${c.need} gnister`; }
+  else if(c.roll){ const {tn}=needOf(h,c.roll); tag=`🎲 ${TR[c.roll.tr].n} · ${DIFF[c.roll.d].n} · ${7-tn} ud af 6`; }
+  return `<button class="${cls}" data-act="choose" data-i="${i}" ${dis}><span>${esc(fill(c.t,h))}</span>${tag?`<span class="tag">${tag}</span>`:''}</button>`;
+}
+function enterScene(h, id){
+  const sc = S[id]; if(!sc) throw new Error('Scenen '+id+' findes ikke');
+  h.progress.scene = id;
+  if(sc.gain){
+    const g = h.progress.gained;
+    if(sc.gain.sparks){ h.sparks += sc.gain.sparks; g.sparks += sc.gain.sparks; }
+    if(sc.gain.friend && !has(h, sc.gain.friend)){ h.friends.push(sc.gain.friend); g.friends.push(sc.gain.friend); }
+  }
+  saveHeroes();
+  speech.stop(); render(); window.scrollTo(0,0);
+  if(prefs.autoRead) setTimeout(()=>speech.read(), 250);
+}
+
+/* ---------- terningen ---------- */
+function openRoll(h, c){
+  const {tn, parts} = needOf(h, c.roll);
+  pendingRoll = {h, c, tn};
+  const n = 7-tn;
+  const m = document.createElement('div'); m.className='modal'; m.id='modal';
+  m.innerHTML = `<div class="card" role="dialog" aria-modal="true" aria-labelledby="rolltitle">
+    <h2 id="rolltitle" style="margin-bottom:.2em">Slå med terningen</h2>
+    <p style="margin:.2em 0">${TR[c.roll.tr].e} <b>${TR[c.roll.tr].n}</b> · <span class="diff ${c.roll.d}">${DIFF[c.roll.d].n}</span></p>
+    <div class="chance" aria-label="Chance ${n} ud af 6">${[1,2,3,4,5,6].map(i=>`<i class="${i>=tn?'y':''}"></i>`).join('')}</div>
+    <p style="margin:.2em 0"><b>Slå ${tn} eller mere.</b> Chancen er ${n} ud af 6.</p>
+    ${parts.length?`<p class="muted small">Hjælp fra: ${parts.join(' · ')}</p>`:'<p class="muted small">Ingen hjælp denne gang, men alt kan ske!</p>'}
+    <div id="dieArea">
+      ${prefs.ownDie
+        ? `<p class="small">Slå med jeres egen terning, og tryk på det, I slog:</p><div class="own">${[1,2,3,4,5,6].map(i=>`<button data-act="own" data-v="${i}" aria-label="${i}">${dieSVG(i)}</button>`).join('')}</div>`
+        : `<div class="die">${dieSVG(6)}</div><button class="primary" data-act="roll" autofocus>🎲 Slå!</button>`}
+    </div>
+    <p style="margin-top:14px"><button class="ghost small" data-act="cancelroll">Vælg noget andet</button></p>
+  </div>`;
+  m.addEventListener('click', onClick);
+  document.body.appendChild(m);
+  const f=m.querySelector('[autofocus]'); if(f) f.focus();
+}
+function closeModal(){ const m=document.getElementById('modal'); if(m) m.remove(); }
+function doRoll(){
+  const area = document.getElementById('dieArea'); if(!area) return;
+  area.innerHTML = `<div class="die spin" id="dieFace">${dieSVG(1)}</div>`;
+  let k=0; const final = 1+Math.floor(Math.random()*6);
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tick = setInterval(()=>{
+    k++; const f=document.getElementById('dieFace'); if(!f){ clearInterval(tick); return; }
+    f.innerHTML = dieSVG(1+Math.floor(Math.random()*6));
+    if(k>=(reduce?1:9)){ clearInterval(tick); showResult(final); }
+  }, 80);
+}
+function showResult(n){
+  const r = pendingRoll; if(!r) return;
+  const ok = n>=r.tn;
+  const area = document.getElementById('dieArea');
+  const comp = r.h.companion && COMPANIONS[r.h.companion];
+  area.innerHTML = `<div class="die">${dieSVG(n, ok?'#e3f4e8':'#fdebd6')}</div>
+    <div class="result ${ok?'ok':'no'}">${ok?'Det lykkedes! 🎉':'Ikke denne gang …'}</div>
+    <p class="small">${ok?`I slog ${n}. Det var nok!`:`I slog ${n}. Men historien går videre på en anden måde.`}${!ok&&comp?` <br>${comp.e} ${comp.s}: »Pyt! Det bliver spændende alligevel.«`:''}</p>
+    <button class="primary" data-act="afterroll" data-ok="${ok?1:0}" autofocus>Videre →</button>`;
+  const cr = document.querySelector('[data-act="cancelroll"]'); if(cr) cr.parentNode.remove();
+  const b = area.querySelector('button'); if(b) b.focus();
+}
+
+/* ---------- afslutning ---------- */
+VIEWS.end = (v)=>{
+  const h = heroById(v.id); if(!h) return VIEWS.home();
+  const r = v.res || {sparks:0, friends:[], lvlUp:false, story:''};
+  const st = STORY[r.story] || {title:'Eventyret', e:'🏮'};
+  return `<div class="wrap center" style="max-width:640px">
+    <div class="end-stars">✨${st.e}✨</div>
+    <h1>Eventyret er slut!</h1>
+    <p>${esc(h.name)} klarede »${st.title}«. Godt gået, alle sammen.</p>
+    <div class="card" style="text-align:left">
+      <h3 style="margin-top:0">Det tager I med hjem</h3>
+      <p>✨ <b>${r.sparks}</b> ${r.sparks===1?'gnist':'gnister'} (i alt ${h.sparks})</p>
+      ${r.friends.length?`<p>🤝 Nye venner: ${r.friends.map(f=>FRIENDS[f].e+' '+FRIENDS[f].n).join(', ')}</p>`:''}
+      <p>📈 <b>Ét nyt point</b> til at gøre en kraft stærkere.</p>
+      ${r.lvlUp?`<p>⭐ <b>${esc(h.name)} er nu level ${level(h)}!</b>${h.pendingMagic?' Og kan lære en ny magi.':''}</p>`:''}
+    </div>
+    <p class="muted small" style="margin-top:14px">Snak lidt om det: Hvad var det bedste valg, I tog i dag?</p>
+    <p><button class="primary" data-act="go" data-to="hero" data-id="${h.id}" autofocus>Videre til ${esc(h.name)} →</button></p>
+  </div>`;
+};
+
+/* ---------- indstillinger ---------- */
+VIEWS.settings = ()=>{
+  const sw=(k,label,desc)=>`<div class="setting"><div><b style="font-family:var(--head)">${label}</b>${desc?`<div class="muted small">${desc}</div>`:''}</div><button class="switch" data-act="pref" data-k="${k}" aria-pressed="${!!prefs[k]}" aria-label="${label}"></button></div>`;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  return `<div class="bar"><button class="icon ghost" data-act="back" aria-label="Tilbage">←</button><div class="title">Indstillinger</div></div>
+  <div class="wrap" style="padding-top:0;max-width:640px">
+    <div class="card">
+      ${sw('big','Stor skrift','Gør historien lettere at læse.')}
+      ${sw('autoRead','Læs automatisk højt','Hver ny side læses op af sig selv.')}
+      ${sw('ownDie','Brug vores egen terning','Slå med en rigtig terning og tast resultatet ind.')}
+      <div class="setting"><div><b style="font-family:var(--head)">Oplæsningens fart</b><div class="muted small">${speech.ok?(speech.voice?'Dansk stemme: '+esc(speech.voice.name):'Der er ingen dansk stemme på enheden. Tilføj den under enhedens indstillinger for tale.'):'Din browser kan ikke læse højt.'}</div></div>
+        <div class="row">${[[0.75,'Langsom'],[0.9,'Normal'],[1.05,'Hurtig']].map(([r,n])=>`<button class="opt" data-act="rate" data-v="${r}" aria-pressed="${prefs.rate===r}">${n}</button>`).join('')}</div></div>
+      <div class="setting"><div><b style="font-family:var(--head)">Farver</b></div>
+        <div class="row">${[['auto','Automatisk'],['light','Lys'],['dark','Mørk']].map(([k,n])=>`<button class="opt" data-act="theme" data-v="${k}" aria-pressed="${prefs.theme===k}">${n}</button>`).join('')}</div></div>
+    </div>
+    <h3 style="margin-top:24px">Brug som app</h3>
+    <div class="card">
+      ${standalone()?'<p style="margin:0">✅ Lanterneskoven kører allerede som app.</p>':
+      installEvt?`<p>Installér Lanterneskoven, så den ligger på hjemmeskærmen og virker uden internet.</p><button class="primary" data-act="install">📲 Installér app</button>`:
+      ios?'<p style="margin:0">På iPhone og iPad: Tryk på <b>Del</b> (firkanten med pilen) i Safari, og vælg <b>Føj til hjemmeskærm</b>.</p>':
+      '<p style="margin:0">Åbn menuen i browseren, og vælg <b>Installér app</b> eller <b>Føj til startskærm</b>. Så virker spillet også uden internet.</p>'}
+    </div>
+    <h3 style="margin-top:24px">Gemte data</h3>
+    <div class="card"><p>Helte og venner gemmes kun her på enheden. Der er ingen konto, og intet sendes nogen steder hen.</p>
+      <button class="ghost" data-act="resetall">🗑️ Slet alle helte og indstillinger</button></div>
+    <p class="muted small center" style="margin-top:24px">Lanterneskoven · lavet til at blive brugt sammen</p>
+  </div>`;
+};
+
+/* ============================================================
+   Handlinger
+   ============================================================ */
+const ACT = {
+  welcome(){ welcomed=true; store.set('lk-welcomed', true); go('home', null, true); },
+  go(d){ go(d.to, d.id?{id:d.id}:null); },
+  back(){ if(history.state && history.length>1) history.back(); else go('home'); },
+  newhero(){ draft = {id:null, name:'', look:randomLook(), traits:Object.fromEntries(TRAITS.map(t=>[t.k,1])), magic:[], companion:null}; go('build',{step:1}); },
+  editlook(d){ const h=heroById(d.id); draft={id:h.id, name:h.name, look:Object.assign({},h.look), traits:Object.assign({},h.traits), magic:h.magic.slice(), companion:h.companion, editOnly:true}; go('build',{step:1}); },
+  look(d){ draft.look[d.k] = /Color$|^skin$/.test(d.k) ? +d.v : d.v; refreshBuilder(); },
+  randomlook(){ draft.look = randomLook(); render(); },
+  step(d){
+    readName();
+    if(+d.s>1 && !draft.name.trim()){ toast('Helten skal have et navn først 🙂'); const i=document.getElementById('hname'); if(i) i.focus(); return; }
+    if(draft.editOnly && +d.s>1){ const h=heroById(draft.id); h.name=draft.name.trim(); h.look=draft.look; saveHeroes(); draft=null; go('hero',{id:h.id}, true); toast('Udseendet er gemt'); return; }
+    go('build',{step:+d.s}, true);
+  },
+  dtrait(d){ const v=draft.traits[d.k]+(+d.d); if(v<1||v>4) return; if(+d.d>0 && draftPoints()<=0) return; draft.traits[d.k]=v; render(); },
+  dmagic(d){ draft.magic=[d.v]; render(); },
+  dcomp(d){ draft.companion=d.v; render(); },
+  finishhero(){
+    if(!draft.magic.length){ toast('Vælg en magi'); return; }
+    if(!draft.companion){ toast('Vælg en følgesvend'); return; }
+    const h = fixHero({id:uid(), name:draft.name.trim()||'Helt', look:draft.look, traits:draft.traits, magic:draft.magic, companion:draft.companion, points:draftPoints()});
+    heroes.push(h); saveHeroes(); draft=null; go('hero',{id:h.id}, true);
+  },
+  htrait(d){ const h=heroById(view.id); if(!h||h.points<1||h.traits[d.k]>=5) return; h.traits[d.k]++; h.points--; saveHeroes(); render();
+    if(h.traits[d.k]===5) toast(`⭐ ${TR[d.k].n} er på 5! Nu kan I tage Mester-valg.`); },
+  learnmagic(d){ const h=heroById(d.id); if(!h.magic.includes(d.v)) h.magic.push(d.v); h.pendingMagic=false; saveHeroes(); go('hero',{id:h.id}, true); toast(`${MAGICS[d.v].e} ${h.name} kan nu ${MAGICS[d.v].n}!`); },
+  delhero(d){ const h=heroById(d.id); if(!confirm(`Vil I slette ${h.name}? Det kan ikke fortrydes.`)) return; heroes=heroes.filter(x=>x.id!==d.id); saveHeroes(); go('home',null,true); },
+  start(d){
+    const h=heroById(d.id), st=STORY[d.s];
+    if(!storyUnlocked(h,st)){ toast(`Klar »${STORY[st.needs].title}« først 🔒`); return; }
+    if(h.progress && h.progress.story!==d.s && !confirm(`I er midt i »${STORY[h.progress.story].title}«. Vil I starte »${st.title}« i stedet?`)) return;
+    if(h.progress && h.progress.story===d.s){ go('play',{id:h.id}); return; }
+    h.progress = {story:d.s, scene:st.start, gained:{sparks:0, friends:[]}};
+    saveHeroes(); go('play',{id:h.id});
+    if(prefs.autoRead) setTimeout(()=>speech.read(), 250);
+  },
+  continue(d){ go('play',{id:d.id}); },
+  choose(d){
+    const h=heroById(view.id), sc=S[h.progress.scene], c=choicesFor(h, sc)[+d.i];
+    if(!c) return;
+    if(c.master && h.traits[c.master]<5) return;
+    if(c.roll){ speech.stop(); openRoll(h, c); return; }
+    if(c.cost){ h.sparks -= c.cost; h.progress.gained.sparks -= c.cost; toast(`✨ I gav ${c.cost} ${c.cost===1?'gnist':'gnister'} væk`); }
+    enterScene(h, c.go);
+  },
+  roll(){ doRoll(); },
+  own(d){ showResult(+d.v); },
+  cancelroll(){ pendingRoll=null; closeModal(); },
+  afterroll(d){ const r=pendingRoll; pendingRoll=null; closeModal(); if(r) enterScene(r.h, +d.ok ? r.c.roll.ok : r.c.roll.no); },
+  finish(d){
+    const h=heroById(d.id); const p=h.progress; if(!p) return;
+    const before=level(h);
+    h.adv++; h.points++; h.done[p.story]=(h.done[p.story]||0)+1;
+    const lvlUp = level(h)>before;
+    if(lvlUp && level(h)>=3 && h.magic.length<2) h.pendingMagic=true;
+    const res={sparks:Math.max(0,p.gained.sparks), friends:p.gained.friends, lvlUp, story:p.story};
+    h.progress=null; saveHeroes(); speech.stop();
+    go('end',{id:h.id, res}, true);
+  },
+  read(){ if(speech.active) speech.stop(); else speech.read(); },
+  bigtext(){ prefs.big=!prefs.big; savePrefs(); render(); },
+  pref(d){ prefs[d.k]=!prefs[d.k]; savePrefs(); render(); },
+  rate(d){ prefs.rate=+d.v; savePrefs(); render(); },
+  theme(d){ prefs.theme=d.v; savePrefs(); render(); },
+  install(){ if(!installEvt) return; installEvt.prompt(); installEvt.userChoice.finally(()=>{ installEvt=null; render(); }); },
+  resetall(){ if(!confirm('Vil I slette alle helte, venner og indstillinger? Det kan ikke fortrydes.')) return;
+    ['lk-heroes','lk-prefs','lk-welcomed'].forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); location.reload(); }
+};
+function readName(){ const i=document.getElementById('hname'); if(i && draft) draft.name=i.value; }
+function refreshBuilder(){
+  readName();
+  const p=document.getElementById('preview'); if(p) p.firstElementChild.outerHTML = heroSVG(draft.look);
+  document.querySelectorAll('[data-act="look"]').forEach(b=>{ const k=b.dataset.k; const val=/Color$|^skin$/.test(k)?+b.dataset.v:b.dataset.v; b.setAttribute('aria-pressed', draft.look[k]===val); });
+}
+function onClick(e){
+  const el = e.target.closest('[data-act]'); if(!el || el.disabled) return;
+  const fn = ACT[el.dataset.act]; if(!fn) return;
+  e.preventDefault();
+  try{ fn(el.dataset); }catch(err){ console.error(err); toast('Hov, noget drillede. Prøv igen.'); }
+}
+app.addEventListener('click', onClick);
+app.addEventListener('input', e=>{ if(e.target.id==='hname' && draft) draft.name=e.target.value; });
+app.addEventListener('keydown', e=>{ if(e.target.id==='hname' && e.key==='Enter'){ e.preventDefault(); ACT.step({s:2}); } });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && document.getElementById('modal') && !document.querySelector('.result')){ ACT.cancelroll(); } });
+
+/* ============================================================
+   App (PWA): installation og offline
+   ============================================================ */
+let installEvt = null;
+function standalone(){ return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone===true; }
+window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); installEvt=e; if(view.name==='home'||view.name==='settings') render(); });
+window.addEventListener('appinstalled', ()=>{ installEvt=null; toast('Lanterneskoven er installeret 🏮'); });
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener('load', ()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+/* ============================================================
+   Start
+   ============================================================ */
+applyPrefs();
+const st0 = history.state;
+if(st0 && st0.name && VIEWS[st0.name] && st0.name!=='build' && st0.name!=='end'){ view = st0; render(); }
+else go('home', null, true);
+booted = true;
+
+// til test
+window.__LK = {S, STORIES, choicesFor, heroes:()=>heroes};
+})();
+</script>
+</body>
+</html>
