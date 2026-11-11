@@ -47,6 +47,8 @@ Ud over de fire dele kommer der en ny, selvstændig historie den 1. i hver måne
 
 Månedens historie laves af en planlagt Claude-session den 15. i måneden. Den åbner en pull request med titlen "Månedens historie: …", og så er det ejeren, der godkender den ved at lægge den ind (merge). Først da kommer den med i spillet.
 
+Har den kommende måned allerede en historie på `main`, gør den månedlige kørsel ingenting: ingen gren, ingen pull request og ingen kommentar.
+
 Har du en idé til en historie, så opret et issue med mærket `historie-idé`.
 
 For at se en historie, før den er udkommet, åbn `index.html?preview=<id>` (fx `?preview=2026-12-julestjernen`). Så bruges et fast prøvehold, og der gemmes ikke noget.
@@ -100,7 +102,7 @@ Hver historie ligger i sin egen mappe, `stories/<id>/historie.js`, og står i li
 - `art/dele.js`: delene, billederne bygges af.
 - `docs/historie-regler.md`: reglerne for en god historie.
 
-**Ny historie:** brug skill'en `ny-historie` (`.claude/skills/ny-historie/SKILL.md`). Den følger `docs/historie-regler.md`, laver mappen og tilføjer historien i kataloget.
+**Ny historie:** brug skill'en `ny-historie` (`.claude/skills/ny-historie/SKILL.md`). Er skill'en ikke registreret (fx i den planlagte session), så læs filen direkte. Den følger `docs/historie-regler.md`, laver mappen og tilføjer historien i kataloget.
 
 **Tjek, før noget lægges ind:**
 

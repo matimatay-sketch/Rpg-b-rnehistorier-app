@@ -9,10 +9,23 @@ Opskriften på en ny månedshistorie: én selvstændig, illustreret historie, so
 
 **Reglerne for indholdet står i `docs/historie-regler.md`. De gælder altid.** Denne fil er arbejdsgangen.
 
+**Er skill'en ikke registreret** i sessionen (fx i en planlagt session, hvor `ny-historie` ikke står blandt skills), så læs denne fil direkte fra disken, `.claude/skills/ny-historie/SKILL.md` i repoet, og følg den.
+
+## GitHub-trinene, og når de ikke kan lade sig gøre
+
+Flere trin bruger GitHub: find issues med mærkatet `historie-idé`, find en åben pull request med "Månedens historie" i titlen, åbn pull requesten, skriv en kommentar, og følg pull requesten. Den planlagte session har ikke altid de samme værktøjer. Gør sådan:
+
+1. **Prøv først GitHub-værktøjerne (MCP).** De er ofte udskudte og skal hentes med `ToolSearch`, fx `select:mcp__github__list_issues,mcp__github__list_pull_requests,mcp__github__create_pull_request,mcp__github__add_issue_comment`. Repoet er `matimatay-sketch/Rpg-b-rnehistorier-app`.
+2. **Ellers `gh`,** hvis kommandoen findes og er logget ind (`gh auth status`).
+3. **Følg pull requesten** med `subscribe_pr_activity`, hvis værktøjet findes (hent det også med `ToolSearch`).
+4. **Kan et trin ikke gøres** (intet værktøj, ingen adgang, en fejl, der kommer igen), så prøv ikke igen og igen. Push grenen, hvis der er en, og stop. Skriv til sidst i sessionen en tydelig besked til ejeren: hvad der er lavet, hvilken gren det ligger på, hvilket trin der ikke kunne gøres, og præcis hvad ejeren selv skal gøre (fx "Åbn en pull request fra grenen `claude/maanedens-historie-2026-12` mod `main` med titlen …, og læg forhåndsvisningslinket … i beskrivelsen").
+
+Kan du ikke se, om der er en åben "Månedens historie"-pull request (før du begynder, trin 1), så lav ikke en ny historie. Stop med en besked til ejeren om, at det ikke kunne tjekkes.
+
 ## Før du begynder
 
-1. **Er sidste måneds historie godkendt?** Søg efter åbne pull requests med "Månedens historie" i titlen (GitHub-værktøjerne, fx `list_pull_requests`, eller `gh pr list --search "Månedens historie in:title" --state open`).
-   - Findes der en, så lav **ikke** en ny historie. Skriv en kort, venlig påmindelse som kommentar på den åbne pull request, fx: "Hej! Månedens historie venter stadig på at blive læst og godkendt. Spil den fra linket i beskrivelsen, og merge, når den er klar. Skriv en kommentar her, hvis noget skal rettes." Stop så.
+1. **Er sidste måneds historie godkendt?** Søg efter åbne pull requests med "Månedens historie" i titlen (`mcp__github__list_pull_requests` med `state: open`, eller `gh pr list --search "Månedens historie in:title" --state open`). Se "GitHub-trinene" ovenfor, hvis det ikke kan lade sig gøre.
+   - Findes der en, så lav **ikke** en ny historie. Skriv en kort, venlig påmindelse som kommentar på den åbne pull request (`mcp__github__add_issue_comment` med pull requestens nummer, eller `gh pr comment`), fx: "Hej! Månedens historie venter stadig på at blive læst og godkendt. Spil den fra linket i beskrivelsen, og merge, når den er klar. Skriv en kommentar her, hvis noget skal rettes." Stop så.
 2. **Har den kommende måned allerede en historie?** Historien er til **den kommende måned**, dvs. måneden efter dagens dato. Kører du den 15. november 2026, er det december 2026, og `udgives` er `'2026-12-01'`. Hent den nyeste `main` (`git fetch origin main`), og læs `stories/katalog.js` på `origin/main` (`git show origin/main:stories/katalog.js`).
    - Står der allerede en historie med `udgives` den 1. i den kommende måned, så stop uden at gøre noget: ingen gren, ingen pull request og ingen kommentar.
 3. Lav en gren fra den nyeste `main`: `claude/maanedens-historie-<ÅÅÅÅ-MM>`, fx `claude/maanedens-historie-2026-12`.
@@ -21,7 +34,7 @@ Opskriften på en ny månedshistorie: én selvstændig, illustreret historie, so
 
 ### 1. Find idéen
 
-Find den ældste åbne issue med mærkatet `historie-idé` (fx `gh issue list --label historie-idé --state open`, og tag den med det laveste nummer). Brug idéen, og husk issue-nummeret til `Closes #N`.
+Find den ældste åbne issue med mærkatet `historie-idé` (`mcp__github__list_issues` med `labels: ["historie-idé"]` og `state: OPEN`, eller `gh issue list --label historie-idé --state open`), og tag den med det laveste nummer. Brug idéen, og husk issue-nummeret til `Closes #N`. Kan issues ikke læses, så vælg selv et emne som nedenfor, og skriv det i pull requestens beskrivelse.
 
 Er der ingen, så vælg selv et emne, der passer til årstiden og måneden (sne og jul i december, forår og spirer i april, sommerferie og bær i juli, blade og høst i oktober). Tjek i `stories/katalog.js`, at emnet ikke ligner en tidligere månedshistorie for meget.
 
@@ -80,17 +93,19 @@ node --test 'tests/*.test.mjs'
 node --test 'tests/e2e/*.test.cjs'
 ```
 
-Ret, til alt er grønt (`Ingen fejl i N historier` og ingen fejlede tests). E2e-testen `tests/e2e/maanedens.test.cjs` spiller automatisk alle månedshistorier i kataloget igennem i forhåndsvisningen to gange (med terningen høj og lav) og fejler ved fejl i konsollen.
+Ret, til alt er grønt (`Ingen fejl i N historier` og ingen fejlede tests). Tjekket sammenligner også hver post i `stories/katalog.js` med sin fil (samme `id`, `type` og `udgives`) og kører alle magi- og mester-valgenes funktioner. E2e-testen `tests/e2e/maanedens.test.cjs` spiller automatisk alle månedshistorier i kataloget igennem i forhåndsvisningen to gange (med terningen høj og lav) og fejler ved fejl i konsollen.
+
+**Stopregel:** er tjekket eller testene stadig ikke grønne efter 3 seriøse forsøg på at rette dem, så stop med at rette. Commit og push, og åbn pull requesten som **kladde** (`draft: true`, eller `gh pr create --draft`) med den fejlende uddata i beskrivelsen og en kort forklaring af, hvad du har prøvet. Kan der ikke åbnes en pull request, så stop med beskeden til ejeren (se "GitHub-trinene").
 
 Se derefter billederne med dine egne øjne: start en server i repoet (`python3 -m http.server 8000`), åbn `http://localhost:8000/index.html?preview=<id>` i Playwright, og tag skærmbilleder af nogle scener (`deviceScaleFactor: 1`). Se efter figurer, der dækker hinanden, står i luften eller er skåret over, og ret dem én gang.
 
 ### 5. Hæv VERSION
 
-Hæv `VERSION` i `sw.js` med én, fx `'lk-v6'` til `'lk-v7'`. Historiefilen skal ikke stå i nogen liste i `sw.js`: historierne gemmes, når de hentes.
+Hæv `VERSION` i `sw.js` med én, fx `'lk-v7'` til `'lk-v8'`. Historiefilen skal ikke stå i nogen liste i `sw.js`: appen beder selv service workeren gemme alle katalogets filer, også de kommende, så historien også åbner på udgivelsesdagen uden net.
 
 ### 6. Åbn en pull request
 
-Commit på grenen, og push. Åbn en pull request mod `main`:
+Commit på grenen, og push. Åbn en pull request mod `main` (`mcp__github__create_pull_request`, ellers `gh pr create`; se "GitHub-trinene", hvis ingen af dem virker):
 
 - **Titel:** `Månedens historie: <titel> (<måned år>)`, fx `Månedens historie: Julestjernen (december 2026)`.
 - **Beskrivelse:**
@@ -101,7 +116,7 @@ Commit på grenen, og push. Åbn en pull request mod `main`:
 
 ### 7. Følg pull requesten
 
-Abonnér på pull requestens aktivitet (`subscribe_pr_activity`). Når ejeren skriver en kommentar, så ret historien efter den, kør tjekket igen (trin 4), commit og push til samme gren, og svar kort på kommentaren med, hvad du har rettet. Er en kommentar uklar, så spørg på pull requesten i stedet for at gætte.
+Abonnér på pull requestens aktivitet (`subscribe_pr_activity`, hent det med `ToolSearch`, hvis det er udskudt). Findes værktøjet ikke, så skriv i beskeden til ejeren, at kommentarer på pull requesten ikke bliver set automatisk, og at ejeren kan bede om rettelser i chatten i stedet. Når ejeren skriver en kommentar, så ret historien efter den, kør tjekket igen (trin 4, med samme stopregel), commit og push til samme gren, og svar kort på kommentaren med, hvad du har rettet (`mcp__github__add_issue_comment` med pull requestens nummer, eller `gh pr comment`). Er en kommentar uklar, så spørg på pull requesten i stedet for at gætte.
 
 Merge aldrig selv. Ejerens merge er godkendelsen.
 
@@ -116,3 +131,5 @@ Merge aldrig selv. Ejerens merge er godkendelsen.
 | Ny tegnet del for noget, der allerede findes | Genbrug delene; tilføj kun det, historien mangler |
 | Glemt at hæve `VERSION` i `sw.js` | Hæv den i samme pull request |
 | Ny pull request, mens sidste måneds stadig er åben | Skriv en påmindelse på den åbne i stedet |
+| Prøve et GitHub-trin igen og igen | Push grenen, stop, og skriv til ejeren, hvad de skal gøre |
+| Rette i det uendelige, når tjekket ikke bliver grønt | Efter 3 seriøse forsøg: kladde-pull request med den fejlende uddata |
