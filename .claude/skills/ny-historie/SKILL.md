@@ -75,7 +75,7 @@ Sådan skriver du:
 - Planlæg først: en start med en figur, der har brug for hjælp; en hub med 3-4 stier, hvor hver sti har et terningkast med en Ok- og en Fejl-scene; en finale med 3-4 glade slutninger plus en mester-slutning.
 - Hver scene har titel, tekst, et **Spørg børnene**-spørgsmål og et billede.
 - Hver Fejl-scene er sød eller sjov og fører videre. Ingen blindgyder.
-- **1-2 bevægelser, aldrig flere**, efter afsnittet "Bevægelser" i `docs/historie-regler.md`: gør et terningvalg, hvor kroppen er med (fx en bakke eller en snemand), om til `bevaeg: { goer, stat, target, win, lose }`, og giv det en kort, sikker instruktion fra listen over gode bevægelser. Højst én i hver scene, og kun hvor Fejl-scenen er venlig og sjov. Se `snBakke` og `snSpor` i Julestjernen.
+- **1-2 bevægelser, aldrig flere**, efter afsnittet "Bevægelser" i `docs/historie-regler.md`: gør et terningvalg, hvor kroppen er med (fx en bakke eller en snemand), om til `bevaeg: { goer, stat, target, win, lose }`, og giv det en kort, sikker instruktion fra listen over gode bevægelser. Højst én i hver scene, og kun hvor Fejl-scenen er venlig og sjov. Se `snBakke` og `snSpor` i Julestjernen. Det bedste eksempel er liniegangen i `bro` (`stories/lantern/historie.js`): gå ét skridt ad gangen hen ad et snørebånd. Foretræk bevægelser, hvor det at vakle har en tydelig mening (balance, liste lydløst, stå på ét ben), så "Vi vaklede" giver en naturlig, venlig Fejl-scene. Spejlleg kun, hvis "Vi vaklede"-scenen stadig giver mening.
 - Sæt aldrig et venne-flag (`nusseVen`, `nusseHonning`, `mollLoefte`, `tutVen`, `maaneVen`, `vindVen`). Læs dem gerne.
 - Læs teksten højt for dig selv. Er en sætning svær at læse højt, så del den op.
 
@@ -112,6 +112,7 @@ Commit på grenen, og push. Åbn en pull request mod `main` (`mcp__github__creat
 - **Beskrivelse:**
   - et kort resumé af historien (3-5 sætninger, gerne med de sjoveste øjeblikke),
   - `Closes #N` for idéens issue (udelad linjen, hvis du selv valgte emnet),
+  - afsnittet **Bevægelser til gennemsyn**: en liste med hver bevægelse (1-2), hvor hver har scenens id, valgets `label`, hele `goer`-teksten og titlen på dens "Vi vaklede"-scene (`lose`). Ejeren skal kunne læse dem igennem, før historien går live uden yderligere gennemsyn,
   - forhåndsvisningslinket: `https://raw.githack.com/matimatay-sketch/Rpg-b-rnehistorier-app/<gren>/index.html?preview=<id>`,
   - en linje om, at historien bliver synlig for familierne den 1. i måneden, når pull requesten er merget.
 

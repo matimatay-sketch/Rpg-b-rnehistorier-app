@@ -68,6 +68,7 @@ En **bevægelse** er et terningvalg, hvor børnene rejser sig og selv gør det, 
 - Skriv det som et terningvalg, men med `bevaeg` i stedet for `roll`: `{ label: 'Gå over stammen, ét skridt ad gangen', bevaeg: { goer: '<instruktion>', stat: 'Mod', target: 6, win: '<idOk>', lose: '<idFejl>' } }`. `key` virker som ved et kast. `stat` og `target` bruges, når bevægelse er slået fra.
 - `label` skal give mening både som bevægelse og som kast. `goer` er 1-2 korte sætninger, der læses højt og siger, hvad man gør. Hvem der gør det, viser appen selv.
 - **1-2 bevægelser i hver historie, aldrig flere**, og højst én i hver scene. En månedshistorie har mindst én.
+- Det bedste eksempel er liniegangen i `bro` (`stories/lantern/historie.js`): gå ét skridt ad gangen hen ad et snørebånd. Foretræk bevægelser, hvor det at vakle har en tydelig mening (balance, liste lydløst, stå på ét ben). Spejlleg kun, hvis "Vi vaklede"-scenen stadig giver mening.
 - Vælg et valg, hvor kroppen er med i historien (en stamme, en sump, blæst, en bakke), og hvor Fejl-scenen er venlig og sjov. "Vi vaklede" skal føles lige så fint som "Vi klarede det!".
 - **Sikkerhed:** bevægelsen laves på stuegulvet med almindelige ting. Ingen klatring, intet spring ned fra noget, intet om kap, ingen snurren rundt, til man bliver svimmel, og intet på trapper, møbler eller nær vinduer. Den må ikke kræve noget, familien typisk ikke har ved hånden. Ingen bliver holdt ude eller gjort til grin.
 
