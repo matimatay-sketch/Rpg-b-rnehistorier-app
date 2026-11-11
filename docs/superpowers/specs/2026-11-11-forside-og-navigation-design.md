@@ -81,3 +81,43 @@ E2e-test af:
 - at forhåndsvisningen stadig starter i historien og intet gemmer
 
 Gennemspilningstesten skal bestå uændret. Det er tilladt at justere, hvordan testen kommer fra start til første scene, fx med et ekstra klik via forsiden, men aldrig at optage den igen. Gælder for alle eksisterende tests: de må tilpasses den nye vej ind, men ikke svækkes.
+
+## Ændring: Lanternestien (godkendt af ejeren 2026-11-11)
+
+Erstatter afsnittet "Forsiden" ovenfor. Skitsen, som ejeren godkendte, ligger i `assets/2026-11-11-lanternestien-skitse.html`. Den viser tre telefonskærme med rigtige billeder og helte.
+
+### Forsiden
+- **Øverst:** navnet "Lanterneskoven" og tandhjulsknappen til indstillingerne (som nu).
+- **Heltene:** "Med i aften. Tryk for at slå til og fra." Under teksten står heltene, som de ser ud (appens egen `avatar`), cirka 58 px med navn under.
+  - Valgte helte har en ring i lanternefarven, og fravalgte er blege.
+  - Et tryk slår en helt til eller fra (samme `lib.play` som i dag).
+  - En sidste knap "+" med teksten "Helte" fører til heltelisten og -byggeren.
+  - Har familien ingen helte, viser rækken kun "+"-knappen med teksten "Lav jeres første helt".
+- **Lanternestien:** én sti pr. gruppe, først de synlige serier (nyeste serie først, kapitler i rækkefølge, også de kommende kapitler i serien), derefter "Den store fortælling" (sagaens fire dele).
+  - Hver gruppe har en overskrift: serietitlen med linjen "En lanterne tændes hver fredag i <måned>", eller "Den store fortælling" med linjen "Fire dele, der hænger sammen".
+  - Stien går i zigzag: lanternerne skifter mellem højre og venstre side, og en prikket, buet linje forbinder dem.
+  - Ved hver lanterne står titlen og en linje:
+    - "Ude nu" (grøn) for udgivne kapitler, der ikke er gennemført
+    - "Tændes fredag <d>. <mdr.>" for kommende kapitler
+    - "Gennemført" for gennemførte historier
+    - "Del n af 4" for sagaen
+  - En tændt lanterne er en historie, der kan spilles. En slukket lanterne er et kommende kapitel; den kan ikke åbnes, men titel og dato kan ses.
+- **Ugens eventyr-kortet** fra den første udgave udgår. Stien er forsiden.
+
+### Tryk på en lanterne
+Et ark glider op nedefra (med mørk baggrund bag). Det viser historiens billede (dens første scene), "Kapitel n af N i <serie>" eller "Del n af 4", titlen, den korte beskrivelse, knappen **"Start eventyret"** og et link **"Luk"**. Arket lukkes også med Escape og ved tryk på baggrunden. Fokus flyttes ind i arket og tilbage bagefter.
+
+### Vælg følgesvend
+En ny skærm efter "Start eventyret":
+- **Øverst:** "‹ Forside" og tandhjulet. Under dem står den valgte historie med et lille billede, "Kapitel n af N i <serie>" og titlen.
+- **Overskrift:** "Hvem tager I med?"
+- **De seks følgesvende** står som kort i to kolonner. Hvert kort har et billede (figuren alene i `lysning` om dagen, glad, tegnet med `LK.art.scene`), navn, beskrivelse og "+1 i <træk>" (fra `js/data.js`). Den valgte har en ring i lanternefarven. Sidst valgte følgesvend er valgt på forhånd.
+- **Knappen** "Afsted med <navn>" starter historien med de helte, der er med i aften.
+  - Er ingen helte valgt, står der på siden: "Vælg mindst én helt på forsiden", og knappen er slået fra.
+- Den gamle opsætning med radioknapper til historie og følgesvend udgår. Heltelisten og -byggeren bevares og nås fra "+"-knappen.
+
+### Fire rettelser fra den første bygning
+1. **"‹ Forside"** sidder fast øverst (sticky), så den altid kan ses i lange scener.
+2. **Slutskærmen:** "Tilbage til historierne" fører til forsiden.
+3. **Stop-bekræftelsen** vises ikke på historiens første scene, før der er valgt noget.
+4. **Scenens overskriftslinje** holdes på én linje på en telefon, fx ved at forkorte eller ombryde smukt.
