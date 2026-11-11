@@ -70,3 +70,18 @@ test('kataloget: de gode poster giver ingen fejl', () => {
   assert.equal(forPost('gmaaned'), '');
 });
 test('det rigtige katalog passer med sine filer', () => assert.deepEqual(tjekKatalog('stories/katalog.js', { kraevBilleder: true }), []));
+
+// Bevægelser: et valg med bevaeg: { goer, stat, target, win, lose }.
+test('god bevægelse giver ingen fejl', () => assert.deepEqual(tjek(['tests/fixtures/bevaeg-god.js']), []));
+test('uden instruktion', () => assert.match(beskeder('bevaeg-uden-goer.js'), /Bevægelse uden instruktion/));
+test('uden terning', () => assert.match(beskeder('bevaeg-uden-terning.js'), /Bevægelse uden træk og sværhed til terningen/));
+test('for mange', () => assert.match(beskeder('bevaeg-for-mange.js'), /For mange bevægelser \(højst 2\)/));
+test('to bevægelser i samme scene', () => assert.match(beskeder('bevaeg-to-i-scene.js'), /To bevægelser i samme scene/));
+test('månedshistorie uden bevægelse', () => assert.match(beskeder('maaned-uden-bevaeg.js'), /Månedshistorien har ingen bevægelser/));
+test('bevægelsens mål tjekkes', () => {
+  const f = tjek(['tests/fixtures/bevaeg-lose-findes-ikke.js']).map(x => x.besked).join('\n');
+  assert.match(f, /fører til "findesikke"/);
+});
+
+test('valg med både terning og bevægelse', () => assert.match(beskeder('bevaeg-begge.js'), /Valget har både terning og bevægelse/));
+test('bevægelse med brudt sværhed', () => assert.match(beskeder('bevaeg-brokent-maal.js'), /Bevægelse uden træk og sværhed til terningen/));

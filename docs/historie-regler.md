@@ -61,6 +61,28 @@ Se `stories/lantern/historie.js` for et helt eksempel.
 - **Uffes fjer.** En scene med `gainFeather: true` giver Uffes fjer, som giver +1 til ét terningkast.
 - **Flag.** En scene med `flag: '<navn>'` husker noget i dette eventyr, fx at man blev våd, så finalen kan nævne det.
 
+## Bevægelser
+
+En **bevægelse** er et terningvalg, hvor børnene rejser sig og selv gør det, heltene gør i historien. Familien afgør, hvordan det gik, med knapperne **"Vi klarede det!"** og **"Vi vaklede"**. De fører til de samme to scener som et kast, der lykkes eller mislykkes. Familien kan slå bevægelse fra med knappen **Bevægelse**; så er valget et almindeligt terningkast med samme træk og sværhed.
+
+- Skriv det som et terningvalg, men med `bevaeg` i stedet for `roll`: `{ label: 'Gå over stammen, ét skridt ad gangen', bevaeg: { goer: '<instruktion>', stat: 'Mod', target: 6, win: '<idOk>', lose: '<idFejl>' } }`. `key` virker som ved et kast. `stat` og `target` bruges, når bevægelse er slået fra.
+- `label` skal give mening både som bevægelse og som kast. `goer` er 1-2 korte sætninger, der læses højt og siger, hvad man gør. Hvem der gør det, viser appen selv.
+- **1-2 bevægelser i hver historie, aldrig flere**, og højst én i hver scene. En månedshistorie har mindst én.
+- Det bedste eksempel er liniegangen i `bro` (`stories/lantern/historie.js`): gå ét skridt ad gangen hen ad et snørebånd. Foretræk bevægelser, hvor det at vakle har en tydelig mening (balance, liste lydløst, stå på ét ben). Spejlleg kun, hvis "Vi vaklede"-scenen stadig giver mening.
+- Vælg et valg, hvor kroppen er med i historien (en stamme, en sump, blæst, en bakke), og hvor Fejl-scenen er venlig og sjov. "Vi vaklede" skal føles lige så fint som "Vi klarede det!".
+- **Sikkerhed:** bevægelsen laves på stuegulvet med almindelige ting. Ingen klatring, intet spring ned fra noget, intet om kap, ingen snurren rundt, til man bliver svimmel, og intet på trapper, møbler eller nær vinduer. Den må ikke kræve noget, familien typisk ikke har ved hånden. Ingen bliver holdt ude eller gjort til grin.
+
+Gode bevægelser at vælge fra eller lave variationer af:
+
+- gå på line, fx et snørebånd, en tæppekant eller en streg af puder
+- stå på ét ben, mens man tæller til ti
+- liste helt lydløst fra den ene ende af stuen til den anden
+- hoppe som en frø tre gange
+- balancere en bog eller en bamse på hovedet
+- lave sig så lille som en mus eller så stor som en bjørn
+- spejle hinanden, hvor den ene gør, og den anden gør det samme
+- blæse en fjer eller et stykke papir hen over bordet
+
 ## Regler for månedshistorier
 
 - `type: 'maaned'` i kataloget og `udgives: 'ÅÅÅÅ-MM-01'`, den 1. i den måned, historien er til.
@@ -71,6 +93,7 @@ Se `stories/lantern/historie.js` for et helt eksempel.
 - Den må læse vennerne (`k.state.flags.nusseVen`, `k.crew()`), men må **aldrig sætte** et af venne-flagene `nusseVen`, `nusseHonning`, `mollLoefte`, `tutVen`, `maaneVen` eller `vindVen`. Brug egne flag-navne til det, der kun gælder i eventyret.
 - Skriv historiens egne linjer om vennerne ud fra `k.state.flags`. Brug ikke `k.friendLines()`: de linjer er skrevet til sagaen, hvor vennerne dukker op for første gang efter Del 1, og de bliver forkerte, hvis en ven allerede er med i historien. Tjek altid, hvem der allerede er til stede, før en ven "kommer".
 - Ingen "næste del". Slutskærmen viser selv et link tilbage til listen.
+- 1-2 bevægelser, aldrig flere (se "Bevægelser").
 
 ## Billeder
 
@@ -84,5 +107,5 @@ Se `stories/lantern/historie.js` for et helt eksempel.
 
 ## Tjek
 
-- `node tools/tjek-historier.mjs` skal give `Ingen fejl`. Det tjekker, at alle valg fører til en scene, der findes, at hver scene har titel, tekst, spørgsmål og billede, at alle veje kan nå en slutning, at der ikke er blindgyder, at ingen scene-id findes i to historier, og at en månedshistorie ikke sætter et venne-flag.
-- `node --test 'tests/*.test.mjs'` og `node --test 'tests/e2e/*.test.cjs'` skal være grønne. E2e-testen `tests/e2e/maanedens.test.cjs` spiller alle månedshistorier i kataloget igennem i forhåndsvisningen.
+- `node tools/tjek-historier.mjs` skal give `Ingen fejl`. Det tjekker, at alle valg fører til en scene, der findes, at hver scene har titel, tekst, spørgsmål og billede, at alle veje kan nå en slutning, at der ikke er blindgyder, at ingen scene-id findes i to historier, at en månedshistorie ikke sætter et venne-flag, og at bevægelserne er i orden: hver har en instruktion, et træk og en sværhed og to mål, der findes, der er højst 2 i historien og højst 1 i hver scene, og en månedshistorie har mindst 1.
+- `node --test 'tests/*.test.mjs'` og `node --test 'tests/e2e/*.test.cjs'` skal være grønne. E2e-testen `tests/e2e/maanedens.test.cjs` spiller alle månedshistorier i kataloget igennem i forhåndsvisningen med bevægelse slået til, én gang med "Vi klarede det!" og én gang med "Vi vaklede".

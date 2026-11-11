@@ -41,7 +41,7 @@ Er der ingen, så vælg selv et emne, der passer til årstiden og måneden (sne 
 ### 2. Læs reglerne og et eksempel
 
 - Læs `docs/historie-regler.md` hele vejen igennem.
-- Læs `stories/lantern/historie.js` (hub med stier, terningkast, Fejl-scener, gnister, magi, mester, billeder) og den nyeste månedshistorie i `stories/` (fx `stories/2026-12-julestjernen/historie.js`).
+- Læs `stories/lantern/historie.js` (hub med stier, terningkast, en bevægelse, Fejl-scener, gnister, magi, mester, billeder) og den nyeste månedshistorie i `stories/` (fx `stories/2026-12-julestjernen/historie.js`).
 - Læs toppen af `art/dele.js` og listen over `steder`, `figurer` og `ting`. Se dem tegnet ved at åbne `tools/vis-dele.html` i en browser.
 - `k` er kittet fra `js/kit.js` (`k.state`, `k.joinNames`, `k.gnistNames`, `k.lockTxt`, `k.partyStat`, `k.crew`, `k.stats`, `k.esc`). Brug ikke `k.friendLines()` i en månedshistorie: linjerne er skrevet til sagaen (fx kommer Nusse genert frem bag et træ), og de passer ikke, hvis figuren allerede er med i historien. Skriv historiens egne venne-linjer ud fra `k.state.flags`, og udelad de venner, der allerede er med.
 
@@ -75,6 +75,7 @@ Sådan skriver du:
 - Planlæg først: en start med en figur, der har brug for hjælp; en hub med 3-4 stier, hvor hver sti har et terningkast med en Ok- og en Fejl-scene; en finale med 3-4 glade slutninger plus en mester-slutning.
 - Hver scene har titel, tekst, et **Spørg børnene**-spørgsmål og et billede.
 - Hver Fejl-scene er sød eller sjov og fører videre. Ingen blindgyder.
+- **1-2 bevægelser, aldrig flere**, efter afsnittet "Bevægelser" i `docs/historie-regler.md`: gør et terningvalg, hvor kroppen er med (fx en bakke eller en snemand), om til `bevaeg: { goer, stat, target, win, lose }`, og giv det en kort, sikker instruktion fra listen over gode bevægelser. Højst én i hver scene, og kun hvor Fejl-scenen er venlig og sjov. Se `snBakke` og `snSpor` i Julestjernen. Det bedste eksempel er liniegangen i `bro` (`stories/lantern/historie.js`): gå ét skridt ad gangen hen ad et snørebånd. Foretræk bevægelser, hvor det at vakle har en tydelig mening (balance, liste lydløst, stå på ét ben), så "Vi vaklede" giver en naturlig, venlig Fejl-scene. Spejlleg kun, hvis "Vi vaklede"-scenen stadig giver mening.
 - Sæt aldrig et venne-flag (`nusseVen`, `nusseHonning`, `mollLoefte`, `tutVen`, `maaneVen`, `vindVen`). Læs dem gerne.
 - Læs teksten højt for dig selv. Er en sætning svær at læse højt, så del den op.
 
@@ -93,7 +94,7 @@ node --test 'tests/*.test.mjs'
 node --test 'tests/e2e/*.test.cjs'
 ```
 
-Ret, til alt er grønt (`Ingen fejl i N historier` og ingen fejlede tests). Tjekket sammenligner også hver post i `stories/katalog.js` med sin fil (samme `id`, `type` og `udgives`) og kører alle magi- og mester-valgenes funktioner. E2e-testen `tests/e2e/maanedens.test.cjs` spiller automatisk alle månedshistorier i kataloget igennem i forhåndsvisningen to gange (med terningen høj og lav) og fejler ved fejl i konsollen.
+Ret, til alt er grønt (`Ingen fejl i N historier` og ingen fejlede tests). Tjekket sammenligner også hver post i `stories/katalog.js` med sin fil (samme `id`, `type` og `udgives`) og kører alle magi- og mester-valgenes funktioner. E2e-testen `tests/e2e/maanedens.test.cjs` spiller automatisk alle månedshistorier i kataloget igennem i forhåndsvisningen to gange med bevægelse slået til (terningen høj og "Vi klarede det!", terningen lav og "Vi vaklede") og fejler ved fejl i konsollen, eller hvis den ikke møder en bevægelse.
 
 **Stopregel:** er tjekket eller testene stadig ikke grønne efter 3 seriøse forsøg på at rette dem, så stop med at rette. Commit og push, og åbn pull requesten som **kladde** (`draft: true`, eller `gh pr create --draft`) med den fejlende uddata i beskrivelsen og en kort forklaring af, hvad du har prøvet. Kan der ikke åbnes en pull request, så stop med beskeden til ejeren (se "GitHub-trinene").
 
@@ -111,6 +112,7 @@ Commit på grenen, og push. Åbn en pull request mod `main` (`mcp__github__creat
 - **Beskrivelse:**
   - et kort resumé af historien (3-5 sætninger, gerne med de sjoveste øjeblikke),
   - `Closes #N` for idéens issue (udelad linjen, hvis du selv valgte emnet),
+  - afsnittet **Bevægelser til gennemsyn**: en liste med hver bevægelse (1-2), hvor hver har scenens id, valgets `label`, hele `goer`-teksten og titlen på dens "Vi vaklede"-scene (`lose`). Ejeren skal kunne læse dem igennem, før historien går live uden yderligere gennemsyn,
   - forhåndsvisningslinket: `https://raw.githack.com/matimatay-sketch/Rpg-b-rnehistorier-app/<gren>/index.html?preview=<id>`,
   - en linje om, at historien bliver synlig for familierne den 1. i måneden, når pull requesten er merget.
 
@@ -132,4 +134,10 @@ Merge aldrig selv. Ejerens merge er godkendelsen.
 | Glemt at hæve `VERSION` i `sw.js` | Hæv den i samme pull request |
 | Ny pull request, mens sidste måneds stadig er åben | Skriv en påmindelse på den åbne i stedet |
 | Prøve et GitHub-trin igen og igen | Push grenen, stop, og skriv til ejeren, hvad de skal gøre |
+| `Månedshistorien har ingen bevægelser` | Gør 1-2 terningvalg om til `bevaeg` (se "Bevægelser" i reglerne) |
+| `For mange bevægelser (højst 2)` | Gør resten tilbage til almindelige terningvalg med `roll` |
+| `To bevægelser i samme scene` | Højst én bevægelse pr. scene; flyt den anden til en anden scene eller gør den til `roll` |
+| `Bevægelse uden instruktion` | Skriv `goer`: 1-2 korte sætninger om, hvad man gør |
+| `Bevægelse uden træk og sværhed til terningen` | Giv `stat` (et af de seks træk) og `target` (fx 6), som bruges, når bevægelse er slået fra |
+| En bevægelse med klatring, spring, kapløb eller snurren | En rolig bevægelse på stuegulvet fra listen i reglerne |
 | Rette i det uendelige, når tjekket ikke bliver grønt | Efter 3 seriøse forsøg: kladde-pull request med den fejlende uddata |

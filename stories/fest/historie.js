@@ -27,7 +27,9 @@ LK.addStory(function (k) {
       ask: 'Hvordan gør man et stort arbejde lettere?',
       dyn: function () {
         function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'f_lysOk', lose: 'f_lysFejl', flag: 'tutVen', flagTxt: 'fordi Tuts svampe lyser op' } }; }
-        var c = [R('List', 'Byg en lang stang af grene med en krog i enden'), R('Mod', 'Gå først ind i den mørkeste del af skoven med en rygsæk fuld af lanterner', 7), R('Fantasi', 'Mal en stjernehimmel på lanternerne med fingrene')];
+        // Bevægelse: samme valg som R, men familien bærer selv en lanterne.
+        function B(stat, label, t, goer) { var c = R(stat, label, t), r = c.roll; return { label: label, bevaeg: { goer: goer, stat: r.stat, target: r.target, win: r.win, lose: r.lose, flag: r.flag, flagTxt: r.flagTxt } }; }
+        var c = [R('List', 'Byg en lang stang af grene med en krog i enden'), B('Mod', 'Gå først ind i den mørkeste del af skoven med en rygsæk fuld af lanterner', 7, 'Læg en bog eller en bamse på hovedet. Det er en lanterne. Gå langsomt hen over gulvet, uden at den falder af.'), R('Fantasi', 'Mal en stjernehimmel på lanternerne med fingrene')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at tænde de højeste lanterner', to: 'f_lysGnist', use: n }); });
         c.push({ label: 'Bed Tuts lysende svampe stå som lamper langs stien', to: 'f_lysOk', lock: function () { return k.state.flags.tutVen ? null : 'Kræver at I har hjulpet Tut'; } });
         return c;
@@ -62,7 +64,9 @@ LK.addStory(function (k) {
       ask: 'Hvilken lyd bliver I allermest glade for?',
       dyn: function () {
         function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'f_musikOk', lose: 'f_musikFejl', flag: 'nusseVen', flagTxt: 'fordi Nusse har lånt jer sin fløjte' } }; }
-        var c = [R('Humor', 'Lav en vild lydorkester med frøer, krager og tudser'), R('Venlighed', 'Bed alle om at nynne en stille sang sammen'), R('Nysgerrighed', 'Find alle de ting i skoven, der kan lave lyde')];
+        // Bevægelse: samme valg som R, men familien er selv orkestret.
+        function B(stat, label, goer) { var c = R(stat, label), r = c.roll; return { label: label, bevaeg: { goer: goer, stat: r.stat, target: r.target, win: r.win, lose: r.lose, flag: r.flag, flagTxt: r.flagTxt } }; }
+        var c = [B('Humor', 'Lav en vild lydorkester med frøer, krager og tudser', 'Den ene laver en sjov dyrelyd med en bevægelse til, som en frø, en krage eller en tudse. De andre gør præcis det samme som et spejl.'), R('Venlighed', 'Bed alle om at nynne en stille sang sammen'), R('Nysgerrighed', 'Find alle de ting i skoven, der kan lave lyde')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at klinge som en lille klokke', to: 'f_musikGnist', use: n }); });
         c.push({ label: 'Bed Månen lyse, så alle kan se at danse', to: 'f_musikOk', lock: function () { return k.state.flags.maaneVen ? null : 'Kræver at I har hjulpet Månen'; } });
         return c;

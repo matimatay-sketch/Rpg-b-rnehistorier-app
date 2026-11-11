@@ -36,7 +36,7 @@ const MESTER = { stats: { Mod: 5, List: 0, Venlighed: 5, Fantasi: 5, Humor: 0, N
 // En helt uden mestertræk, men med to magier, så magierne (og bagefter skjoldet) bruges.
 const MAGIKER = { stats: { Mod: 3, List: 2, Venlighed: 2, Fantasi: 3, Humor: 2, Nysgerrighed: 2 }, stories: 4, magic: 'gnist', magic2: 'skjold' };
 
-// Ny browser-kontekst med gemte data og et fast Math.random. Service workeren er slået fra,
+// Ny browser-kontekst med gemte data, bevægelse slået fra og et fast Math.random. Service workeren er slået fra,
 // så den ikke gemmer filer mellem testene og ikke går uden om page.route.
 async function nySide(lib, rnd) {
   const context = await browser.newContext({ serviceWorkers: 'block' });
@@ -44,6 +44,8 @@ async function nySide(lib, rnd) {
     try {
       localStorage.setItem('lk-heroes', libJson);
       localStorage.setItem('lk-welcomed', '1');
+      // Bevægelse slået fra: så er bevægelsesvalgene terningkast, og forløbet er det samme som før.
+      localStorage.setItem('lk-prefs', '{"bevaeg":false}');
     } catch (e) {}
     if (r !== null) Math.random = () => r;
   }, [JSON.stringify(lib), rnd]);
@@ -134,6 +136,45 @@ for (const [navn, rnd, over, sidste] of KOERSLER) {
     await context.close();
   });
 }
+
+// Del 1 med bevægelse slået til (som fra starten): der vælges et bevægelsesvalg (🤸), når der er et, ellers det
+// første valg, og der trykkes "Vi klarede det!" ved hver bevægelse, til slutskærmen.
+test('del 1 kan spilles til slut med bevægelse slået til og "Vi klarede det!"', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block' });
+  await context.addInitScript(libJson => {
+    try { localStorage.setItem('lk-heroes', libJson); localStorage.setItem('lk-welcomed', '1'); } catch (e) {}
+    Math.random = () => 0.99;
+  }, JSON.stringify({ heroes: [helt()], play: { h1: true }, world: {} }));
+  const page = await context.newPage();
+  const fejl = [];
+  page.on('pageerror', e => fejl.push(e.message));
+  page.on('console', m => { if (m.type() === 'error') fejl.push(m.text()); });
+  await page.goto(server.base + 'index.html');
+  await page.waitForSelector('input[name=story][value="lantern"]');
+  await vaelgOgStart(page, 'lantern');
+  assert.strictEqual(await page.getAttribute('#bevaeg', 'aria-pressed'), 'true');
+  let bevaegelser = 0;
+  for (let i = 0; i < 300 && !(await page.$('.end')); i++) {
+    if (await page.$('#roll')) {
+      await page.click('#roll');
+      await page.waitForFunction(() => { const b = document.getElementById('roll'); return b && b.textContent === 'Læs videre' && !b.disabled; });
+      await page.click('#roll');
+    } else if (await page.$('#klarede')) {
+      bevaegelser++;
+      await page.click('#klarede');
+    } else {
+      const valg = page.locator('#choices .crow > .btn:not([disabled])');
+      const bevaeg = valg.filter({ has: page.locator('.tag', { hasText: '🤸' }) });
+      await ((await bevaeg.count()) ? bevaeg.first() : valg.first()).click();
+    }
+  }
+  assert.strictEqual((await page.textContent('.end')).trim(), 'Slut');
+  assert.ok(bevaegelser >= 1, 'ingen bevægelser i del 1');
+  assert.match(await page.textContent('#stage .stats'), new RegExp('Bevægelser: ' + bevaegelser));
+  assert.strictEqual((await gemt(page)).world.done_lantern, true);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
 
 // Billedet bevæger sig (lanterner, stjerner, øjne), men står helt stille, når enheden beder om mindre bevægelse.
 for (const [navn, motion, bevaeger] of [['bevæger sig', 'no-preference', true], ['står stille med reduceret bevægelse', 'reduce', false]]) {

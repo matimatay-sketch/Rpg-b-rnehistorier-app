@@ -61,7 +61,7 @@ LK.addStory(function (k) {
         'Men stammen vipper, og vandet er koldt.'],
       ask: 'Hvad ville I gøre, hvis I var bange for vand?',
       choices: [
-        { label: 'Gå over stammen, ét skridt ad gangen', roll: { stat: 'Mod', target: 6, win: 'broOk', lose: 'broFejl' } },
+        { label: 'Gå over stammen, ét skridt ad gangen', bevaeg: { goer: 'Læg et snørebånd eller en tæppekant på gulvet. Det er stammen. Gå hen ad den, ét skridt ad gangen, uden at træde ved siden af.', stat: 'Mod', target: 6, win: 'broOk', lose: 'broFejl' } },
         { label: 'Byg et rækværk af pinde sammen', roll: { stat: 'List', target: 6, win: 'broOk', lose: 'broFejl' } },
         { label: 'Lad som om, stammen er en regnbuebro', roll: { stat: 'Fantasi', target: 6, win: 'broOk', lose: 'broFejl' } }
       ]

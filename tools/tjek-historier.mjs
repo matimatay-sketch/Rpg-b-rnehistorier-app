@@ -83,6 +83,8 @@ function tjekHistorie(story, kit, saet, ctx, valg, fejl) {
   const valgIAlle = {}; // scene -> sand hvis der er valg i alle tilstande
   const titlerOk = {};
   const askOk = {};
+  const bevaegelser = new Set(); // "scene\u0000label" for hvert bevægelsesvalg, uanset tilstand
+  const traek = kit.stats.map(t => t[0]);
   const tekst = (v) => (Array.isArray(v) ? v.join(' ') : v == null ? '' : String(v)).trim();
 
   ids.forEach(id => {
@@ -108,14 +110,29 @@ function tjekHistorie(story, kit, saet, ctx, valg, fejl) {
       }
       if (valgListe) {
         if (!valgListe.length) valgIAlle[id] = false;
+        let iScenen = 0;
         valgListe.forEach(c => {
           laeg(c.to);
           if (c.roll) { laeg(c.roll.win); laeg(c.roll.lose); }
+          const b = c.bevaeg;
+          if (b) {
+            laeg(b.win); laeg(b.lose);
+            iScenen++;
+            if (c.roll) meld(id, 'Valget har både terning og bevægelse');
+            bevaegelser.add(id + '\u0000' + c.label);
+            if (!tekst(b.goer)) meld(id, 'Bevægelse uden instruktion');
+            if (traek.indexOf(b.stat) < 0 || !Number.isInteger(b.target) || !(b.target >= 2 && b.target <= 12))
+              meld(id, 'Bevægelse uden træk og sværhed til terningen');
+          }
         });
+        if (iScenen > 1) meld(id, 'To bevægelser i samme scene');
       }
     });
     saet(null);
   });
+
+  if (bevaegelser.size > 2) meld('', 'For mange bevægelser (højst 2)');
+  if (story.type === 'maaned' && bevaegelser.size === 0) meld('', 'Månedshistorien har ingen bevægelser');
 
   // Magi- og mester-valgenes funktioner køres kun, når en helt har magien eller 5 i trækket.
   // Kør dem alle under hver falsk tilstand (nye tilstande hver gang, for eff() må ændre tilstanden).

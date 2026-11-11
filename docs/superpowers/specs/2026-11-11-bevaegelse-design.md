@@ -1,7 +1,7 @@
 # Bevægelsesudfordringer i stedet for nogle terningkast
 
 **Dato:** 2026-11-11
-**Status:** Klar til godkendelse
+**Status:** Godkendt af ejeren 2026-11-11
 
 ## Hvorfor
 
@@ -69,7 +69,7 @@ En **bevægelsesudfordring** bruges ligesom et terningkast. Den fører til den s
   `{ label, bevaeg: { goer: '<instruktion>', stat, target, win, lose } }`.
   `stat` og `target` bruges kun, når bevægelse er slået fra. Navnene på felterne kan bygherren justere.
 - Teksten i `label` skal give mening i begge tilstande, fx "Gå over stammen, ét skridt ad gangen". Når bevægelse er slået til, står instruktionen i boksen.
-- **De fire eksisterende dele:** 2-3 bevægelsesudfordringer pr. del, i scener hvor kroppen er med i historien. Fx bækken med stammen (del 1), tornekrattet (del 1), tågen eller sumpen (del 2), blæsten på bjerget (del 3) og dansen eller lanternerne til festen (del 4). Det er det eksisterende terningvalg med samme handling, der bliver til en bevægelse, så teksten i "lykkedes"- og "mislykkedes"-scenerne stadig passer.
+- **De fire eksisterende dele:** 1-2 bevægelsesudfordringer pr. del, aldrig flere (ejerens valg), i scener hvor kroppen er med i historien. Fx bækken med stammen (del 1), tornekrattet (del 1), tågen eller sumpen (del 2), blæsten på bjerget (del 3) og dansen eller lanternerne til festen (del 4). Det er det eksisterende terningvalg med samme handling, der bliver til en bevægelse, så teksten i "lykkedes"- og "mislykkedes"-scenerne stadig passer.
 - **Julestjernen:** 1-2 bevægelsesudfordringer på samme måde, fx kælkebakken eller snemanden.
 
 ### Gode bevægelser
@@ -86,7 +86,7 @@ En liste i reglerne for historierne, som historierne vælger fra eller laver var
 
 ### Regler, opskrift og tjek
 
-- `docs/historie-regler.md` får et afsnit om bevægelsesudfordringer: sikkerhedsreglerne fra "Det må ikke ske", listen over gode bevægelser, at "Vi vaklede"-scenen skal være venlig og sjov, og at en månedshistorie har 1-3 bevægelsesudfordringer.
+- `docs/historie-regler.md` får et afsnit om bevægelsesudfordringer: sikkerhedsreglerne fra "Det må ikke ske", listen over gode bevægelser, at "Vi vaklede"-scenen skal være venlig og sjov, og at en månedshistorie har 1-2 bevægelsesudfordringer, aldrig flere.
 - Skill'en `ny-historie` skal bede om dem.
 - Historietjekket fanger:
   - et bevægelsesvalg uden instruktion
@@ -107,7 +107,7 @@ En liste i reglerne for historierne, som historierne vælger fra eller laver var
 ## Det, bygherren selv afgør
 
 - Det præcise navn på felterne og hvordan boksen ser ud, så længe den ligner terningboksen og bruger appens farver.
-- Hvilke konkrete terningvalg i de fire dele der bliver til bevægelser, inden for 2-3 pr. del og reglerne ovenfor.
+- Hvilke konkrete terningvalg i de fire dele der bliver til bevægelser, inden for 1-2 pr. del og reglerne ovenfor.
 - Ordlyden af instruktionerne.
 - Hvordan bevægelsesvalg vises i forhåndsvisningen (med eksempelholdet, slået til).
 
