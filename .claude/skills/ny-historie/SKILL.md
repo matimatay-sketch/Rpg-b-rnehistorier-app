@@ -29,7 +29,7 @@ Er der ingen, så vælg selv et emne, der passer til årstiden og måneden (sne 
 - Læs `docs/historie-regler.md` hele vejen igennem.
 - Læs `stories/lantern/historie.js` (hub med stier, terningkast, Fejl-scener, gnister, magi, mester, billeder) og den nyeste månedshistorie i `stories/` (fx `stories/2026-12-julestjernen/historie.js`).
 - Læs toppen af `art/dele.js` og listen over `steder`, `figurer` og `ting`. Se dem tegnet ved at åbne `tools/vis-dele.html` i en browser.
-- `k` er kittet fra `js/kit.js` (`k.state`, `k.joinNames`, `k.gnistNames`, `k.lockTxt`, `k.partyStat`, `k.crew`, `k.friendLines`, `k.stats`, `k.esc`).
+- `k` er kittet fra `js/kit.js` (`k.state`, `k.joinNames`, `k.gnistNames`, `k.lockTxt`, `k.partyStat`, `k.crew`, `k.stats`, `k.esc`). Brug ikke `k.friendLines()` i en månedshistorie: linjerne er skrevet til sagaen (fx kommer Nusse genert frem bag et træ), og de passer ikke, hvis figuren allerede er med i historien. Skriv historiens egne venne-linjer ud fra `k.state.flags`, og udelad de venner, der allerede er med.
 
 ### 3. Skriv historien
 

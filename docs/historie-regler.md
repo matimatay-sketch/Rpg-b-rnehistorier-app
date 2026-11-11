@@ -67,7 +67,8 @@ Se `stories/lantern/historie.js` for et helt eksempel.
 - Historiens id er mappens navn, fx `2026-12-julestjernen`, så det aldrig støder sammen med en anden historie.
 - **Scene-id'er skal være unikke på tværs af alle historier.** Giv alle scener et kort præfiks for historien, fx `snStart`, `snHub`, `snBakkeOk`.
 - En gennemført månedshistorie tæller som et eventyr, så heltene stiger i level.
-- Den må læse vennerne (`k.state.flags.nusseVen`, `k.crew()`, `k.friendLines()`), men må **aldrig sætte** et af venne-flagene `nusseVen`, `nusseHonning`, `mollLoefte`, `tutVen`, `maaneVen` eller `vindVen`. Brug egne flag-navne til det, der kun gælder i eventyret.
+- Den må læse vennerne (`k.state.flags.nusseVen`, `k.crew()`), men må **aldrig sætte** et af venne-flagene `nusseVen`, `nusseHonning`, `mollLoefte`, `tutVen`, `maaneVen` eller `vindVen`. Brug egne flag-navne til det, der kun gælder i eventyret.
+- Skriv historiens egne linjer om vennerne ud fra `k.state.flags`. Brug ikke `k.friendLines()`: de linjer er skrevet til sagaen, hvor vennerne dukker op for første gang efter Del 1, og de bliver forkerte, hvis en ven allerede er med i historien. Tjek altid, hvem der allerede er til stede, før en ven "kommer".
 - Ingen "næste del". Slutskærmen viser selv et link tilbage til listen.
 
 ## Billeder

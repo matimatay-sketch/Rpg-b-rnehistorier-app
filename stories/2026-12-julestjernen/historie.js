@@ -18,6 +18,17 @@ LK.addStory(function (k) {
     Nysgerrighed: function (n) { return n + ' kigger op i træets top og opdager en lille hule mellem grenene. Derinde ligger en gammel julestjerne, som ingen har set i hundrede år.'; }
   };
 
+  // Venner fra sagaen, der kommer til julestjernen. Historiens egne linjer i stedet for k.friendLines(), som er skrevet
+  // til sagaen: Nusse er med hele vejen her og nævnes derfor ikke, og Moll og Tut kan allerede have været mødt i dag.
+  function venneLinjer() {
+    var f = k.state.flags, o = [];
+    if (f.mollLoefte) o.push('Moll kommer med en stak julekort under armen. &laquo;I lovede mig en historie engang,&raquo; siger hun. &laquo;Den her er god nok.&raquo;');
+    if (f.tutVen) o.push('Tut kommer glidende på sine skøjter hen over sneen og stopper lige foran jer. &laquo;Se! Nu kan jeg bremse!&raquo;');
+    if (f.vindVen) o.push('Vinden puster så blidt, at sneen hvirvler rundt om træet som glitter.');
+    if (f.maaneVen) o.push('Månen kigger ned mellem skyerne og lægger sølvlys over hele den hvide skov.');
+    return o;
+  }
+
   var scenes = {
     snStart: {
       title: 'Den første sne',
@@ -212,13 +223,13 @@ LK.addStory(function (k) {
     snEndVenner: {
       title: 'En stjerne af venner', end: true, all: true,
       text: function () {
-        var fl = k.friendLines();
+        var fl = venneLinjer();
         var a = 'I råber ud i den hvide skov: &laquo;Glædelig jul! Vil nogen hjælpe os med stjernen?&raquo; Først er alt stille. Så knaser det i sneen.';
         var slut = 'Alle dyrene har en lille lanterne med. De klatrer op i træet og hænger dem i toppen, så de danner en stor, lysende stjerne. &laquo;Det er den første julestjerne, der er lavet af venner,&raquo; hvisker Nusse.';
         if (!fl.length) return [a + ' Ræve, mus, pindsvin og to fnisende ræveunger kommer frem mellem træerne.', slut];
         return [a, fl.join(' '), 'Ræve, mus og pindsvin kommer også. ' + slut];
       },
-      ask: function () { return k.friendCount() ? 'Hvem var I gladest for at se i aften?' : 'Hvornår har I sidst fået hjælp af en ven? Hvordan føltes det?'; }
+      ask: function () { return venneLinjer().length ? 'Hvem var I gladest for at se i aften?' : 'Hvornår har I sidst fået hjælp af en ven? Hvordan føltes det?'; }
     },
     snEndSang: {
       title: 'Julesangen', end: true, all: true,
