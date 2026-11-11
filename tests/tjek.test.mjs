@@ -22,3 +22,8 @@ test('mangler billede', () => {
 });
 test('billede med ukendt del', () => assert.match(billedBeskeder('forkert-billede.js').map(f => f.besked).join('\n'), /Billedfejl: Ukendt sted: mars/));
 test('uden krav om billeder er et manglende billede i orden', () => assert.deepEqual(tjek(['tests/fixtures/mangler-billede.js']), []));
+
+test('månedshistorierne i e2e-kataloget har billeder og er i orden', () => {
+  const filer = ['tests/fixtures/stories-maaned/efteraar/historie.js', 'tests/fixtures/stories-maaned/juletraeet/historie.js'];
+  assert.deepEqual(tjek(filer, { kraevBilleder: true }), []);
+});
