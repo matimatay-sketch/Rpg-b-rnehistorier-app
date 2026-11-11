@@ -3,6 +3,9 @@
 // Hver del er en funktion (c, ...) => SVG-streng. c.u('navn') giver url(#præfiks-navn) til billedets egne gradienter,
 // så flere billeder på samme side aldrig deler id'er; c.ny('navn') giver et nyt, unikt id til en del, der har sin egen gradient.
 // Ting kaldes som (c, taendt, spec), så en ting kan læse sine egne valg (fx gnistens farve).
+// Figurer kaldes som (c, humoer, spec), så en figur kan læse sine egne valg (fx snemandens næse).
+// Vinter: tingene snefald (placér i x 200, y 125 for sne over hele billedet), snedrive (en bunke sne på jorden)
+// og stjerne (en julestjerne), og figuren snemand med naese: 'gulerod' (standard), 'stjerne' eller 'kogle'.
 // Figurer tegnes om (0,0) = midt på kroppen; fødderne står ca. 40-46 længere nede (som Uffe på grenen i skitsen).
 // spec.maane: false giver en nattehimmel uden måne (fx når Månen er forsvundet).
 // Bevægelse sker via CSS-klasserne lk-blafr (lanterneglød), lk-blink (øjne) og lk-glimt (stjerner, gnister); se LK.art.css.
@@ -264,6 +267,26 @@ self.LK = self.LK || {};
       ansigt(h, { dx: 6, y: -11, r: 2.6, mund: { y: 2, w: 3.5 }, kinder: -5, bryn: '#5A5258' }) +
       `<line x1="22" y1="12" x2="30" y2="26" stroke="#6B4A2F" stroke-width="3.5" stroke-linecap="round"/>` +
       `<circle cx="18" cy="4" r="9" fill="#CDE8F4" opacity=".6" stroke="#6B4A2F" stroke-width="2.5"/><circle cx="12" cy="16" r="3.5" fill="#A9A2A8"/>`,
+    // Snemand med kulsmil, halstørklæde og pindearme. d.naese: 'gulerod' (standard), 'stjerne' eller 'kogle'.
+    snemand: (c, h, d = {}) => {
+      const naese = d.naese == null ? 'gulerod' : d.naese;
+      const naeser = {
+        gulerod: `<path d="M0 -36 L15 -33 L0 -30Z" fill="#E8822E"/>`,
+        stjerne: glod(c, 6, -33, 12, 'guld', 'lk-glimt') +
+          `<path d="M6 -39 Q7 -34 13 -33 Q7 -32 6 -27 Q5 -32 -1 -33 Q5 -34 6 -39Z" fill="#FFE08A" stroke="#E3A21A" stroke-width=".8"/>`,
+        kogle: `<path d="M-1 -36.5 Q10 -38 17 -33 Q10 -28 -1 -29.5Z" fill="#7A4E2C"/><path d="M3 -36 l2 3 l2 -3 l2 3 l2 -3 M3 -30 l2 -3 l2 3 l2 -3" stroke="#4A2E18" stroke-width="1" fill="none"/>`,
+      };
+      if (!Object.prototype.hasOwnProperty.call(naeser, naese)) throw new Error(`Ukendt næse på snemand: ${naese}`);
+      return `<g stroke="#6B4A2F" stroke-width="3" stroke-linecap="round" fill="none"><path d="M-16 -10 L-40 -24 M-32 -19 L-38 -30"/><path d="M16 -10 L40 -26 M33 -22 L42 -18"/></g>` +
+        `<ellipse cx="0" cy="44" rx="26" ry="4" fill="#000" opacity=".12"/>` +
+        `<circle cx="0" cy="22" r="24" fill="#F4F6FA"/><path d="M-22 30 Q0 48 22 30 Q14 44 0 46 Q-14 44 -22 30Z" fill="#D6E0EC"/>` +
+        `<circle cx="0" cy="-8" r="17" fill="#F4F6FA"/><circle cx="0" cy="-34" r="14" fill="#F4F6FA"/>` +
+        `<g fill="${MORK}"><circle cx="0" cy="-6" r="2.4"/><circle cx="0" cy="3" r="2.4"/><circle cx="0" cy="14" r="2.6"/></g>` +
+        `<path d="M-14 -23 Q0 -17 14 -23 L14 -18 Q0 -12 -14 -18Z" fill="#C8352E"/><path d="M8 -19 L13 -4 L7 -4 L4 -18Z" fill="#C8352E"/>` +
+        `<g stroke="#F4F1EA" stroke-width="1.5"><path d="M-6 -20 v4 M2 -19 v4 M9 -6 h4"/></g>` +
+        `<rect x="-11" y="-53" width="22" height="4" rx="2" fill="#2A2A38"/><rect x="-8" y="-67" width="16" height="15" rx="2" fill="#2A2A38"/><rect x="-8" y="-57" width="16" height="3" fill="#C8352E"/>` +
+        ansigt(h, { dx: 5.5, y: -38, r: 2.6, mund: { y: -27, w: 5 }, kinder: -31, bryn: '#4A4E5E' }) + naeser[naese];
+    },
   };
 
   // ---------- Ting ----------
@@ -310,6 +333,32 @@ self.LK = self.LK || {};
         .map(([x, y, v, f]) => `<g transform="translate(${x} ${y}) rotate(${v})"><path d="M-8 0 Q0 -6 8 0 Q0 6 -8 0Z" fill="${f}"/><line x1="-8" y1="0" x2="6" y2="0" stroke="#3B2A1A" stroke-width=".6" opacity=".5"/></g>`).join(''),
   };
 
+  // ---------- Vinter ----------
+
+  // Et snefnug: en lille prik eller en sekstakket stjerne.
+  const fnug = (x, y, r, i) => r < 2.5
+    ? `<circle class="lk-glimt" style="animation-delay:-${(i * 0.45).toFixed(2)}s" cx="${x}" cy="${y}" r="${r}"/>`
+    : `<g class="lk-glimt" style="animation-delay:-${(i * 0.45).toFixed(2)}s" transform="translate(${x} ${y})"><path d="M0 -${r} V${r} M-${(r * 0.87).toFixed(2)} -${r / 2} L${(r * 0.87).toFixed(2)} ${r / 2} M-${(r * 0.87).toFixed(2)} ${r / 2} L${(r * 0.87).toFixed(2)} -${r / 2}" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/></g>`;
+  const FNUG = [[-180, -100, 2], [-140, -60, 3.5], [-95, -110, 1.6], [-60, -40, 2], [-20, -90, 4], [20, -50, 1.8], [60, -105, 2.2], [95, -30, 3.5], [140, -80, 1.7], [180, -45, 2.4],
+    [-170, -10, 1.8], [-115, 20, 2.4], [-40, 10, 3], [10, 40, 1.6], [70, 15, 2], [120, 45, 3.2], [175, 10, 1.6], [-150, 60, 3], [-80, 75, 1.8], [45, 85, 2.4], [160, 85, 1.8], [-10, -120, 1.6]];
+
+  ting.snefald = () => `<g fill="#FFFFFF" opacity=".9">${FNUG.map(([x, y, r], i) => fnug(x, y, r, i)).join('')}</g>`;
+  // En bunke sne, ca. 140 bred; (0,0) er midt på bunden.
+  ting.snedrive = () =>
+    `<path d="M-72 4 Q-60 -18 -30 -20 Q-14 -32 8 -26 Q34 -30 50 -14 Q66 -10 72 4Z" fill="#E6EEF7"/>` +
+    `<path d="M-72 4 Q-40 -6 -6 -2 Q30 -8 72 4Z" fill="#C9D6E8"/>` +
+    `<path d="M-40 -16 Q-24 -24 -8 -20" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/>`;
+  // En femtakket julestjerne, ca. 50 bred. Tændt gløder den.
+  ting.stjerne = (c, t) => {
+    const takker = Array.from({ length: 10 }, (_, i) => {
+      const v = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 10 : 24;
+      return `${(Math.cos(v) * r).toFixed(1)} ${(Math.sin(v) * r).toFixed(1)}`;
+    });
+    return (t ? glod(c, 0, 0, 40, 'guld', 'lk-glimt') : '') +
+      `<path d="M${takker.join(' L')}Z" fill="${t ? '#FFD45A' : '#B8B29A'}" stroke="${t ? '#E3A21A' : '#8A8F9A'}" stroke-width="2" stroke-linejoin="round"/>` +
+      `<path d="M0 -14 L3 -4 L0 6 L-3 -4Z" fill="#FFFFFF" opacity="${t ? 0.7 : 0.3}"/>`;
+  };
+
   // ---------- Samling ----------
 
   let taeller = 0;
@@ -344,7 +393,7 @@ self.LK = self.LK || {};
       `<radialGradient id="${pre}kold"><stop offset="0" stop-color="#DFF6F0" stop-opacity=".7"/><stop offset="1" stop-color="#DFF6F0" stop-opacity="0"/></radialGradient></defs>` +
       `<rect width="400" height="250" fill="${c.u('himmel')}"/>` + himle[spec.himmel](c, p, !harMaane) + sted(c, p) +
       tings.map(([t, tegn, sted]) => placer(sted, tegn(c, !!t.taendt, t))).join('') +
-      figs.map(([f, tegn, humoer, sted]) => placer(sted, tegn(c, humoer))).join('') + '</svg>';
+      figs.map(([f, tegn, humoer, sted]) => placer(sted, tegn(c, humoer, f))).join('') + '</svg>';
   }
 
   const css = '.lk-blink{transform-box:fill-box;transform-origin:center;animation:lk-blink 5s infinite}' +

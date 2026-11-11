@@ -45,8 +45,8 @@ test('alle url(#...) peger på et id i samme billede', () => {
 
 test('startsættet findes', () => {
   assert.deepEqual(Object.keys(LK.art.steder).sort(), ['baek', 'bjerg', 'festplads', 'hule', 'lanternetrae', 'lysning', 'maanesoe', 'skovsti', 'slukkettrae', 'sump', 'taage', 'tornekrat', 'vindue'].sort());
-  assert.deepEqual(Object.keys(LK.art.figurer).sort(), ['bjorn', 'krage', 'lysorm', 'maanen', 'moll', 'mus', 'nusse', 'pind', 'raev', 'tut', 'uffe', 'vinden'].sort());
-  assert.deepEqual(Object.keys(LK.art.ting).sort(), ['blade', 'bog', 'brev', 'gnist', 'gren', 'lanterne', 'svamp'].sort());
+  assert.deepEqual(Object.keys(LK.art.figurer).sort(), ['bjorn', 'krage', 'lysorm', 'maanen', 'moll', 'mus', 'nusse', 'pind', 'raev', 'snemand', 'tut', 'uffe', 'vinden'].sort());
+  assert.deepEqual(Object.keys(LK.art.ting).sort(), ['blade', 'bog', 'brev', 'gnist', 'gren', 'lanterne', 'snedrive', 'snefald', 'stjerne', 'svamp'].sort());
 });
 
 test('alle steder, figurer og ting kan tegnes', () => {
@@ -152,4 +152,24 @@ test('vinduet viser himlen gennem ruden med en karm forrest', () => {
     assert.match(s, /fill-rule="evenodd"/, himmel);
     assert.doesNotMatch(s, /undefined|NaN/, himmel);
   }
+});
+
+test('vinterdelene: snefald, snedrive og en stjerne, der gløder, når den er tændt', () => {
+  const tegn = (ting) => LK.art.scene({ sted: 'skovsti', himmel: 'nat', alt: 'x', ting });
+  const sne = tegn([{ navn: 'snefald', x: 200, y: 125 }]);
+  assert.match(sne, /translate\(200 125\)/);
+  assert.ok((sne.match(/lk-glimt/g) || []).length > 20, 'snefnuggene glimter');
+  assert.match(tegn([{ navn: 'snedrive', x: 100, y: 230 }]), /#E6EEF7/);
+  const glod = s => /url\(#lk\d+-glod\)/.test(s);
+  assert.ok(glod(tegn([{ navn: 'stjerne', x: 200, y: 20, taendt: true }])));
+  assert.ok(!glod(tegn([{ navn: 'stjerne', x: 200, y: 20 }])));
+});
+
+test('snemandens næse kan være en gulerod, en stjerne eller en kogle', () => {
+  const tegn = naese => LK.art.scene({ sted: 'lysning', himmel: 'nat', alt: 'x', figurer: [{ navn: 'snemand', x: 200, y: 160, naese }] });
+  assert.match(tegn(undefined), /#E8822E/);
+  assert.match(tegn('gulerod'), /#E8822E/);
+  assert.match(tegn('stjerne'), /#FFE08A/); assert.doesNotMatch(tegn('stjerne'), /#E8822E/);
+  assert.match(tegn('kogle'), /#7A4E2C/); assert.doesNotMatch(tegn('kogle'), /#E8822E/);
+  assert.throws(() => tegn('agurk'), /Ukendt næse på snemand: agurk/);
 });
