@@ -22,6 +22,8 @@ Lanterneskoven er et lille, børnevenligt rollespil i en historiebog: lidt som D
 - 🎲 Terningkast med synlig chance (Nemt, Middel, Svært)
 - ⭐ **Mester-valg:** når et træk når 5, åbner der sig særlige valg i historien
 - 📈 **Levels** (hvert andet eventyr), og på level 3 kan helten vælge en ekstra magi
+- 🖼️ **Et billede til hver scene** i billedbogsstil, og lanternerne står lige under billedet
+- 🎄 **Ny historie hver måned:** den 1. i måneden dukker månedens historie op på forsiden
 - 🧙 Heltebygger med mange hatte, frisurer, ansigter og tilbehør
 - 🔊 Oplæsning med fremhævning af ordene, og en indstilling til stor skrift
 - 💾 Heltene og skovens venner gemmes i browseren, ingen konto nødvendig
@@ -38,6 +40,16 @@ Lanterneskoven er et lille, børnevenligt rollespil i en historiebog: lidt som D
 | 2 | **Månen der gemte sig** | Månen er væk fra himlen. Jeres gnister og venner kan hjælpe. |
 | 3 | **Vinden der var alene** | Et brev fra Vinden: hvorfor slukkede den lanternerne? |
 | 4 | **Lanternefesten** | Skoven holder fest, så Vinden kan sige undskyld. |
+
+### Månedens historie
+
+Ud over de fire dele kommer der en ny, selvstændig historie den 1. i hver måned. Den kan spilles uden at kende resten. Den første er **Julestjernen** (december 2026).
+
+Månedens historie laves af en planlagt Claude-session den 15. i måneden. Den åbner en pull request med titlen "Månedens historie: …", og så er det ejeren, der godkender den ved at lægge den ind (merge). Først da kommer den med i spillet.
+
+Har du en idé til en historie, så opret et issue med mærket `historie-idé`.
+
+For at se en historie, før den er udkommet, åbn `index.html?preview=<id>` (fx `?preview=2026-12-julestjernen`). Så bruges et fast prøvehold, og der gemmes ikke noget.
 
 ---
 
@@ -70,7 +82,7 @@ Appen virker ikke offline, hvis man bare åbner `index.html` direkte fra disken.
 ## Teknik
 
 - Ren HTML, CSS og JavaScript. Ingen frameworks, ingen afhængigheder.
-- Heltene tegnes som SVG direkte i koden, så der ikke er nogen billedfiler.
+- Heltene og scenebillederne tegnes som SVG direkte i koden, så der ikke er nogen billedfiler. Billederne samles af dele i `art/dele.js`.
 - Oplæsning med Web Speech API (`speechSynthesis`).
 - Gemmer i `localStorage` (nøglerne `lk-heroes`, `lk-prefs` og `lk-welcomed`). Under `lk-heroes` ligger heltene, hvem der er med i aften, og hvad skovens venner husker. Kan de gemte data ikke læses, starter spillet bare uden dem.
 - Skrifttyper (Grandstander og Literata) hentes fra Google Fonts. Uden net bruges systemets skrifttyper.
@@ -79,18 +91,37 @@ Appen virker ikke offline, hvis man bare åbner `index.html` direkte fra disken.
 
 ### Sådan er koden bygget op
 
-Historierne ligger i ét objekt, `S`, hvor hver scene har en titel, en tekst, et spørgsmål til børnene (`ask`) og enten faste valg eller et `dyn`-valg, der bygges efter, hvad børnene har med (gnister, venner, træk). Nye scener tilføjes som nye nøgler i `S`, og nye dele tilføjes i listen `STORIES`.
+Hver historie ligger i sin egen mappe, `stories/<id>/historie.js`, og står i listen `stories/katalog.js`. Hver scene har en titel, en tekst, et billede, et spørgsmål til børnene (`ask`) og enten faste valg eller et `dyn`-valg, der bygges efter, hvad børnene har med (gnister, venner, træk).
+
+- `index.html`: selve spillet.
+- `js/data.js`: motorens data (træk, magi, følgesvende m.m.).
+- `js/kit.js`: hjælpere, som historierne bruger.
+- `js/katalog.js`: kataloget og datoerne, så en månedshistorie først vises den 1. i måneden (`type: 'maaned'` og `udgives`).
+- `art/dele.js`: delene, billederne bygges af.
+- `docs/historie-regler.md`: reglerne for en god historie.
+
+**Ny historie:** brug skill'en `ny-historie` (`.claude/skills/ny-historie/SKILL.md`). Den følger `docs/historie-regler.md`, laver mappen og tilføjer historien i kataloget.
+
+**Tjek, før noget lægges ind:**
+
+```bash
+node tools/tjek-historier.mjs
+node --test 'tests/*.test.mjs'
+node --test 'tests/e2e/*.test.cjs'
+```
+
+GitHub Actions kører enhedstestene og historietjekket på hver pull request. Husk at hæve `VERSION` i `sw.js`, når filer ændres.
 
 ---
 
 ## Idéer fremover
 
-- Flere dele og nye fortællinger, fx Halloween-specialen **Græskarnatten**, hvor Lille Spøg har mistet sit bøh
+- Flere nye fortællinger, fx Halloween-specialen **Græskarnatten**, hvor Lille Spøg har mistet sit bøh
 - En Verdensbyggerdel, hvor børnene selv designer dyr og væsner (fjer giver en fugl, skæl giver en gekko)
 - Tegn og fortæl, bevægelsesfortællinger og opgaver til ture og madlavning
 - En ugentlig familiemission
 
-Har du en idé eller en fejl? Opret et issue.
+Har du en idé til en historie? Opret et issue med mærket `historie-idé`. Fejl kan også meldes som issue.
 
 ---
 
