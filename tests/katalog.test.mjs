@@ -20,10 +20,10 @@ test('stories/katalog.js registrerer de fire dele i rækkefølge og derefter må
   const poster = [...lk.katalogPoster];
   assert.deepEqual(poster.slice(0, 4).map(e => e.id + ':' + e.type), ['lantern:saga', 'maane:saga', 'vind:saga', 'fest:saga']);
   poster.forEach(e => assert.ok(existsSync(new URL('../' + e.fil, import.meta.url)), e.fil));
-  // Månedshistorier: id = mappenavnet <ÅÅÅÅ-MM>-<navn>, og de uden serie udkommer den 1. i samme måned.
+  // Månedshistorier: id = mappenavnet <ÅÅÅÅ-MM>-<navn> (et kapitel: <ÅÅÅÅ-MM>-<navn>-<n>), og de uden serie udkommer den 1. i samme måned.
   poster.slice(4).forEach(e => {
     assert.equal(e.type, 'maaned', e.id);
-    assert.match(e.id, /^\d{4}-\d{2}-[a-z0-9]+$/, e.id);
+    assert.match(e.id, e.serie ? new RegExp('^\\d{4}-\\d{2}-[a-z0-9]+-' + e.kapitel + '$') : /^\d{4}-\d{2}-[a-z0-9]+$/, e.id);
     assert.equal(e.fil, 'stories/' + e.id + '/historie.js');
     if (!e.serie) assert.equal(e.udgives, e.id.slice(0, 7) + '-01', e.id);
   });
