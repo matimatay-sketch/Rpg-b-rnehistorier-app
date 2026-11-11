@@ -10,12 +10,12 @@ LK.addStory(function (k) {
   var STUMP = function (def, ph) { return { c: 'gyldne', def: def, col: '#F2C94C', ph: ph }; };
 
   var MESTER_TXT = {
-    Mod: function (n) { return n + ' klatrer helt op i toppen af det sneklædte træ uden at kigge ned. Deroppe holder ' + n + ' hænderne op mod himlen, og sneen på grenene begynder at gløde som en stjerne.'; },
+    Mod: function (n) { return n + ' træder frem foran hele skoven, selvom alle kigger, og løfter en lanterne højt op mod den mørke himmel. &laquo;Vi giver ikke op!&raquo; siger ' + n + ' med klar stemme. Uffe tager lanternen i næbbet og flyver den det sidste stykke op i toppen, og sneen på grenene begynder at gløde som en stjerne.'; },
     List: function (n) { return n + ' binder lanternerne sammen med Nusses lange halstørklæde, så de danner en stor stjerne, og hejser den op i toppen med en snor.'; },
     Venlighed: function (n) { return n + ' lægger en vante om træets stamme og hvisker: &laquo;Du må gerne lyse, selvom stjernen er væk.&raquo; Træet bliver så glad, at det lyser fra roden og helt op.'; },
     Fantasi: function (n) { return n + ' samler en håndfuld snefnug og puster på dem. De bliver til en stjerne af lysende sne, der svæver op og sætter sig i toppen.'; },
     Humor: function (n) { return n + ' laver en så sjov julenisse-dans, at hele skoven griner. Latteren ryster sneen af grenene, og under sneen sidder alle lanternerne og lyser.'; },
-    Nysgerrighed: function (n) { return n + ' kigger op i træets top og opdager en lille hule mellem grenene. Derinde ligger en gammel julestjerne, som ingen har set i hundrede år.'; }
+    Nysgerrighed: function (n) { return n + ' kigger op i træets top og opdager en lille hule mellem grenene. &laquo;Uffe, se derinde!&raquo; Uffe flyver op og finder en gammel julestjerne, som ingen har set i hundrede år.'; }
   };
 
   // Venner fra sagaen, der kommer til julestjernen. Historiens egne linjer i stedet for k.friendLines(), som er skrevet
@@ -100,7 +100,8 @@ LK.addStory(function (k) {
       title: 'Den frosne sø', path: 'soe',
       text: function () {
         var t = ['Månesøen er frosset til, og på isen kører tudsen Tut på skøjter. Rundt og rundt og rundt. På toppen af hans hat sidder en stjernestump og lyser.',
-          '&laquo;Hjææælp!&raquo; synger Tut, mens han suser forbi. &laquo;Jeg har lært at skøjte, men jeg har glemt at lære at stoppe!&raquo;'];
+          '&laquo;Hjææælp!&raquo; synger Tut, mens han suser forbi. &laquo;Jeg har lært at skøjte, men jeg har glemt at lære at stoppe!&raquo;',
+          'Nusse holder jer i ærmet. &laquo;Vi bliver her inde på bredden,&raquo; siger han. &laquo;Man kan ikke se, hvor tyk isen er.&raquo;'];
         if (k.state.flags.tutVen) t.push('Næste gang Tut kommer forbi, vinker han. &laquo;Hej, mine venner! Godt at se jer! Og farvel igen!&raquo;');
         return t;
       },
@@ -153,7 +154,7 @@ LK.addStory(function (k) {
     snHuleOk: {
       title: 'Hulestumpen', gain: true, gnist: STUMP('Hulestumpen', 'Glitter'),
       text: ['&laquo;Et snefnug! Selvfølgelig!&raquo; Moll klapper i sine små hænder og giver jer stjernestumpen.',
-        '&laquo;Så skal jeg bare finde en anden lampe,&raquo; siger hun og tænder et lille stearinlys. &laquo;Kom forbi i aften. Jeg har skrevet et julekort til jer.&raquo;'],
+        '&laquo;Så skal jeg bare finde en anden lampe,&raquo; siger hun og finder sin lille lommelygte frem. &laquo;Kom forbi i aften. Jeg har skrevet et julekort til jer.&raquo;'],
       ask: 'Hvem ville I sende et julekort til, og hvad skulle der stå?',
       next: 'snHub'
     },
@@ -225,7 +226,7 @@ LK.addStory(function (k) {
       text: function () {
         var fl = venneLinjer();
         var a = 'I råber ud i den hvide skov: &laquo;Glædelig jul! Vil nogen hjælpe os med stjernen?&raquo; Først er alt stille. Så knaser det i sneen.';
-        var slut = 'Alle dyrene har en lille lanterne med. De klatrer op i træet og hænger dem i toppen, så de danner en stor, lysende stjerne. &laquo;Det er den første julestjerne, der er lavet af venner,&raquo; hvisker Nusse.';
+        var slut = 'Alle dyrene har en lille lanterne med. De rækker dem op til Uffe, som flyver dem op i toppen én efter én, så de danner en stor, lysende stjerne. &laquo;Det er den første julestjerne, der er lavet af venner,&raquo; hvisker Nusse.';
         if (!fl.length) return [a + ' Ræve, mus, pindsvin og to fnisende ræveunger kommer frem mellem træerne.', slut];
         return [a, fl.join(' '), 'Ræve, mus og pindsvin kommer også. ' + slut];
       },
@@ -261,7 +262,7 @@ LK.addStory(function (k) {
     },
     snSoe: {
       gnist: { l: 'Skab en gnist, der viser Tut, hvor han skal bremse', to: 'snSoeOk' },
-      dyr: { l: 'Bed en flok ænder om at vralte ud og fange Tut', to: 'snSoeOk' },
+      dyr: { l: 'Bed en flok ænder om at flyve hen og vise Tut vejen til bredden', to: 'snSoeOk' },
       syn: { l: 'Se, hvor isen er ru, så Tut kan stoppe der', to: 'snSoeOk' },
       latter: { l: 'Strø latterstøv, så Tut griner og sætter sig ned', to: 'snSoeOk' }
     },
@@ -295,7 +296,7 @@ LK.addStory(function (k) {
     ],
     snSoe: [
       { stat: 'Venlighed', l: 'Tal så roligt til Tut, at han selv finder ud af at stoppe', to: 'snSoeOk', n: function (n) { return n + ' taler så roligt til Tut, at han holder op med at være forskrækket og selv finder ud af at bremse.'; } },
-      { stat: 'Fantasi', l: 'Forestil jer, at isen er et dansegulv, og led Tut i en dans', to: 'snSoeOk', n: function (n) { return n + ' råber trinene til en dans, og Tut danser sig langsomt og blødt hen til bredden.'; } }
+      { stat: 'Fantasi', l: 'Bliv på bredden, og råb dansetrin til Tut, som om isen var et dansegulv', to: 'snSoeOk', n: function (n) { return n + ' bliver stående inde på bredden og råber trinene til en dans ud til Tut. Tut danser sig langsomt og blødt hen til jer.'; } }
     ],
     snHule: [
       { stat: 'Nysgerrighed', l: 'Kig på Molls julekort, og find svaret med det samme', to: 'snHuleKig', n: function (n) { return n + ' kigger på Molls julekort. Der er tegnet snefnug på dem alle sammen. Så er svaret let.'; } }
