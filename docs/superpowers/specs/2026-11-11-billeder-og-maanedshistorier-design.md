@@ -1,7 +1,7 @@
 # Billeder til scenerne og en ny historie hver måned
 
 **Dato:** 2026-11-11
-**Status:** Udkast til godkendelse
+**Status:** Klar til godkendelse
 **Projekt:** 1 af 3 (2 er konti og abonnement, 3 er universet og den ugentlige familiemission)
 
 ## Hvorfor
@@ -108,7 +108,10 @@ Skitserne: https://claude.ai/artifact/QaUcFjbao1gxSZ1BVANxHg (version 1 viser A,
 - **Planlagt opgave:** en planlagt Claude-session kører én gang om måneden, den 15. kl. 10 dansk tid, så ejeren har god tid til at læse og godkende, før måneden skifter. Den laver en ny gren, skriver historien og billederne, kører tjekket, åbner en pull request og lægger linket til forhåndsvisningen i beskrivelsen.
 - **Forhåndsvisning:** pull requesten indeholder et link, hvor historien kan spilles direkte fra pull requestens gren, fx via raw.githack.com, som kan vise filer fra et offentligt GitHub-repo som en hjemmeside. Linket starter direkte i den nye historie.
 - **Rettelser:** vil ejeren have noget ændret, skriver de det som en kommentar på pull requesten. Den planlagte session følger pull requesten og retter.
-- **Godkendelse:** at merge pull requesten til `main` er godkendelsen. Så kommer historien ud til familierne. `VERSION` i `sw.js` hæves i samme pull request, så alle får den nye historie.
+- **Godkendelse:** at merge pull requesten til `main` er godkendelsen. `VERSION` i `sw.js` hæves i samme pull request, så alle får de nye filer.
+- **Udgivelsesdag (ejerens valg):** en godkendt historie bliver synlig for familierne **den 1. i måneden**, uanset hvornår den blev godkendt. Opgaven den 15. laver historien til den kommende måned. Hver historie i listen har en udgivelsesdato, og appen viser den først fra den dato, efter enhedens ur. Godkendes en historie først efter den 1., kommer den ud med det samme. Når appen allerede har hentet en kommende historie, åbner den også på dagen uden net. Forhåndsvisningen ser bort fra datoen.
+- Datoen er kun et spørgsmål om, hvornår historien vises. Repoet er offentligt, så filerne kan findes før tid. At holde indhold bag betaling hører til projekt 2.
+- **Lås på `main` (ejerens valg):** ejeren slår en regel til på GitHub, så intet kan komme ind på `main` uden en pull request, og så `main` ikke kan slettes eller overskrives. Så sikrer GitHub selv, at ingen historie udgives uden godkendelse.
 - **Opskriften** på at lave en historie ligger som en projekt-skill i `.claude/skills/`, så den månedlige session og ejeren (i chatten) kan lave en historie på samme måde.
 
 ### Afklaret efter gennemlæsning (Claudes valg, kan rettes)
