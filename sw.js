@@ -1,6 +1,6 @@
 // Lanterneskoven: gør spillet til en app, der også virker uden internet.
 // Hæv versionen, når index.html, js/, art/ eller en historie ændres, så gamle filer ryddes op.
-const VERSION = 'lk-v6';
+const VERSION = 'lk-v7';
 const SHELL = [
   './',
   './index.html',
@@ -24,7 +24,8 @@ const SHELL = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  // cache: 'reload' henter filerne fra nettet, så addAll ikke tager gamle kopier fra browserens almindelige cache.
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
@@ -50,17 +51,18 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Kataloget over historier: prøv nettet først (så nye historier kommer med), ellers den gemte udgave.
-  if (url.origin === location.origin && url.pathname.endsWith('/stories/katalog.js')) {
+  // Egne scripts (motoren i js/, billeddelene, kataloget og historierne): prøv nettet først, så en ny index.html
+  // aldrig blandes med gamle scripts, og en rettet historie vises med det samme. Uden net: den gemte udgave.
+  if (url.origin === location.origin && url.pathname.endsWith('.js')) {
     e.respondWith(
-      fetch(req)
+      fetch(new Request(req, { cache: 'no-cache' }))
         .then(res => { if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); } return res; })
         .catch(() => caches.match(req, { ignoreSearch: true }))
     );
     return;
   }
 
-  // Skrifttyper og egne filer: gemte først, ellers hent og gem.
+  // Skrifttyper, ikoner og andre egne filer: gemte først, ellers hent og gem.
   const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
   if (url.origin === location.origin || isFont) {
     e.respondWith(
@@ -70,4 +72,18 @@ self.addEventListener('fetch', e => {
       }))
     );
   }
+});
+
+// Siden sender katalogets filer (LK.offlineFiler i index.html), også de kommende månedshistorier, så de kan åbnes
+// uden net, også på deres udgivelsesdag. Kun egne .js-filer, og kun dem, der ikke allerede er gemt.
+self.addEventListener('message', e => {
+  const filer = e.data && Array.isArray(e.data.gem) ? e.data.gem : [];
+  e.waitUntil(caches.open(VERSION).then(c => Promise.all(filer.map(u => {
+    let url;
+    try { url = new URL(u, location.href); } catch (x) { return null; }
+    if (url.origin !== location.origin || !url.pathname.endsWith('.js')) return null;
+    return c.match(url.href).then(hit => hit || fetch(new Request(url.href, { cache: 'no-cache' }))
+      .then(res => { if (res.ok) return c.put(url.href, res); })
+      .catch(() => {}));
+  }))));
 });

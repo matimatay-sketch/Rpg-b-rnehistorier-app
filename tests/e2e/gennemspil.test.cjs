@@ -210,6 +210,8 @@ test('historierne kan spilles uden internet, når appen har været åbnet én ga
   await context.addInitScript(libJson => {
     try { localStorage.setItem('lk-heroes', libJson); localStorage.setItem('lk-welcomed', '1'); } catch (e) {}
   }, JSON.stringify({ heroes: [helt()], play: { h1: true }, world: {} }));
+  // Uret står før den første månedshistorie (december 2026), så listen kun har sagaens dele.
+  await context.clock.setFixedTime(new Date('2026-11-15T12:00:00'));
   const page = await context.newPage();
   await page.goto(server.base + 'index.html');
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));

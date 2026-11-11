@@ -705,7 +705,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
           '<button type="button" class="chip" data-edit="' + h.id + '">' + (h.pts > 0 ? 'Forbedre' : 'Rediger') + '</button></div>';
       }).join('') +
       (lib.heroes.length < 8 ? '<button class="btn" id="newh" type="button">+ Ny helt</button>' : '') +
-      '<label class="lab">Vælg del af historien</label>' +
+      '<label class="lab">Vælg historie</label>' +
       '<div class="comps" role="radiogroup">' + STORIES.map(function (st) {
         return '<label class="comp"><input type="radio" name="story" value="' + st.id + '"' + (setup.story === st.id ? ' checked' : '') + '><span><span class="nm">' + st.title + '</span><br><span class="ds">' + st.blurb + (lib.world['done_' + st.id] ? ' Gennemført.' : '') + '</span></span><span class="pl">' + st.tag + '</span></label>';
       }).join('') + '</div>' +
@@ -1031,10 +1031,12 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     enter(st.start);
   }
 
-  /* ?katalog=<sti> er kun til testene: et andet katalog, fx tests/fixtures/stories-maaned/katalog.js. */
+  /* ?katalog=<sti> er kun til testene: et andet katalog, fx tests/fixtures/stories-maaned/katalog.js.
+     Det virker kun på testmaskinen (localhost, 127.0.0.1 og file:), aldrig fra den rigtige adresse. */
   function hentKatalog(videre) {
     var sti = PARAMS.get('katalog');
-    if (!sti || !/^[A-Za-z0-9_\-\/]+\.js$/.test(sti) || sti.charAt(0) === '/') return videre();
+    var lokalt = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (!sti || !lokalt || !/^[A-Za-z0-9_\-\/]+\.js$/.test(sti) || sti.charAt(0) === '/') return videre();
     var el = document.createElement('script');
     el.src = sti;
     el.onload = el.onerror = function (e) { if (e.type === 'error') console.error('Kunne ikke hente kataloget ' + sti); videre(); };
@@ -1042,21 +1044,35 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   }
 
   /* Læs kataloget, hent de synlige historier som <script>, og start appen, når alle er hentet eller fejlet. */
-  LK.start = function () { hentKatalog(hentHistorier); };
-  function hentHistorier() {
-    var poster = LK.synlige(LK.katalogPoster || [], new Date(), PREVIEW_ID);
-    var mangler = poster.length;
-    poster.forEach(function (p) { ENTRY[p.id] = p; });
+  LK.start = function () { hentKatalog(function () { hentHistorier(vis); }); };
+  function vis() {
+    $('about').onclick = function (e) { e.preventDefault(); renderWelcome(true); };
+    if (PREVIEW_ID) startPreview();
+    else if (welcomed) renderSetup(); else renderWelcome(false);
+  }
+  var hentetDato = null, henter = false; /* datoen, listen sidst blev lavet for, og om den er ved at blive lavet */
+  function hentHistorier(videre) {
+    henter = true;
+    var nu = new Date(), alle = LK.katalogPoster || [];
+    var poster = LK.synlige(alle, nu, PREVIEW_ID);
+    var nye = poster.filter(function (p) { return !ENTRY[p.id]; });
+    var mangler = nye.length;
+    nye.forEach(function (p) { ENTRY[p.id] = p; });
+    /* Alle katalogets filer, også de kommende historier, gemmes af service workeren (se nederst og sw.js),
+       så en kommende historie også åbner på sin udgivelsesdag uden net. De registreres og vises ikke før. */
+    if (!PREVIEW_ID) {
+      LK.offlineFiler = alle.map(function (p) { return new URL(p.fil, location.href).href; });
+      if (LK.gemOffline) LK.gemOffline();
+    }
     function klar() {
       var orden = poster.map(function (p) { return p.id; });
       function plads(id) { var i = orden.indexOf(id); return i < 0 ? orden.length : i; }
       STORIES.sort(function (a, b) { return plads(a.id) - plads(b.id); });
-      $('about').onclick = function (e) { e.preventDefault(); renderWelcome(true); };
-      if (PREVIEW_ID) startPreview();
-      else if (welcomed) renderSetup(); else renderWelcome(false);
+      hentetDato = LK.datoStreng(nu); henter = false;
+      videre();
     }
     if (!mangler) return klar();
-    poster.forEach(function (p) {
+    nye.forEach(function (p) {
       var el = document.createElement('script');
       el.src = p.fil;
       el.async = false;
@@ -1067,6 +1083,12 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       document.head.appendChild(el);
     });
   }
+  /* En installeret app kan ligge åben i flere dage. Vågner den på en ny dato (fx den 1.), hentes de historier,
+     der er udkommet siden. Listen tegnes kun igen, hvis den står fremme; en historie, I er i gang med, afbrydes ikke. */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible' || PREVIEW_ID || henter || !hentetDato || LK.datoStreng(new Date()) === hentetDato) return;
+    hentHistorier(function () { if (!state.scene && setup.view === 'lib' && $('go')) renderLib(); });
+  });
 })();
 LK.start();
 </script>
@@ -1078,8 +1100,16 @@ LK.start();
   window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); evt = e; link.hidden = false; });
   window.addEventListener('appinstalled', function () { evt = null; link.hidden = true; });
   link.onclick = function (e) { e.preventDefault(); if (!evt) return; evt.prompt(); evt.userChoice.finally(function () { evt = null; link.hidden = true; }); };
-  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  /* Forhåndsvisningen (?preview=) bruger ingen service worker, så et rettet udkast altid vises friskt. */
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !new URLSearchParams(location.search).get('preview')) {
+    window.addEventListener('load', function () {
+      var sw = navigator.serviceWorker;
+      /* Bed service workeren gemme katalogets filer (LK.offlineFiler, se hentHistorier). Det virker også ved
+         første besøg, hvor siden endnu ikke går gennem service workeren, og igen, når en ny udgave tager over. */
+      function gem() { sw.ready.then(function (reg) { if (reg.active && LK.offlineFiler) reg.active.postMessage({ gem: LK.offlineFiler }); }); }
+      sw.register('sw.js').then(function () { LK.gemOffline = gem; gem(); }).catch(function () {});
+      sw.addEventListener('controllerchange', gem);
+    });
   }
 })();
 </script>

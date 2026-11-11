@@ -1,4 +1,4 @@
-// Starter `python3 -m http.server` i repo-roden på en ledig port. Til e2e-tests.
+// Starter `python3 -m http.server` i repo-roden (eller i mappen `mappe`) på en ledig port. Til e2e-tests.
 const { spawn } = require('node:child_process');
 const net = require('node:net');
 const path = require('node:path');
@@ -14,9 +14,9 @@ function ledigPort() {
   });
 }
 
-async function startServer() {
+async function startServer(mappe) {
   const port = await ledigPort();
-  const proc = spawn('python3', ['-m', 'http.server', String(port), '--bind', '127.0.0.1'], { cwd: rod, stdio: 'ignore' });
+  const proc = spawn('python3', ['-m', 'http.server', String(port), '--bind', '127.0.0.1'], { cwd: mappe || rod, stdio: 'ignore' });
   const base = 'http://127.0.0.1:' + port + '/';
   for (let i = 0; i < 100; i++) {
     try {
