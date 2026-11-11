@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { tjek } from '../tools/tjek-historier.mjs';
+import { tjek, tjekKatalog } from '../tools/tjek-historier.mjs';
 
 const beskeder = (fil) => tjek(['tests/fixtures/' + fil]).map(f => f.besked).join('\n');
 
@@ -36,3 +36,37 @@ test('en månedshistorie må ikke sætte et venne-flag', () => {
   assert.match(beskeder('maaned-venneflag.js'), /En månedshistorie må ikke sætte venne-flaget "tutVen"/);
   assert.doesNotMatch(beskeder('maaned-venneflag.js'), /eget/);
 });
+
+// Magi- og mester-valgenes funktioner køres kun, når en helt har magien eller 5 i trækket. Tjekket kører dem alle.
+test('magi med en show(), der kaster, er en fejl', () => {
+  const f = tjek(['tests/fixtures/magi-show-kaster.js']);
+  assert.deepEqual(f.map(x => x.scene), ['ms_a']);
+  assert.match(f[0].besked, /^Fejl i koden: .*magien "gnist"/);
+});
+test('mester-valg med en n(), der kaster, er en fejl', () => {
+  const f = tjek(['tests/fixtures/mester-n-kaster.js']);
+  assert.deepEqual(f.map(x => x.scene), ['mn_a']);
+  assert.match(f[0].besked, /^Fejl i koden: .*mester-valget "Mod"/);
+});
+test('magi og mester-valg, der bruger helten som motoren, er i orden', () => assert.deepEqual(tjek(['tests/fixtures/magi-eff.js']), []));
+
+// Hver post i kataloget skal passe med historien i sin fil.
+const katalogFejl = () => tjekKatalog('tests/fixtures/katalog-tjek/katalog.js');
+const forPost = (id) => katalogFejl().filter(f => f.historie === id).map(f => f.besked).join('\n');
+test('et katalog, hvor alt passer, giver ingen fejl', () => assert.deepEqual(tjekKatalog('tests/fixtures/katalog-tjek/god-katalog.js'), []));
+test('kataloget: historien har et andet id end posten', () => {
+  assert.match(forPost('rigtig'), /Historien i filen har id "forkert", men kataloget kalder den "rigtig"/);
+});
+test('kataloget: historien har en anden type end posten', () => {
+  assert.equal(forPost('ftype'), 'Historien i filen har type "saga", men kataloget siger "maaned"');
+});
+test('kataloget: historien har en anden udgivelsesdato end posten', () => {
+  assert.equal(forPost('fudg'), 'Historien i filen har udgives "2027-03-15", men kataloget siger "2027-03-01"');
+});
+test('kataloget: filen registrerer to historier', () => assert.match(forPost('toa'), /registrerer 2 historier/));
+test('kataloget: filen registrerer ingen historie', () => assert.match(forPost('ingen'), /registrerer ingen historie/));
+test('kataloget: de gode poster giver ingen fejl', () => {
+  assert.equal(forPost('gsaga'), '');
+  assert.equal(forPost('gmaaned'), '');
+});
+test('det rigtige katalog passer med sine filer', () => assert.deepEqual(tjekKatalog('stories/katalog.js', { kraevBilleder: true }), []));
