@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600;800&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <style>
-/* Layout: one reading column like an open picture book; banner of lantern forest on top, story card, then big choice buttons. */
+/* Layout: one reading column like an open picture book; banner of the forest on top, story card with the scene's picture, then big choice buttons. */
 :root {
   --bg: #EDF2EE;
   --surface: #FFFFFF;
@@ -60,10 +60,6 @@ button, input { font: inherit; color: inherit; }
 
 .banner { border-radius: 20px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
 .banner svg { display: block; width: 100%; height: auto; }
-.banner .lamp { fill: var(--lantern); opacity: .22; transition: opacity .8s; }
-.banner .lamp.on { opacity: 1; }
-.banner .halo { fill: var(--lantern); opacity: 0; transition: opacity .8s; }
-.banner .halo.on { opacity: .25; }
 .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--muted); }
 .bar .brand { color: var(--ink); font-weight: 800; font-size: 18px; }
 .spark { display: inline-flex; gap: 6px; align-items: center; }
@@ -72,6 +68,14 @@ button, input { font: inherit; color: inherit; }
 
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .card h2 { font-size: 28px; font-weight: 800; }
+/* Scenens billede fylder hele kortets bredde øverst; er skærmen lav, beskæres det i siderne af SVG'ens slice. */
+.scene-art { margin: -22px -20px 0; border-radius: 19px 19px 0 0; overflow: hidden; background: #1E2E52; }
+.scene-art svg { display: block; width: 100%; height: auto; max-height: 45vh; }
+/* Lanternerækken: en smal stribe under billedet, der lyser mere, jo længere man kommer. */
+.lamps { display: flex; justify-content: center; gap: 14px; margin-top: -4px; }
+.lamps i { width: 12px; height: 16px; border-radius: 4px 4px 6px 6px; background: var(--line); display: block; position: relative; }
+.lamps i::before { content: ""; position: absolute; left: 5px; top: -5px; width: 2px; height: 5px; background: var(--line); }
+.lamps i.on { background: var(--lantern); box-shadow: 0 0 10px var(--lantern); }
 .story p + p { margin-top: 12px; }
 .turn { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--lantern-ink); background: var(--lantern); border-radius: 999px; padding: 3px 14px 3px 6px; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; }
 .turn svg { display: block; }
@@ -92,7 +96,7 @@ button, input { font: inherit; color: inherit; }
 .die { width: 92px; height: 92px; border-radius: 22px; border: 3px solid var(--ink); background: var(--surface); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 52px; }
 .die.rolling { animation: wob .35s linear infinite; }
 @keyframes wob { 0% { transform: rotate(-8deg) } 50% { transform: rotate(8deg) } 100% { transform: rotate(-8deg) } }
-@media (prefers-reduced-motion: reduce) { .die.rolling { animation: none } .banner .lamp, .banner .halo { transition: none } }
+@media (prefers-reduced-motion: reduce) { .die.rolling { animation: none } }
 .sum { font-family: var(--font-display); font-weight: 600; font-size: 17px; }
 .sum.win { color: var(--good); } .sum.lose { color: var(--bad); }
 .feather { display: flex; align-items: center; gap: 8px; font-size: 16px; }
@@ -189,6 +193,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 .rew.up { border-style: solid; }
 .wlist { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
 /* Heltebilledet følger med, mens man vælger */
+.pvtag { font-family: var(--font-display); font-weight: 800; font-size: 12px; background: var(--berry); color: #fff; border-radius: 999px; padding: 1px 9px; margin-left: 8px; vertical-align: middle; }
 .prev { position: sticky; top: 8px; z-index: 3; }
 .prev svg { max-width: 100%; height: auto; }
 @media (max-width: 480px) {
@@ -209,42 +214,52 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       <g fill="var(--tree2)">
         <path d="M80 150 L110 70 L150 20 L190 75 L215 55 L260 130 L280 150Z"/><path d="M230 150 L265 95 L300 45 L335 100 L370 150Z"/><path d="M450 150 L485 90 L520 40 L555 95 L585 150Z"/>
       </g>
-      <g id="lamps"></g>
     </svg>
   </div>
 
-  <div class="bar"><span class="brand">Lanterneskoven</span><span><span id="epi">Del 1 af 4</span> &middot; <span class="spark" id="spark" aria-label="Gnister fundet"></span></span></div>
+  <div class="bar"><span><span class="brand">Lanterneskoven</span><span class="pvtag" id="pvtag" hidden>Forhåndsvisning</span></span><span><span id="epi">Del 1 af 4</span> &middot; <span class="spark" id="spark" aria-label="Gnister fundet"></span></span></div>
 
   <main id="stage" class="card"></main>
   <p class="foot">Prøvehistorie til 6&ndash;9 år. Læs højt sammen, vælg på skift og slå med terningen.<br><a href="#" id="about">Om Lanterneskoven</a><a href="#" id="install" hidden>📲 Installér som app</a></p>
 </div>
 
+<script src="js/katalog.js"></script>
+<script src="js/data.js"></script>
+<script src="js/kit.js"></script>
+<script src="art/dele.js"></script>
+<script src="stories/katalog.js"></script>
 <script>
 (function () {
-  var COMPS = [
-    { id: 'raev', name: 'Rikke Ræv', stat: 'List', desc: 'Snedig, hurtig og svær at narre' },
-    { id: 'bjorn', name: 'Bastian Bjørn', stat: 'Mod', desc: 'Stor, stærk og aldrig bange' },
-    { id: 'pind', name: 'Pip Pindsvin', stat: 'Venlighed', desc: 'Lille, blød og god til at lytte' },
-    { id: 'lysorm', name: 'Lulle Lysorm', stat: 'Fantasi', desc: 'Lyser op og drømmer sig til alt muligt' },
-    { id: 'krage', name: 'Krage Krølle', stat: 'Humor', desc: 'Fortæller vittigheder og laver pudsige lyde' },
-    { id: 'mus', name: 'Mille Mus', stat: 'Nysgerrighed', desc: 'Kigger i alle kroge og spørger om alting' }
-  ];
-  var LAMPS = [[70,118],[175,98],[265,122],[372,106],[470,118],[566,104]];
-  var FRIEND_FLAGS = ['nusseVen', 'nusseHonning', 'mollLoefte', 'tutVen', 'maaneVen', 'vindVen'];
-  var STORIES = [
-    { id: 'lantern', start: 's1', title: 'Lanterneskoven', tag: 'Del 1 af 4', blurb: 'Uffe uglen skal have hjælp til at tænde skovens lanterner.' },
-    { id: 'maane', start: 'm1', title: 'Månen der gemte sig', tag: 'Del 2 af 4', blurb: 'Månen er væk fra himlen. Jeres gnister og venner fra første del kan hjælpe.' },
-    { id: 'vind', start: 'v1', title: 'Vinden der var alene', tag: 'Del 3 af 4', blurb: 'Et brev er blæst ind ad vinduet. Hvorfor slukkede Vinden lanternerne?' },
-    { id: 'fest', start: 'f1', title: 'Lanternefesten', tag: 'Del 4 af 4', blurb: 'Skoven holder fest, så Vinden kan sige undskyld. Alle venner skal med.' }
-  ];
-  function storyIndex(id) { for (var i = 0; i < STORIES.length; i++) if (STORIES[i].id === id) return i; return 0; }
-  function nextStory(id) { return STORIES[storyIndex(id) + 1] || null; }
-  function storyStart(id) { return STORIES.filter(function (x) { return x.id === id; })[0].start; }
+  var D = LK.data;
+  var COMPS = D.comps, MAGICS = D.magics, STATS = D.stats, FRIEND_FLAGS = D.friendFlags;
+  /* Historierne registrerer sig med LK.addStory (se LK.start nederst). STORIES har samme rækkefølge som kataloget:
+     sagaens dele og derefter de synlige månedshistorier. ENTRY er katalogets post for hver historie (type, udgives). */
+  var STORIES = [], ENTRY = {};
+  var MAANEDER = ['januar', 'februar', 'marts', 'april', 'maj', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'december'];
+  function storyById(id) { return STORIES.filter(function (x) { return x.id === id; })[0] || null; }
+  function erMaaned(id) { return !!ENTRY[id] && ENTRY[id].type === 'maaned'; }
+  function sagaDele() { return STORIES.filter(function (x) { return !erMaaned(x.id); }); }
+  function sagaIndex(id) { return sagaDele().map(function (x) { return x.id; }).indexOf(id); }
+  function nextStory(id) { var i = sagaIndex(id); return i < 0 ? null : sagaDele()[i + 1] || null; }
+  function storyStart(id) { return storyById(id).start; }
+  /* 'ÅÅÅÅ-MM-DD' -> 'december 2026' */
+  function maanedTekst(dato) { var d = String(dato || '').split('-'); return (MAANEDER[+d[1] - 1] || '') + ' ' + d[0]; }
+  function overskrift(id) {
+    if (erMaaned(id)) return 'Månedens eventyr · ' + maanedTekst(ENTRY[id].udgives);
+    return 'Del ' + (sagaIndex(id) + 1) + ' af ' + sagaDele().length;
+  }
+
+  /* ?preview=<id> spiller én historie uanset dato med et eksempelhold. Så gemmes der intet på enheden:
+     al brug af localStorage går gennem store, som ikke skriver i forhåndsvisningen. */
+  var PARAMS = new URLSearchParams(location.search);
+  var PREVIEW_ID = PARAMS.get('preview') || null;
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { if (PREVIEW_ID) return; try { localStorage.setItem(k, v); } catch (e) {} }
+  };
   var state;
-  function friendNames(f) { var o = []; if (f && (f.nusseVen || f.nusseHonning)) o.push('Nusse'); if (f && f.mollLoefte) o.push('Moll'); if (f && f.tutVen) o.push('Tut'); if (f && f.maaneVen) o.push('Månen'); if (f && f.vindVen) o.push('Vinden'); return o; }
-  function crew() { return friendNames(state.flags).filter(function (n) { return n !== 'Månen' && n !== 'Vinden'; }); }
-  function gnistNames() { return state.gnistList.map(function (g) { return (g.name || '').trim() || g.def; }); }
-  function availG() { return state.gnisterIn.filter(function (n) { return !state.usedG[n]; }); }
+  var kit = LK.lavKit(function () { return state; });
+  var esc = kit.esc, gen = kit.gen, joinNames = kit.joinNames, friendNames = kit.friendNames, gnistNames = kit.gnistNames;
   /* Levels (udkast): et level hvert LEVEL_EVERY. gennemførte eventyr. Ekstra magi fra SECOND_MAGIC_LEVEL. */
   var LEVEL_EVERY = 2, SECOND_MAGIC_LEVEL = 3;
   function heroLevel(h) { return 1 + Math.floor(((h && h.stories) || 0) / LEVEL_EVERY); }
@@ -292,19 +307,6 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       });
     });
     return out.length ? '<div class="magibar">✨ ' + out.join('') + '</div>' : '';
-  }
-  function friendCount() { return crew().length; }
-  function joinNames(a) { return a.length > 1 ? a.slice(0, -1).join(', ') + ' og ' + a[a.length - 1] : a.join(''); }
-  function partyStat(k) { var m = 0; state.players.forEach(function (p) { var v = (p.stats && p.stats[k]) || 0; if (v > m) m = v; }); return m + (state.compStat === k ? 1 : 0); }
-  function lockTxt(stat, n) { return partyStat(stat) >= n ? null : 'Kræver ' + stat + ' ' + n; }
-  function friendLines() {
-    var f = state.flags, o = [];
-    if (f.nusseVen) o.push('Nusse kommer først, nu med sin hue på. Han bærer sin røde gnist som en lille lygte og vinker genert.');
-    else if (f.nusseHonning) o.push('Bag et træ tøver Nusse. Så putter han honningkagen i lommen og træder frem. &laquo;Må jeg være med?&raquo; hvisker han.');
-    if (f.mollLoefte) o.push('Moll titter op af jorden med en støvet bog under armen. &laquo;I lovede mig en historie!&raquo; siger hun.');
-    if (f.tutVen) o.push('Tut hopper ind med en armfuld lysende svampe og griner så højt, at hatten ryster.');
-    if (f.maaneVen) o.push('Månen kigger ned med et stort smil og lægger sølvlys over hele flokken.');
-    return o;
   }
   /* Følgesvendens små bemærkninger: ved start, ved udfordringer (hver anden), når det går galt, og til sidst. */
   var COMP_VOICE = {
@@ -367,20 +369,20 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   }
   fresh();
 
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function gen(n) { return /[sxz]$/i.test(n) ? n : n + 's'; }
   var $ = function (id) { return document.getElementById(id); };
 
-  var lampsG = $('lamps');
-  LAMPS.forEach(function (p) {
-    var ns = 'http://www.w3.org/2000/svg';
-    var h = document.createElementNS(ns, 'circle'); h.setAttribute('cx', p[0]); h.setAttribute('cy', p[1]); h.setAttribute('r', 22); h.setAttribute('class', 'halo');
-    var l = document.createElementNS(ns, 'rect'); l.setAttribute('x', p[0] - 6); l.setAttribute('y', p[1] - 9); l.setAttribute('width', 12); l.setAttribute('height', 18); l.setAttribute('rx', 4); l.setAttribute('class', 'lamp');
-    lampsG.appendChild(h); lampsG.appendChild(l);
-  });
-  function setLamps(n) {
-    var hs = lampsG.querySelectorAll('.halo'), ls = lampsG.querySelectorAll('.lamp');
-    for (var i = 0; i < ls.length; i++) { var on = i < n; ls[i].classList.toggle('on', on); hs[i].classList.toggle('on', on); }
+  /* Billederne bevæger sig med CSS fra art/dele.js; den sættes ind én gang. */
+  if (LK.art) { var artCss = document.createElement('style'); artCss.textContent = LK.art.css; document.head.appendChild(artCss); }
+  /* Lanternerækken under scenens billede: seks lanterner, n af dem tændt. */
+  function lampsHtml(n) {
+    var o = '';
+    for (var i = 0; i < 6; i++) o += '<i class="' + (i < n ? 'on' : '') + '"></i>';
+    return '<div class="lamps" aria-hidden="true">' + o + '</div>';
+  }
+  /* Scenens billede fra historiens billeder. Fejler et billede, vises scenen bare uden. */
+  function artHtml(id) {
+    if (!ART[id] || !LK.art) return '';
+    try { return '<figure class="scene-art">' + LK.art.scene(ART[id]) + '</figure>'; } catch (e) { console.error('Billedet til ' + id + ' kunne ikke tegnes:', e); return ''; }
   }
   function setSpark() {
     $('spark').innerHTML = [0, 1, 2, 3].map(function (i) { return '<i class="' + (state.gnists > i ? 'on' : '') + '"></i>'; }).join('');
@@ -406,13 +408,6 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     toej: [['Kappe', 'sw', 'cloak', CLOAK], ['Mønster', 'ch', 'pat', PATS], ['Ting (+1 på ét slags terningkast)', 'acc', 'acc', ACCS]],
     stil: [['Baggrund', 'sw', 'bgc', BGC]]
   };
-  var MAGICS = [
-    { id: 'gnist', name: 'Gnistmagi', stat: 'Fantasi', desc: 'Skab en lille ny gnist. Den kan lyse vejen, og i første eventyr kan den blive en ekstra gnist til træet.' },
-    { id: 'dyr', name: 'Dyresprog', stat: 'Venlighed', desc: 'Tal med dyr. Det giver nye muligheder, hvor dyrene kan hjælpe.' },
-    { id: 'syn', name: 'Skjulte syn', stat: 'Nysgerrighed', desc: 'Se det skjulte. Det åbner skjulte veje og afslører ting, som andre overser.' },
-    { id: 'latter', name: 'Latterstøv', stat: 'Humor', desc: 'Strø glitrende støv, så alle får lyst til at grine. Det hjælper ved dem, der er bange, sure eller kede af det.' },
-    { id: 'skjold', name: 'Lysskjold', stat: 'Mod', desc: 'Et lysende skjold over holdet. Det giver et ekstra forsøg, når et terningkast mislykkes.' }
-  ];
   var CATS = [['kraefter', 'Kræfter'], ['magi', 'Magi'], ['ansigt', 'Ansigt'], ['haar', 'Hår'], ['hat', 'Hat'], ['toej', 'Tøj'], ['stil', 'Stil']];
   function accStat(a) { var r = ACCS.filter(function (x) { return x[0] === a; })[0]; return r ? r[2] : ''; }
   function accName(a) { var r = ACCS.filter(function (x) { return x[0] === a; })[0]; return r ? r[1] : ''; }
@@ -421,7 +416,6 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     return { name: '', skin: SKIN[[1, 3, 2, 4][i % 4]], cloak: CLOAK[i % CLOAK.length], hat: 'ingen', hatCol: CLOAK[(i + 2) % CLOAK.length], hair: 'kort', hairCol: HAIRC[i % HAIRC.length],
       eyes: 'prik', brows: 'rolig', mouth: 'smil', spots: 'ingen', gear: 'ingen', pat: 'ingen', acc: ACCS[(i % 3) * 2 + 1][0], bgc: BGC[(i + 1) % BGC.length] };
   }
-  var STATS = [['Mod', 'Modig, når det er farligt'], ['List', 'Snedig og kvik'], ['Venlighed', 'God til at lytte og tale pænt'], ['Fantasi', 'Finder på ting, ingen andre tænker på'], ['Humor', 'Kan få alle til at grine'], ['Nysgerrighed', 'Kigger nærmere og stiller spørgsmål']];
   function zeroStats() { var o = {}; STATS.forEach(function (t) { o[t[0]] = 0; }); return o; }
   function monthIdx() { var d = new Date(); return d.getFullYear() * 12 + d.getMonth(); }
   function makeHero(i) {
@@ -431,10 +425,11 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     return h;
   }
   var lib = { heroes: [], play: {}, world: {} };
-  function saveLib() { try { localStorage.setItem('lk-heroes', JSON.stringify(lib)); } catch (e) {} }
+  function saveLib() { store.set('lk-heroes', JSON.stringify(lib)); }
   (function loadLib() {
+    if (PREVIEW_ID) return; /* forhåndsvisningen bruger kun eksempelholdet (se LK.start) */
     try {
-      var d = JSON.parse(localStorage.getItem('lk-heroes') || 'null');
+      var d = JSON.parse(store.get('lk-heroes') || 'null');
       if (d && d.heroes) { lib.heroes = d.heroes; lib.play = d.play || {}; lib.world = d.world || {}; }
     } catch (e) {}
     var m = monthIdx();
@@ -550,8 +545,8 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   }
 
   var prefs = { auto: false, big: false };
-  try { var sp = JSON.parse(localStorage.getItem('lk-prefs') || '{}'); prefs.auto = !!sp.auto; prefs.big = !!sp.big; } catch (e) {}
-  function savePrefs() { try { localStorage.setItem('lk-prefs', JSON.stringify(prefs)); } catch (e) {} }
+  try { var sp = JSON.parse(store.get('lk-prefs') || '{}'); prefs.auto = !!sp.auto; prefs.big = !!sp.big; } catch (e) {}
+  function savePrefs() { store.set('lk-prefs', JSON.stringify(prefs)); }
   document.body.classList.toggle('big', prefs.big);
   var speech = { ok: 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window, words: [], text: '', choiceText: '', speaking: false, cur: null, noted: false };
   function plain(t) { var d = document.createElement('div'); d.innerHTML = t; return d.textContent; }
@@ -626,929 +621,27 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   }
   var SPK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
 
-  var PATHS = [
-    { id: 'bro', label: 'Følg lyden af rislende vand' },
-    { id: 'torn', label: 'Gå ind mellem de tætte torne' },
-    { id: 'gaade', label: 'Find den gamle rod med det lille hul' }
-  ];
-
-  var S = {
-    s1: {
-      title: 'Uglen i mørket',
-      text: function () {
-        var t = ['Engang hang der hundredvis af små lanterner mellem træerne i Lanterneskoven. Men i nat kom der en drilsk vind, og nu er alle lanternerne slukket.',
-          'Pludselig lander en lille ugle på en gren lige foran jer. &laquo;Hu-hu! Jeg hedder Uffe,&raquo; siger den. &laquo;Jeg kan ikke finde hjem i mørket. Vil I hjælpe mig med at tænde Lanternetræet igen?&raquo;'];
-        if (state.remembered.length) t.push('Så blinker Uffe og smiler. &laquo;Vent lidt, jeg kender jer! Rygtet har løbet gennem hele skoven. ' + joinNames(state.remembered) + ' har fortalt, hvor søde I er.&raquo;');
-        return t;
-      },
-      ask: 'Hvordan tror I, det føles at være en lille ugle i en helt mørk skov?',
-      choices: [{ label: 'Følg med Uffe ind i skoven', to: 'hub' }, { label: 'Spørg Uffe, hvad der skete', to: 's1b' }]
-    },
-    s1b: {
-      title: 'Vinden tog gnisterne',
-      text: ['&laquo;Vinden tog lanternernes gnister,&raquo; hvisker Uffe. &laquo;De spredte sig over hele skoven. Hvis vi finder bare to gnister, kan vi tænde Lanternetræet.&raquo;',
-        'Uffe plukker en lille gylden fjer af sin vinge. &laquo;Tag den med. Den giver held. Brug den, når I slår med terningen.&raquo;'],
-      gainFeather: true,
-      ask: 'Hvornår vil I bruge fjeren? Den kan kun bruges én gang.',
-      choices: [{ label: 'Tak, Uffe! Afsted!', to: 'hub' }]
-    },
-    hub: {
-      title: 'Stien deler sig',
-      text: function () {
-        var g = state.gnists, v = state.visited.length;
-        if (v === 0) return ['Skoven er stille og mørk. Efter lidt tid deler stien sig. I lytter. Der er noget derude.'];
-        var a = 'I går videre. Stien deler sig igen. Uffe flyver foran jer og kigger sig om.';
-        var b = g === 0 ? '&laquo;I har ikke fundet nogen gnister endnu,&raquo; siger Uffe. &laquo;Prøv en sti til, eller gå til Lanternetræet, hvis I tør.&raquo;'
-          : g === 1 ? '&laquo;Én gnist! Træet skal bruge to for at lyse helt, men I bestemmer selv, om vi leder videre.&raquo;'
-          : '&laquo;Nu har I nok gnister til at tænde træet,&raquo; siger Uffe. &laquo;Men flere gnister giver et stærkere lys. I bestemmer.&raquo;';
-        var left = PATHS.filter(function (p) { return state.visited.indexOf(p.id) < 0; }).length + (state.visited.indexOf('svamp') < 0 ? 1 : 0);
-        return [a, b + (left === 0 ? ' Der er ikke flere stier at prøve.' : '')];
-      },
-      ask: 'Hvilken vej ville I vælge, hvis I var helt alene?',
-      dyn: function () {
-        var c = PATHS.filter(function (p) { return state.visited.indexOf(p.id) < 0; }).map(function (p) { return { label: p.label, to: p.id }; });
-        if (state.visited.indexOf('svamp') < 0) c.push({ label: 'Følg de lysende svampe', to: 'svamp', lock: function () { return lockTxt('Nysgerrighed', 2); } });
-        if (state.visited.length > 0) c.push({ label: 'Gå til Lanternetræet nu', to: 'tree' });
-        return c;
-      }
-    },
-    bro: {
-      title: 'Bækken', path: 'bro',
-      text: ['Bag nogle høje bregner løber en bred bæk. En glat træstamme ligger henover vandet. På den anden side glimter der noget blåt. Det er en gnist!',
-        'Men stammen vipper, og vandet er koldt.'],
-      ask: 'Hvad ville I gøre, hvis I var bange for vand?',
-      choices: [
-        { label: 'Gå over stammen, ét skridt ad gangen', roll: { stat: 'Mod', target: 6, win: 'broOk', lose: 'broFejl' } },
-        { label: 'Byg et rækværk af pinde sammen', roll: { stat: 'List', target: 6, win: 'broOk', lose: 'broFejl' } },
-        { label: 'Lad som om, stammen er en regnbuebro', roll: { stat: 'Fantasi', target: 6, win: 'broOk', lose: 'broFejl' } }
-      ]
-    },
-    broOk: {
-      title: 'Den blå gnist', gain: true, gnist: { c: 'blå', def: 'Blå gnist', col: '#4A90D9', ph: 'Blinke' },
-      text: ['I når over på den anden side uden en eneste våd tå. Den blå gnist hopper op i jeres hænder og kilder lidt. &laquo;Hi hi!&raquo; siger den.', '&laquo;Hu-hu! Én gnist!&raquo; råber Uffe.'],
-      ask: 'Hvad tror I, gnisten har lyst til at gøre i Lanternetræet?',
-      next: 'hub'
-    },
-    broFejl: {
-      title: 'Plask!', flag: 'vaad',
-      text: ['Stammen vipper, I vipper, og så plasker I i bækken! Vandet er koldt, men I griner højt. Den blå gnist glider væk med strømmen og forsvinder bag en sten.', '&laquo;Det går nok,&raquo; siger Uffe og ryster vand af jeres ryg. &laquo;Der er flere gnister derude.&raquo;'],
-      ask: 'Er det i orden at fejle, når man prøver? Hvad kan man lære af det?',
-      next: 'hub'
-    },
-    torn: {
-      title: 'Tornekrattet', path: 'torn',
-      text: ['Mellem tornene hører I en tynd lille stemme: &laquo;Hjælp&hellip;&raquo; Det er nissen Nusse. Hans røde gnist sidder fast i en tornegren, og han tør ikke række ud efter den.'],
-      ask: 'Hvad gør man, når en anden er bange?',
-      choices: [
-        { label: 'Tal blidt til Nusse', roll: { stat: 'Venlighed', target: 6, win: 'tornOk', lose: 'tornFejl' } },
-        { label: 'Træk forsigtigt i grenen', roll: { stat: 'Mod', target: 7, win: 'tornOk', lose: 'tornFejl' } },
-        { label: 'Få Nusse til at grine med en sjov lyd', roll: { stat: 'Humor', target: 6, win: 'tornOk', lose: 'tornFejl' } }
-      ]
-    },
-    tornOk: {
-      title: 'Den røde gnist', gain: true, flag: 'nusseVen', gnist: { c: 'røde', def: 'Rød gnist', col: '#E0525A', ph: 'Pippi' },
-      text: ['Nusse kigger frem og smiler lidt. Sammen får I grenen bøjet til side, og den røde gnist svæver ud i jeres hænder.', '&laquo;Tak,&raquo; hvisker Nusse. &laquo;Jeg kommer til Lanternetræet senere. Jeg skal bare finde min hue.&raquo;'],
-      ask: 'Hvordan tror I, Nusse har det nu?',
-      next: 'hub'
-    },
-    tornFejl: {
-      title: 'Den frygtsomme nisse', flag: 'nusseHonning',
-      text: ['Nusse bliver endnu mere bange og kryber helt ned i busken. I kan ikke få fat i gnisten.', 'I lægger en lille honningkage på en sten, så han kan se, at I er venner. &laquo;Måske kommer han frem, når vi er gået,&raquo; siger Uffe.'],
-      ask: 'Hvad kunne I have gjort anderledes? Eller var det rigtigt at give ham ro?',
-      next: 'hub'
-    },
-    gaade: {
-      title: 'Muldvarpens gåde', path: 'gaade',
-      text: ['Under en gammel rod bor Muldvarpen Moll. Hun stikker snuden op og kniber øjnene sammen. &laquo;En gnist? Jo, jeg har en. Men først en gåde:&raquo;',
-        '&laquo;Jeg har ingen mund, men jeg kan fortælle historier. Hvad er jeg?&raquo;'],
-      ask: 'Tænk sammen, før I svarer. Hvad har I i hænderne lige nu?',
-      choices: [
-        { label: 'En bog', to: 'gaadeOk', key: 'bog' },
-        { label: 'En trold', to: 'gaade', key: 'trold', wrong: 'Moll klukker: &laquo;Næsten! Men trolde har mund.&raquo;' },
-        { label: 'En sky', to: 'gaade', key: 'sky', wrong: 'Moll ryster på hovedet: &laquo;Skyer fortæller ikke historier. Prøv igen!&raquo;' },
-        { label: 'Kig dig omkring i Molls hule og stil spørgsmål', key: 'kig', roll: { stat: 'Nysgerrighed', target: 6, win: 'gaadeKig', lose: 'gaadeHint' } }
-      ]
-    },
-    gaadeKig: {
-      title: 'Den grønne gnist', gain: true, flag: 'mollLoefte', gnist: { c: 'grønne', def: 'Grøn gnist', col: '#4CAF6A', ph: 'Fnug' },
-      text: ['I kigger jer omkring i Molls hule. På bordet ligger en stak støvede bøger. &laquo;Hov!&raquo; siger I. &laquo;Har en bog en mund? Nej, men den kan fortælle historier. Det er en bog!&raquo;',
-        'Moll klapper i sine små hænder og rækker en grøn gnist frem. Den lugter af nyslåede enge. &laquo;Fortæl mig en historie en dag,&raquo; siger hun.'],
-      ask: 'Hvad lagde I mærke til, som Moll slet ikke havde tænkt på?',
-      next: 'hub'
-    },
-    gaadeHint: {
-      title: 'Et lille hint',
-      text: ['I kigger og kigger, men får ikke øje på noget. Moll smiler lidt. &laquo;Ikke så nysgerrige endnu? Jeg giver jer et hint: Man kan åbne den, og man kan holde den i hænderne.&raquo;'],
-      ask: 'Hvad kan man åbne og holde i hænderne, og som kan fortælle noget?',
-      next: 'gaade'
-    },
-    gaadeOk: {
-      title: 'Den grønne gnist', gain: true, flag: 'mollLoefte', gnist: { c: 'grønne', def: 'Grøn gnist', col: '#4CAF6A', ph: 'Fnug' },
-      text: ['&laquo;En bog! Selvfølgelig!&raquo; Moll klapper i sine små hænder og rækker en grøn gnist frem. Den lugter af nyslåede enge.', '&laquo;Fortæl mig en historie en dag,&raquo; siger Moll. &laquo;Jeg har aldrig fået en rigtig.&raquo;'],
-      ask: 'Hvilken historie ville I fortælle Moll?',
-      next: 'hub'
-    },
-    svamp: {
-      title: 'Svampecirklen', path: 'svamp',
-      text: function () {
-        var t = ['Bag en væltet gran gemmer der sig en cirkel af svampe, som lyser svagt som små natlamper. Midt i cirklen sidder en tudse med en stor, rynket hat. &laquo;Jeg hedder Tut,&raquo; siger han. &laquo;Jeg har en gnist, men jeg giver den kun til en, der kan få mig til at smile. Det er længe siden, jeg har grint.&raquo;'];
-        if (state.flags.nusseVen) t.push('Tut kigger på jer. &laquo;Nusse har fortalt, at I er søde. Så må I gerne prøve.&raquo;');
-        return t;
-      },
-      ask: 'Hvad får jer selv til at grine, når I er kede af det?',
-      choices: [
-        { label: 'Lav en sjov lyd som en frø med hikke', roll: { stat: 'Humor', target: 6, win: 'svampOk', lose: 'svampFejl', flag: 'nusseVen', flagTxt: 'fordi I hjalp Nusse' } },
-        { label: 'Spørg Tut, hvorfor han er så trist', roll: { stat: 'Venlighed', target: 6, win: 'svampOk', lose: 'svampFejl', flag: 'nusseVen', flagTxt: 'fordi I hjalp Nusse' } },
-        { label: 'Fortæl om en tudse, der kunne flyve', roll: { stat: 'Fantasi', target: 6, win: 'svampOk', lose: 'svampFejl', flag: 'nusseVen', flagTxt: 'fordi I hjalp Nusse' } }
-      ]
-    },
-    svampOk: {
-      title: 'Den lilla gnist', gain: true, flag: 'tutVen', gnist: { c: 'lilla', def: 'Lilla gnist', col: '#9B6BD6', ph: 'Lilje' },
-      text: ['Tut prøver at holde masken, men så kommer der et lille klukkende grin, og så et større. Hans hat ryster, og svampene blinker i takt. &laquo;Jeg havde glemt, hvor rart det er!&raquo;',
-        'Han giver jer en lilla gnist, der pludrer og pludrer. &laquo;Kom og besøg mig igen,&raquo; siger Tut.'],
-      ask: 'Hvad gør I, når nogen omkring jer er kede af det?',
-      next: 'hub'
-    },
-    svampFejl: {
-      title: 'En stille tudse',
-      text: ['Tut sukker lavt og trækker hatten ned over øjnene. &laquo;Det var sødt forsøgt,&raquo; siger han. &laquo;Men jeg er ikke klar endnu.&raquo;',
-        'I sætter jer ved siden af ham og lytter til svampene, der lyser. Måske er det også nok i dag.'],
-      ask: 'Er det i orden at sidde stille sammen med én, der er ked af det?',
-      next: 'hub'
-    },
-    tree: {
-      title: 'Lanternetræet',
-      text: function () {
-        var g = state.gnists;
-        var a = 'Midt i skoven står Lanternetræet, stort som et hus. Alle dets lanterner hænger slukkede og stille. Uffe lander på den laveste gren.';
-        var b = g >= 3 ? '&laquo;Hu-hu! ' + joinNames(gnistNames()) + '! Så mange gnister har træet aldrig fået!&raquo;'
-          : g === 2 ? '&laquo;Hu-hu! ' + joinNames(gnistNames()) + '! Det er lige nok!&raquo;'
-          : g === 1 ? '&laquo;Hu-hu! ' + joinNames(gnistNames()) + ' er en god begyndelse. Måske kan vi klare resten sammen.&raquo;'
-          : '&laquo;I har ingen gnister,&raquo; siger Uffe. &laquo;Men I har noget bedre: I turde prøve. Lad os bede skovens venner om hjælp.&raquo;';
-        var t = [a, b];
-        if (state.flags.vaad) t.push('Jeres sko klasker stadig lidt efter plasket i bækken. Uffe kigger ned og fniser.');
-        return t;
-      },
-      ask: 'Hvad tror I virker bedst: gnisterne, vennerne eller en sang?',
-      dyn: function () {
-        var c = [];
-        if (state.gnists > 0) c.push({ label: 'Løft gnisterne op mod træet', to: 'endLight' });
-        c.push({ label: 'Råb på skovens venner', to: 'endFriends' });
-        c.push({ label: 'Bed vennerne bære gnisterne med jer', to: 'endSammen', lock: function () { return state.gnists > 0 && friendCount() > 0 ? null : 'Kræver en gnist og en ven, I har hjulpet'; } });
-        c.push({ label: 'Syng en sang for træet', to: 'endSang', lock: function () { return partyStat('Fantasi') >= 3 || partyStat('Humor') >= 3 ? null : 'Kræver Fantasi 3 eller Humor 3'; } });
-        return c;
-      }
-    },
-    endLight: {
-      title: 'Skoven lyser', end: true, all: true,
-      text: function () {
-        var g = state.gnists;
-        if (g >= 3) return ['I løfter ' + joinNames(gnistNames()) + ' op på én gang. De sprutter og knitrer og springer fra gren til gren. Lanterne efter lanterne tænder, først gul, så orange, så hvid, og til sidst lyser skoven så kraftigt, at selv stjernerne kigger ned.', 'Uffe flyver glade cirkler om jeres hoveder. &laquo;Så meget lys har jeg aldrig set!&raquo;'];
-        if (g === 2) return ['I løfter ' + joinNames(gnistNames()) + ' op. De sprutter og knitrer og hopper fra gren til gren. Lanterne efter lanterne tænder, først gul, så orange, så hvid. Hele skoven lyser!', 'Uffe flyver glade cirkler om jeres hoveder. &laquo;Nu kan jeg finde hjem!&raquo; Og hver gang nætterne bliver lange, fortæller uglerne om familien, der tændte skoven.'];
-        return ['I løfter ' + joinNames(gnistNames()) + ' op. Den tænder én lanterne, og så en til. Træet lyser blødt, ikke helt som før, men nok til, at Uffe kan se vej hjem.', '&laquo;Det er nok,&raquo; hu-huer han. &laquo;I kan altid finde flere gnister en anden aften.&raquo;'];
-      },
-      ask: 'Hvad var det bedste valg, I tog i dag?'
-    },
-    endFriends: {
-      title: 'Venner tænder lys', end: true, all: true,
-      text: function () {
-        var fl = friendLines();
-        var a = 'I råber ud i mørket: &laquo;Hej! Vil nogen hjælpe os?&raquo; Først er alt stille. Så knitrer det i buskene.';
-        if (!fl.length) return [a + ' Ræve, mus og pindsvin kommer frem, og hver af dem har en lille lampe med lysorme i.',
-          'De hænger lamperne i træet, én efter én. Snart lyser Lanternetræet af venskab. Uffe græder lidt af glæde. &laquo;Jeg vidste ikke, at man kunne tænde en skov bare ved at bede om hjælp,&raquo; siger han.'];
-        return [a, fl.join(' '),
-          'Sammen med ræve, mus og pindsvin hænger de lamper med lysorme i træet, én efter én. Snart lyser Lanternetræet af venskab. &laquo;Det var jer, der hjalp dem først,&raquo; siger Uffe stille. &laquo;Nu hjælper de jer.&raquo;'];
-      },
-      ask: function () { return friendCount() ? 'Hvem hjalp I først, og hvordan føltes det, da de hjalp jer tilbage?' : 'Hvornår har I sidst bedt nogen om hjælp? Hvordan gik det?'; }
-    },
-    endSammen: {
-      title: 'Alle sammen', end: true, all: true,
-      text: function () {
-        return ['I løfter gnisterne højt. Men træet er stort og gnisterne er små. &laquo;Vi klarer det ikke alene,&raquo; siger Uffe.']
-          .concat(friendLines(), ['Hver ven får en gnist at bære. De klatrer op i træet og tænder lanterne efter lanterne, til hele Lanterneskoven skinner som en stjernehimmel.',
-            'Uffe flyver ned og sætter sig på jeres skulder. &laquo;Det var den bedste nat i hele skoven,&raquo; hvisker han.']);
-      },
-      ask: 'Hvorfor tror I, det virkede bedre, da I gjorde det sammen?'
-    },
-    endSang: {
-      title: 'Skovens sang', end: true, all: true,
-      text: function () {
-        var t = ['I stiller jer ved foden af Lanternetræet og begynder at synge. Først lidt skævt, så højere. Uffe synger med, og så gør buskene. Hver tone får en lanterne til at blinke.'];
-        if (state.gnists > 0) t.push(joinNames(gnistNames()) + ' svæver ud af jeres hænder og danser med i lysene.');
-        t.push('Til sidst lyser hele skoven i takt med jeres sang. Træet rasler tilfreds med bladene. &laquo;Ingen har sunget for mig før,&raquo; siger det med en dyb, blød stemme.');
-        return t;
-      },
-      ask: 'Hvilken sang ville I synge for træet?'
-    },
-    endMester: {
-      title: 'Mesterens lys', end: true, all: true,
-      text: function () {
-        var m = state.mester || { name: 'Jeres helt', stat: 'Mod' };
-        var how = MESTER_TXT[m.stat] || MESTER_TXT.Mod;
-        return [how(esc(m.name)), 'Lanterne efter lanterne tænder, og til sidst lyser hele Lanterneskoven. Uffe sætter sig på træets laveste gren og hvisker: &laquo;Nogle gange er det de ting, man har øvet sig rigtig meget i, der tænder de største lys.&raquo;'];
-      },
-      ask: 'Hvad er I blevet rigtig gode til? Hvordan lærte I det?'
-    },
-
-    /* ---------- Eventyr 2: Månen der gemte sig ---------- */
-    m1: {
-      title: 'Himlen uden måne', lit: 2,
-      text: function () {
-        var t = ['Nogle nætter efter, at Lanterneskoven blev tændt, vågner I ved, at nogen rasler på ruden. Det er Uffe! &laquo;Hu-hu! Kom hurtigt! Månen er væk!&raquo;',
-          'Alle lanternerne lyser stadig smukt, men oppe på himlen er der kun mørke og stjerner. Hvor månen plejer at hænge, er der et hul.'];
-        var g = state.gnisterIn;
-        t.push(g.length ? 'Jeres gnister ' + joinNames(g) + ' kommer susende og peger alle sammen mod Månesøen.' : 'En lille gnist svæver ned fra et træ og peger mod Månesøen.');
-        var fr = friendNames(state.flags).filter(function (n) { return n !== 'Månen'; });
-        if (fr.length) t.push('&laquo;Jeg har hørt fra ' + joinNames(fr) + ',&raquo; siger Uffe. &laquo;De vil gerne hjælpe os.&raquo;');
-        return t;
-      },
-      ask: 'Hvad tror I, der sker, hvis månen aldrig kommer tilbage?',
-      choices: [{ label: 'Følg gnisterne mod Månesøen', to: 'm_taage' }, { label: 'Spørg Uffe, hvorfor månen er væk', to: 'm1b' }]
-    },
-    m1b: {
-      title: 'Uffes gæt', lit: 2, gainFeather: true,
-      text: ['&laquo;Jeg tror, månen er ked af det,&raquo; hvisker Uffe. &laquo;Siden I tændte lanternerne, kigger ingen op på den mere.&raquo;',
-        'Han plukker en sølvfjer af sin vinge. &laquo;Tag den med. Den lyser i mørket, og den giver held. Brug den, når I slår med terningen.&raquo;'],
-      ask: 'Har I nogensinde følt jer glemt? Hvad hjælper, når man har det sådan?',
-      choices: [{ label: 'Tak, Uffe! Lad os finde månen', to: 'm_taage' }]
-    },
-    m_taage: {
-      title: 'Tågen', lit: 3,
-      text: ['Ved skovens kant ligger en tyk, hvid tåge som en stor dyne. I kan ikke se jeres egne fødder. Et sted derinde ligger Månesøen.'],
-      ask: 'Hvordan finder man vej, når man ikke kan se noget?',
-      dyn: function () {
-        function R(stat, label) { return { label: label, roll: { stat: stat, target: 6, win: 'm_taageOk', lose: 'm_taageFejl', flag: 'tutVen', flagTxt: 'fordi Tuts svampe lyser vejen' } }; }
-        var c = [R('Nysgerrighed', 'Kig efter små spor på jorden'), R('List', 'Lyt efter lyden af vand og følg den'), R('Venlighed', 'Hold hinanden i hænderne og gå sammen')];
-        availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at lyse vejen', to: 'm_taageGnist', use: n }); });
-        c.push({ label: 'Tegn en lysende sti i tågen med fantasien', to: 'm_taageOk', lock: function () { return lockTxt('Fantasi', 3); } });
-        return c;
-      }
-    },
-    m_taageOk: {
-      title: 'Tågen letter', lit: 3,
-      text: function () {
-        var t = ['I går skridt for skridt, og pludselig lysner tågen. Foran jer glitrer Månesøen, helt stille og sort som blæk.'];
-        if (state.flags.tutVen) t.push('Bag jer lyser Tuts svampe som små vejskilte.');
-        return t;
-      },
-      ask: 'Hvad hjalp mest: at kigge, at lytte eller at holde sammen?',
-      next: 'm_sump'
-    },
-    m_taageFejl: {
-      title: 'Rundt i ring', lit: 3,
-      text: ['I går og går, og pludselig står I ved det samme væltede træ igen. I er gået i ring! En lille frø kvækker: &laquo;Det gør alle i tågen!&raquo;',
-        'Frøen hopper foran jer og viser vej, til tågen til sidst slipper jer.'],
-      ask: 'Er det i orden at gå forkert? Hvad gør man så?',
-      next: 'm_sump'
-    },
-    m_taageGnist: {
-      title: 'Gnisten lyser', lit: 3,
-      text: function () {
-        var n = state.lastUse || 'Gnisten';
-        return [n + ' svæver op og lyser som en lille lanterne. Tågen deler sig som et forhæng, og stien står tydelig foran jer.',
-          n + ' bliver helt træt af at lyse og lægger sig til at sove i jeres lomme. Den kan ikke bruges mere i nat.'];
-      },
-      ask: 'Hvad kan I gøre for at takke en, der har hjulpet jer?',
-      next: 'm_sump'
-    },
-    m_sump: {
-      title: 'Kvækkesumpen', lit: 4,
-      text: ['Næste stykke går gennem en sump, hvor tusind frøer kvækker i munden på hinanden. Larmen er så høj, at I ikke kan høre jer selv tænke. På den anden side glimter Månesøen.'],
-      ask: 'Hvad gør man, når der er så meget larm, at man ikke kan tænke?',
-      dyn: function () {
-        function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'm_sumpOk', lose: 'm_sumpFejl', flag: 'mollLoefte', flagTxt: 'fordi Moll har vist en genvej' } }; }
-        var c = [R('Humor', 'Kvæk med og få frøerne til at grine'), R('Mod', 'Hop fra sten til sten over sumpen', 7), R('Fantasi', 'Find på en melodi, som frøerne kan synge med på')];
-        availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at lyse stenene op', to: 'm_sumpGnist', use: n }); });
-        c.push({ label: 'Bed Moll vise sin hemmelige genvej', to: 'm_sumpOk', lock: function () { return state.flags.mollLoefte ? null : 'Kræver at I har hjulpet Moll'; } });
-        return c;
-      }
-    },
-    m_sumpOk: {
-      title: 'Over sumpen', lit: 4,
-      text: function () {
-        var t = ['Frøerne holder op med at kvække og begynder at nynne sammen med jer. Larmen bliver til en melodi, og I går let hen over sumpen.'];
-        if (state.flags.mollLoefte) t.push('Under jer rasler Moll i sin tunnel og sender et lille &laquo;Hej!&raquo; op gennem jorden.');
-        return t;
-      },
-      ask: 'Hvordan føles det, når larm bliver til musik?',
-      next: 'm_maane'
-    },
-    m_sumpFejl: {
-      title: 'Plask i mudderet', lit: 4, flag: 'mudder',
-      text: ['I glider og plasker, og frøerne klukker af grin. Det er koldt og mudret, men til sidst er I forbi. Jeres sko siger &laquo;splask&raquo; for hvert skridt.'],
-      ask: 'Er det værre at blive mudret eller at blive grint af? Hvad tænker I?',
-      next: 'm_maane'
-    },
-    m_sumpGnist: {
-      title: 'Lysende sten', lit: 4,
-      text: function () {
-        var n = state.lastUse || 'Gnisten';
-        return [n + ' hopper fra sten til sten, og hver sten lyser op under den. Frøerne tier stille af ren forbavselse, og I går tørskoede over.',
-          n + ' gaber stort og kravler ned i jeres lomme for at sove.'];
-      },
-      ask: 'Hvorfor tror I, at frøerne blev stille?',
-      next: 'm_maane'
-    },
-    m_maane: {
-      title: 'Månen i søen', lit: 5,
-      text: function () {
-        var t = ['Midt i søen sidder månen. Men den er ikke rund og skinnende. Den er en lille bleg skive, der hænger med hovedet. &laquo;Gå væk,&raquo; siger den med en stille stemme. &laquo;Ingen kigger op på mig mere. Lanternerne er meget finere.&raquo;'];
-        if (state.flags.mudder) t.push('Månen kigger på jeres mudrede sko og smiler næsten.');
-        return t;
-      },
-      ask: 'Hvad ville I sige til én, der er ked af det og føler sig glemt?',
-      dyn: function () {
-        function R(stat, label, key, t) { return { label: label, key: key, roll: { stat: stat, target: t || 6, win: 'm_endHjem', lose: 'm_maaneFejl', flag: 'nusseVen', flagTxt: 'fordi Nusse har lært jer pæne ord' } }; }
-        var c = [R('Venlighed', 'Sig, at lanterner og måne lyser bedst sammen', 'mm1'), R('Fantasi', 'Fortæl om dengang månen reddede en lille ugle', 'mm2'), R('Humor', 'Lav en sjov grimasse, så månen kommer til at grine', 'mm3'), R('Mod', 'Løft månen forsigtigt op af vandet', 'mm4', 7)];
-        c.push({ label: 'Lad alle venner lyse op mod månen', to: 'm_endVenner', lock: function () { return friendCount() >= 2 ? null : 'Kræver to venner, I har hjulpet'; } });
-        c.push({ label: 'Lad gnisterne skinne ved siden af månen', to: 'm_endGnister', lock: function () { return availG().length > 0 ? null : 'Kræver en gnist, der ikke er brugt'; } });
-        c.push({ label: 'Sæt jer stille ved siden af månen og vent', to: 'm_endStille' });
-        return c;
-      }
-    },
-    m_maaneFejl: {
-      title: 'Det hjælper ikke', lit: 5,
-      text: ['Månen ryster på hovedet og dykker et stykke ned under vandet. &laquo;Det hjælper ikke,&raquo; mumler den.', 'I sidder tavse. Så hvisker Uffe: &laquo;Prøv at lytte i stedet for at gøre noget.&raquo;'],
-      ask: 'Hvad er forskellen på at gøre noget for en ven og at lytte?',
-      next: 'm_maane'
-    },
-    m_endHjem: {
-      title: 'Månen kommer hjem', end: true, all: true, flag: 'maaneVen',
-      text: function () {
-        var t = ['Månen kigger på jer og tænker sig om. Så begynder den at stige op af søen, langsomt som en boble. Jo højere den kommer, jo rundere og lysere bliver den.',
-          'Til sidst hænger den på himlen igen, stor og sølvhvid. Nedefra skinner lanternerne, oppefra skinner månen. &laquo;Det er jo som to lamper i samme stue,&raquo; siger Uffe.'];
-        var fr = friendNames(state.flags).filter(function (n) { return n !== 'Månen'; });
-        if (fr.length) t.push(joinNames(fr) + ' vinker fra søens bred.');
-        if (availG().length) t.push(joinNames(availG()) + ' danser rundt om månen som små stjerner.');
-        return t;
-      },
-      ask: 'Hvorfor er det godt, at der er plads til både lanterner og måne?'
-    },
-    m_endStille: {
-      title: 'Den stille måne', end: true, all: true, flag: 'maaneVen',
-      text: ['I sætter jer ved søen og siger ingenting. Månen kigger på jer. Længe. Så hvisker den: &laquo;Tak, fordi I blev.&raquo;',
-        'Langsomt løfter den sig op fra vandet. Den er ikke helt rund endnu, men den er tilbage. Næste aften bliver den lidt rundere, og dagen efter lidt rundere igen.'],
-      ask: 'Hvornår hjælper det mest bare at være der?'
-    },
-    m_endVenner: {
-      title: 'Alle kigger op', end: true, all: true, flag: 'maaneVen',
-      text: function () {
-        var fr = friendNames(state.flags).filter(function (n) { return n !== 'Månen'; });
-        return ['I løfter hånden og kalder: &laquo;Alle sammen! Kig op på månen!&raquo; Fra skoven kommer ' + joinNames(fr) + ', og hver især løfter et lille lys.',
-          'Månen kigger rundt på alle de lyse ansigter. &laquo;Så mange, der kigger på mig,&raquo; hvisker den. Så blusser den op, rund og skinnende, og stiger op til himlen.'];
-      },
-      ask: 'Hvem kigger I op til, og hvem kigger op til jer?'
-    },
-    m_endGnister: {
-      title: 'Gnister og måne', end: true, all: true, flag: 'maaneVen',
-      text: function () {
-        return [joinNames(availG()) + ' svæver ud over søen og sætter sig som små stjerner ved siden af månen. &laquo;Må vi lyse sammen med dig?&raquo; spørger de.',
-          'Månen smiler for første gang i lang tid. Så stiger den op, og gnisterne følger med som en lysende hale.'];
-      },
-      ask: 'Hvem ville I gerne lyse sammen med?'
-    },
-
-    /* ---------- Del 3: Vinden der var alene ---------- */
-    v1: {
-      title: 'Et brev i vinden', lit: 2,
-      text: function () {
-        var t = ['Nogle nætter efter, at månen kom hjem, banker det på ruden. Det er ikke Uffe. Det er et lille, krøllet brev, der blæser rundt i stuen som et sommerfuglefnug.',
-          'På brevet står der med rystende skrift: &laquo;Undskyld. Det var mig, der blæste lanternerne ud. Jeg ville bare lege. Jeg har ikke nogen at lege med. Vinden.&raquo;',
-          'Uffe lander på vindueskarmen. &laquo;Hu-hu! Så var det altså Vinden hele tiden,&raquo; siger han stille. &laquo;Kom, vi må finde den.&raquo;'];
-        var g = state.gnisterIn;
-        t.push(g.length ? 'Jeres gnister ' + joinNames(g) + ' kommer susende ind ad vinduet og peger alle sammen mod Vindbjerget.' : 'En lille gnist svæver ind ad vinduet og peger mod Vindbjerget.');
-        var fr = crew();
-        if (fr.length) t.push('&laquo;' + joinNames(fr) + ' har allerede hørt om brevet,&raquo; siger Uffe. &laquo;De tror, at Vinden bare er ensom.&raquo;');
-        return t;
-      },
-      ask: 'Har I nogensinde gjort noget dumt, fordi I gerne ville have nogen at lege med?',
-      choices: [{ label: 'Følg gnisterne mod Vindbjerget', to: 'v_skov' }, { label: 'Spørg Uffe, hvad han ved om Vinden', to: 'v1b' }]
-    },
-    v1b: {
-      title: 'Uffes hemmelighed', lit: 2, gainFeather: true,
-      text: ['&laquo;Da jeg var lille, var Vinden min bedste ven,&raquo; siger Uffe. &laquo;Den bar mig på ryggen, når mine vinger var for små. Så blev jeg stor og fik travlt med lanterner, og så havde jeg ikke tid til Vinden mere.&raquo;',
-        'Han plukker en lille fjer af sin vinge, lettere og lysere end alle de andre. &laquo;Tag den med. Den giver held, og Vinden vil kende den. Brug den, når I slår med terningen.&raquo;'],
-      ask: 'Har I en ven, I har haft for lidt tid til? Hvad kunne I gøre?',
-      choices: [{ label: 'Tak, Uffe! Lad os finde Vinden', to: 'v_skov' }]
-    },
-    v_skov: {
-      title: 'Bladenes dans', lit: 3,
-      text: ['Stien til Vindbjerget går gennem en skov, hvor tusind blade hvirvler rundt i luften som et stort, grønt tæppe. De drejer og drejer, og de er så mange, at I ikke kan se jeres egne hænder.',
-        '&laquo;Vinden har leget alene her i flere nætter,&raquo; hvisker Uffe. &laquo;Bladene kan ikke stoppe.&raquo;'],
-      ask: 'Hvordan føles det at lege helt alene i lang tid?',
-      dyn: function () {
-        function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'v_skovOk', lose: 'v_skovFejl', flag: 'nusseVen', flagTxt: 'fordi Nusse kender de små stier' } }; }
-        var c = [R('Mod', 'Gå lige gennem bladene med hovedet først', 7), R('List', 'Vent på et hul mellem hvirvlerne og løb'), R('Humor', 'Dans med bladene, så de bliver glade')];
-        availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at lyse en rolig sti', to: 'v_skovGnist', use: n }); });
-        c.push({ label: 'Forestil jer, at bladene er sommerfugle, der gerne vil hjælpe', to: 'v_skovOk', lock: function () { return lockTxt('Fantasi', 3); } });
-        return c;
-      }
-    },
-    v_skovOk: {
-      title: 'Bladene falder til ro', lit: 3,
-      text: function () {
-        var t = ['Langsomt daler bladene ned omkring jer som grønt konfetti. Hvirvlen bliver til en blid brise, og stien åbner sig. Langt væk rejser Vindbjerget sig, gråt og stort.'];
-        if (state.flags.nusseVen || state.flags.nusseHonning) t.push('En lille rød hue titter frem bag et træ. Det er Nusse, der vinker fra sikker afstand.');
-        return t;
-      },
-      ask: 'Hvad fik bladene til at falde til ro: at være stille, at grine eller at tage det roligt?',
-      next: 'v_bjerg'
-    },
-    v_skovFejl: {
-      title: 'Rundt i hvirvlen', lit: 3,
-      text: ['En hvirvel af blade løfter jer op og sætter jer blidt ned igen, helt der, hvor I startede. I har blade i håret, i lommerne og bag ørerne!',
-        'En lille mus kigger ud af et hul. &laquo;Man skal være blid i bladene,&raquo; fniser den og viser jer en sti langs kanten, til I er kommet igennem.'],
-      ask: 'Er det i orden at starte forfra? Hvad lærte I?',
-      next: 'v_bjerg'
-    },
-    v_skovGnist: {
-      title: 'Lys i bladene', lit: 3,
-      text: function () {
-        var n = state.lastUse || 'Gnisten';
-        return [n + ' svæver op og lyser som et lille bål midt i hvirvlen. Bladene falder til ro rundt om lyset, som om de ville varme sig.',
-          n + ' bliver helt træt og kravler ned i jeres lomme for at sove. Den kan ikke bruges mere i nat.'];
-      },
-      ask: 'Hvad kan I gøre for at takke en, der har hjulpet jer?',
-      next: 'v_bjerg'
-    },
-    v_bjerg: {
-      title: 'Vindbjerget', lit: 4,
-      text: ['Vindbjerget er højt og stejlt, og jo højere I kommer, jo hårdere blæser det. Jeres tøj flagrer, og småsten ruller forbi jeres fødder.',
-        'Helt oppe på toppen kan I ane en lille, drejende sky.'],
-      ask: 'Hvad gør man, når noget blæser imod én?',
-      dyn: function () {
-        function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'v_bjergOk', lose: 'v_bjergFejl', flag: 'mollLoefte', flagTxt: 'fordi Moll har vist jer en genvej' } }; }
-        var c = [R('Mod', 'Bøj jer ned og gå ét skridt ad gangen', 7), R('List', 'Hold jer i læ bag klipperne'), R('Nysgerrighed', 'Find ud af, hvor blæsten kommer fra, og gå med den')];
-        availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at lyse op i blæsten', to: 'v_bjergGnist', use: n }); });
-        c.push({ label: 'Bed Moll grave en tunnel gennem klippen', to: 'v_bjergOk', lock: function () { return state.flags.mollLoefte ? null : 'Kræver at I har hjulpet Moll'; } });
-        return c;
-      }
-    },
-    v_bjergOk: {
-      title: 'Toppen', lit: 4,
-      text: function () {
-        var t = ['Pludselig lægger blæsten sig. Øverst på bjerget drejer en lille hvirvel af luft rundt og rundt, helt alene. I kan ikke se den, men I kan se, hvordan små blade og fjer danser omkring den.'];
-        if (state.flags.maaneVen) t.push('Månen kigger ned over bjergtoppen og lægger sølvlys på stien, så I kan se, hvor I går.');
-        return t;
-      },
-      ask: 'Hvad tror I, Vinden tænker, når den ser jer komme?',
-      next: 'v_vind'
-    },
-    v_bjergFejl: {
-      title: 'Hår til vejrs', lit: 4, flag: 'blaest',
-      text: ['Blæsten tager jeres hatte og blæser jeres hår helt lodret. I må kravle de sidste meter på alle fire. Det ser så sjovt ud, at en flok fugle klapper med vingerne.',
-        'Til sidst når I toppen, forpustede og grinende, med hår som små skorstene.'],
-      ask: 'Er det værre at se sjov ud eller at give op? Hvad tænker I?',
-      next: 'v_vind'
-    },
-    v_bjergGnist: {
-      title: 'Et lys i blæsten', lit: 4,
-      text: function () {
-        var n = state.lastUse || 'Gnisten';
-        return [n + ' lyser som en lille lanterne, og blæsten bliver så forbløffet, at den holder pause. I går de sidste skridt til toppen i ro og mag.',
-          n + ' gaber stort og kravler ned i jeres lomme for at sove.'];
-      },
-      ask: 'Hvorfor tror I, at blæsten holdt pause?',
-      next: 'v_vind'
-    },
-    v_vind: {
-      title: 'Vinden', lit: 5,
-      text: function () {
-        var t = ['Hvirvlen stopper, da den får øje på jer. Så kommer der en lille, tynd stemme, som lyder som en fløjte i en nøglering. &laquo;Gå væk,&raquo; siger Vinden. &laquo;I er vrede på mig. Jeg slukkede jeres lanterner.&raquo;'];
-        if (state.flags.blaest) t.push('Vinden kigger på jeres lodrette hår og fniser lidt. &laquo;Det gjorde jeg,&raquo; siger den.');
-        if (state.feather) t.push('Så ser den Uffes fjer. &laquo;Du har Uffes fjer,&raquo; hvisker den. &laquo;Er han ikke vred på mig?&raquo;');
-        return t;
-      },
-      ask: 'Hvad siger man til én, der har lavet noget galt og er ked af det?',
-      dyn: function () {
-        function R(stat, label, key, t) { return { label: label, key: key, roll: { stat: stat, target: t || 6, win: 'v_endHjem', lose: 'v_vindFejl', flag: 'tutVen', flagTxt: 'fordi Tut har lært jer at grine sammen' } }; }
-        var c = [R('Venlighed', 'Sig, at I tilgiver, og at I gerne vil lege', 'vv1'), R('Humor', 'Lav en drage af jeres arme, og lad som om I flyver', 'vv2'), R('Fantasi', 'Fortæl, hvordan Vinden kunne bære lys i stedet for at slukke det', 'vv3'), R('Mod', 'Løb ud i blæsten og tag fat i Vinden', 'vv4', 7)];
-        c.push({ label: 'Lad alle venner række hånden ud til Vinden', to: 'v_endVenner', lock: function () { return friendCount() >= 2 ? null : 'Kræver to venner, I har hjulpet'; } });
-        c.push({ label: 'Lad gnisterne lege med Vinden', to: 'v_endGnister', lock: function () { return availG().length > 0 ? null : 'Kræver en gnist, der ikke er brugt'; } });
-        c.push({ label: 'Sæt jer stille ved siden af Vinden og lyt', to: 'v_endLyt' });
-        return c;
-      }
-    },
-    v_vindFejl: {
-      title: 'Vinden tøver', lit: 5,
-      text: ['Vinden krøller sig sammen og bliver helt lille. &laquo;Det hjælper ikke,&raquo; mumler den. &laquo;Jeg er alt for dum.&raquo;',
-        'Uffe lander ved siden af jer og hvisker: &laquo;Prøv at fortælle, at I også nogle gange laver fejl.&raquo;'],
-      ask: 'Hvad er forskellen på at være dum og at lave en fejl?',
-      next: 'v_vind'
-    },
-    v_endHjem: {
-      title: 'Vinden får lov at lege', end: true, all: true, flag: 'vindVen',
-      text: function () {
-        var t = ['Vinden bliver så glad, at den snurrer tre gange rundt om jer. &laquo;Må jeg godt lege med jer alligevel?&raquo; hvisker den. Og I siger ja.',
-          'Fra den dag blæser Vinden blidt gennem Lanterneskoven. Den bærer duften af blomster og lanternernes lys fra træ til træ i stedet for at slukke dem.'];
-        if (availG().length) t.push(joinNames(availG()) + ' danser på Vindens ryg som små stjerneskud.');
-        t.push('&laquo;Hu-hu!&raquo; siger Uffe. &laquo;Nu mangler vi bare at sige undskyld til resten af skoven. Vi skal holde en fest!&raquo;');
-        return t;
-      },
-      ask: 'Hvorfor er det godt at give nogen en chance til?'
-    },
-    v_endLyt: {
-      title: 'Vinden fortæller', end: true, all: true, flag: 'vindVen',
-      text: ['I sætter jer ved siden af Vinden og siger ingenting. Efter lang tid begynder Vinden at fortælle: om bjergene, om havet og om alle de steder, den har været, uden at nogen har lyttet.',
-        'I lytter, til stjernerne står højt på himlen. &laquo;Tak,&raquo; hvisker Vinden til sidst. &laquo;Det var det, jeg manglede.&raquo; Uffe nikker. &laquo;Nu skal vi bare vise hele skoven, at Vinden er en ven. Lad os holde en fest!&raquo;'],
-      ask: 'Hvornår hjælper det mest bare at lytte?'
-    },
-    v_endVenner: {
-      title: 'Alle rækker ud', end: true, all: true, flag: 'vindVen',
-      text: function () {
-        return ['I løfter hånden og kalder: &laquo;Kom frem, alle sammen!&raquo; Fra stierne under bjerget kommer ' + joinNames(crew()) + ', og hver især rækker en hånd ud mod Vinden.',
-          'Vinden kigger på alle de hænder og bliver helt stille. &laquo;Er der så mange, der vil lege med mig?&raquo; Så snurrer den rundt af glæde og løfter jer alle et lille stykke op fra jorden.',
-          '&laquo;Hu-hu!&raquo; råber Uffe. &laquo;Nu skal vi holde en fest for hele skoven!&raquo;'];
-      },
-      ask: 'Hvem har rakt hånden ud til jer, når I havde brug for det?'
-    },
-    v_endGnister: {
-      title: 'Gnister i blæsten', end: true, all: true, flag: 'vindVen',
-      text: function () {
-        return [joinNames(availG()) + ' svæver op og begynder at lege fangeleg med Vinden. Vinden løfter dem højt op og lader dem dale langsomt ned igen, og de kilder af grin.',
-          'Hver gang Vinden blæser, danser gnisterne i lange, lysende spiraler, og himlen ser ud, som om stjernerne har fået nye venner.',
-          '&laquo;Hu-hu! Det her skal fejres,&raquo; siger Uffe. &laquo;Lad os holde en fest!&raquo;'];
-      },
-      ask: 'Hvem ville I gerne lege fangeleg med?'
-    },
-
-    /* ---------- Del 4: Lanternefesten ---------- */
-    f1: {
-      title: 'Invitationer', lit: 2,
-      text: function () {
-        var t = ['Morgenen efter, at Vinden har fået lov at lege, sidder Uffe på jeres vindueskarm med en lille fjerpen i kloen. &laquo;Hu-hu! Nu skal Vinden sige undskyld til hele skoven,&raquo; siger han. &laquo;Og den bedste måde at sige undskyld på er med en fest!&raquo;',
-          'Lanterneskoven skal have lanterner, musik og gæster. Og Vinden står genert bag et træ og kigger på jer.'];
-        var fr = crew();
-        if (fr.length) t.push('&laquo;' + joinNames(fr) + ' vil gerne hjælpe,&raquo; siger Uffe.');
-        if (state.flags.maaneVen) t.push('Højt oppe på himlen blinker Månen. Den har allerede lovet at komme.');
-        return t;
-      },
-      ask: 'Hvordan holder man en god fest for dem, man har gjort kede af det?',
-      choices: [{ label: 'Gå i gang med festen', to: 'f_lys' }, { label: 'Spørg Uffe, hvad der er vigtigst', to: 'f1b' }]
-    },
-    f1b: {
-      title: 'Uffes festregel', lit: 2, gainFeather: true,
-      text: ['&laquo;Den vigtigste regel til en fest,&raquo; siger Uffe, &laquo;er, at alle skal have lov at være med. Også dem, der er lidt bange.&raquo;',
-        'Han plukker en lysende fjer af sin vinge. &laquo;Tag den med. Den giver held til festen. Brug den, når I slår med terningen.&raquo;'],
-      ask: 'Hvordan kan man få en, der er genert, til at føle sig velkommen?',
-      choices: [{ label: 'Tak, Uffe! Lad os holde fest', to: 'f_lys' }]
-    },
-    f_lys: {
-      title: 'Lanterner til festen', lit: 3,
-      text: ['Først skal der lys til. Lanternerne hænger højt i træerne, og mange af dem er blevet bøjede og skæve af Vindens leg. Der er hundredvis, og de skal rettes op, pudses og tændes.'],
-      ask: 'Hvordan gør man et stort arbejde lettere?',
-      dyn: function () {
-        function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'f_lysOk', lose: 'f_lysFejl', flag: 'tutVen', flagTxt: 'fordi Tuts svampe lyser op' } }; }
-        var c = [R('List', 'Byg en stige af grene og reb'), R('Mod', 'Klatr op i træerne med en rygsæk fuld af lanterner', 7), R('Fantasi', 'Mal en stjernehimmel på lanternerne med fingrene')];
-        availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at tænde de højeste lanterner', to: 'f_lysGnist', use: n }); });
-        c.push({ label: 'Bed Tuts lysende svampe stå som lamper langs stien', to: 'f_lysOk', lock: function () { return state.flags.tutVen ? null : 'Kræver at I har hjulpet Tut'; } });
-        return c;
-      }
-    },
-    f_lysOk: {
-      title: 'Skoven lyser', lit: 3,
-      text: ['Lanterne efter lanterne bliver rettet op og tændt, til hele skoven ligner en stjernehimmel på jorden. Vinden hjælper med at blæse så blidt, at lysene bare danser.'],
-      ask: 'Hvad er det flotteste, I har set, når det var mørkt?',
-      next: 'f_musik'
-    },
-    f_lysFejl: {
-      title: 'Skæve lanterner', lit: 3,
-      text: ['Nogle lanterner kommer til at hænge skævt, og andre med bunden i vejret. Uffe kigger på dem med hovedet på skrå. &laquo;Hu-hu! De ser faktisk ret sjove ud,&raquo; siger han.',
-        'Og det gør de. Skoven lyser, bare lidt mere pudsigt end før.'],
-      ask: 'Er noget stadig flot, selvom det ikke blev perfekt?',
-      next: 'f_musik'
-    },
-    f_lysGnist: {
-      title: 'Gnisten tænder', lit: 3,
-      text: function () {
-        var n = state.lastUse || 'Gnisten';
-        return [n + ' svæver op til de højeste grene og tænder lanterne efter lanterne med et lille kys. Hver gang klinger det som et lille &laquo;ding&raquo;.',
-          n + ' bliver helt træt og kravler ned i jeres lomme for at sove.'];
-      },
-      ask: 'Hvem hjælper jer, når I ikke kan nå det alene?',
-      next: 'f_musik'
-    },
-    f_musik: {
-      title: 'Musik til festen', lit: 4,
-      text: ['Til en rigtig fest hører der musik. Men skoven er helt stille, for ingen har turdet synge, siden Vinden blæste. I kan høre jeres egne skridt og ikke andet.'],
-      ask: 'Hvilken lyd bliver I allermest glade for?',
-      dyn: function () {
-        function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'f_musikOk', lose: 'f_musikFejl', flag: 'nusseVen', flagTxt: 'fordi Nusse har lånt jer sin fløjte' } }; }
-        var c = [R('Humor', 'Lav en vild lydorkester med frøer, krager og tudser'), R('Venlighed', 'Bed alle om at nynne en stille sang sammen'), R('Nysgerrighed', 'Find alle de ting i skoven, der kan lave lyde')];
-        availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at klinge som en lille klokke', to: 'f_musikGnist', use: n }); });
-        c.push({ label: 'Bed Månen lyse, så alle kan se at danse', to: 'f_musikOk', lock: function () { return state.flags.maaneVen ? null : 'Kræver at I har hjulpet Månen'; } });
-        return c;
-      }
-    },
-    f_musikOk: {
-      title: 'Skoven synger', lit: 4,
-      text: ['Først er det kun én tone. Så kommer der en til, og en til, indtil hele skoven er fuld af melodi. Træerne rasler i takt, frøerne kvækker, og Vinden fløjter med.'],
-      ask: 'Hvilken sang kan I alle sammen?',
-      next: 'f_gaester'
-    },
-    f_musikFejl: {
-      title: 'Skæve toner', lit: 4,
-      text: ['Det lyder som en kat i en tromme. Men så begynder en krage at synge med, og så en frø, og så en ugle, og pludselig bliver det bedre og bedre.',
-        '&laquo;Det er ikke perfekt,&raquo; siger Uffe, &laquo;men det er jeres.&raquo;'],
-      ask: 'Hvorfor er det sjovere at synge sammen end alene?',
-      next: 'f_gaester'
-    },
-    f_musikGnist: {
-      title: 'Klokkeklang', lit: 4,
-      text: function () {
-        var n = state.lastUse || 'Gnisten';
-        return [n + ' svæver rundt og klinger som den allermindste klokke. Frøerne, kragerne og tudserne falder ind, til hele skoven spiller.',
-          n + ' gaber stort og kravler ned i jeres lomme for at sove.'];
-      },
-      ask: 'Hvad er den smukkeste lyd, I kender?',
-      next: 'f_gaester'
-    },
-    f_gaester: {
-      title: 'Gæsterne', lit: 4,
-      text: ['Nu skal gæsterne komme. I banker på hos ræve, mus, pindsvin og ugler, men de fleste tør ikke komme.',
-        '&laquo;Vinden har blæst mit tag af,&raquo; siger en lille mus. &laquo;Hvad hvis den gør det igen?&raquo;'],
-      ask: 'Hvad hjælper, når man er bange for noget, der engang gjorde ondt?',
-      dyn: function () {
-        function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'f_gaesterOk', lose: 'f_gaesterFejl', flag: 'mollLoefte', flagTxt: 'fordi Moll fortæller de andre, hvor rart det er' } }; }
-        var c = [R('Venlighed', 'Fortæl, at Vinden har skrevet et brev og vil sige undskyld'), R('Mod', 'Gå sammen med de bange gæster hele vejen til festen', 7), R('Humor', 'Lav en invitation som en pudsig sang')];
-        c.push({ label: 'Lad Nusse fortælle, hvordan det er at være bange', to: 'f_gaesterOk', lock: function () { return (state.flags.nusseVen || state.flags.nusseHonning) ? null : 'Kræver at I har hjulpet Nusse'; } });
-        return c;
-      }
-    },
-    f_gaesterOk: {
-      title: 'Alle kommer', lit: 4,
-      text: function () {
-        var t = ['Én efter én titter de frem: ræve, mus, pindsvin og ugler. Den lille mus går forrest, og de andre følger lige efter.'];
-        if (state.flags.nusseVen || state.flags.nusseHonning) t.push('Nusse går ved siden af den lille mus og holder den i hånden. &laquo;Jeg var også bange,&raquo; siger han. &laquo;Men det bliver bedre.&raquo;');
-        return t;
-      },
-      ask: 'Hvordan føles det at komme ind til en fest, hvor man ikke kender nogen?',
-      next: 'f_fest'
-    },
-    f_gaesterFejl: {
-      title: 'Kun en enkelt', lit: 4,
-      text: ['Kun den lille mus tør komme med. Men den fortæller de andre, hvor sjovt der er, og snart kommer de listende, én efter én.'],
-      ask: 'Er det i orden at komme senere end de andre?',
-      next: 'f_fest'
-    },
-    f_fest: {
-      title: 'Festen', lit: 5,
-      text: function () {
-        var t = ['Skoven lyser, musikken spiller, og gæsterne står i en stor rundkreds. Midt i cirklen står Vinden, helt lille. Alle kigger på den.',
-          '&laquo;Jeg&hellip; jeg vil gerne sige undskyld,&raquo; hvisker Vinden. &laquo;Jeg slukkede jeres lanterner, fordi jeg var ensom. Jeg lover at blæse blidt.&raquo; Så bliver der helt stille.'];
-        var fr = crew();
-        if (fr.length) t.push(joinNames(fr) + ' smiler til Vinden.');
-        return t;
-      },
-      ask: 'Hvad siger man, når nogen siger undskyld?',
-      dyn: function () {
-        function R(stat, label, key, win, t) { return { label: label, key: key, roll: { stat: stat, target: t || 6, win: win, lose: 'f_festFejl', flag: 'vindVen', flagTxt: 'fordi Vinden stoler på jer' } }; }
-        var c = [R('Venlighed', 'Sig, at alle laver fejl, og at Vinden hører til i skoven', 'ff1', 'f_endTilgiv'), R('Humor', 'Bed Vinden puste tryllebobler til alle', 'ff2', 'f_endDans'), R('Fantasi', 'Bed Vinden bære lanternerne op som lysende balloner', 'ff3', 'f_endLys')];
-        c.push({ label: 'Lad alle venner synge for Vinden', to: 'f_endVenner', lock: function () { return friendCount() >= 2 ? null : 'Kræver to venner, I har hjulpet'; } });
-        c.push({ label: 'Sæt jer i græsset og vær stille sammen med Vinden', to: 'f_endStille' });
-        return c;
-      }
-    },
-    f_festFejl: {
-      title: 'Stille i rundkredsen', lit: 5,
-      text: ['Ingen siger noget. Vinden kigger ned, og lanternerne holder helt stille. Så rækker den lille mus en pote frem. &laquo;Det kan vi nok godt prøve,&raquo; siger den med en tynd stemme.',
-        'Uffe hvisker: &laquo;Prøv igen. Man skal sige det, man mener.&raquo;'],
-      ask: 'Hvorfor er det svært at sige noget, når alle kigger?',
-      next: 'f_fest'
-    },
-    f_endTilgiv: {
-      title: 'Plads til alle', end: true, all: true,
-      text: function () {
-        var t = ['Den lille mus træder frem. &laquo;Alle kan blæse forkert engang imellem,&raquo; siger den. Og så nikker gæsterne, én efter én.',
-          'Vinden bliver så lettet, at den sender en blød brise gennem alle lanterner, så de svajer, som lå de i en vugge. Musikken begynder igen, og denne gang danser Vinden med.'];
-        if (state.flags.maaneVen) t.push('Månen kigger ned og lægger sølvlys over hele festen.');
-        t.push('Uffe sidder på den laveste gren og ser ud over skoven. &laquo;Jeg fandt hjem i aften,&raquo; hvisker han. &laquo;Det var ikke et træ. Det var jer.&raquo;');
-        return t;
-      },
-      ask: 'Hvem har givet jer en ny chance?'
-    },
-    f_endDans: {
-      title: 'Skovens dans', end: true, all: true,
-      text: function () {
-        var t = ['Vinden puster store, skinnende tryllebobler, som svæver op mellem lanternerne og spejler hele skoven. Først tøver gæsterne, så begynder den lille mus at danse, og snart danser alle.',
-          'Vinden løfter dansende blade i spiraler, og lanternerne blinker i takt med musikken.'];
-        if (availG().length) t.push(joinNames(availG()) + ' danser med som små stjerner.');
-        t.push('&laquo;Hu-hu!&raquo; råber Uffe. &laquo;Nu er Lanterneskoven helt tændt igen, og ingen er alene!&raquo;');
-        return t;
-      },
-      ask: 'Hvad er den sjoveste dans, I kender?'
-    },
-    f_endLys: {
-      title: 'Lanterner i luften', end: true, all: true,
-      text: function () {
-        var t = ['Vinden løfter lanternerne forsigtigt af grenene og lader dem svæve op i luften som lysende balloner. Alle gæsterne tager sig til munden. Aldrig har skoven set noget så smukt.',
-          'Så lader Vinden dem dale blidt tilbage på deres grene, én efter én, uden at ét eneste lys går ud.'];
-        if (availG().length) t.push(joinNames(availG()) + ' danser rundt om lanternerne som en lysende krans.');
-        t.push('&laquo;Se,&raquo; siger Uffe stille. &laquo;Når Vinden bærer lyset, i stedet for at slukke det, bliver det endnu mere magisk.&raquo;');
-        return t;
-      },
-      ask: 'Hvad kan man gøre af noget, der før gik galt?'
-    },
-    f_endVenner: {
-      title: 'Alle sammen', end: true, all: true,
-      text: function () {
-        return ['I peger på de venner, I har mødt undervejs. ' + joinNames(crew()) + ' træder frem og begynder at synge for Vinden. Først tyndt, så højt, så alle gæsterne falder ind.',
-          'Vinden lytter med lukkede øjne. Til sidst blæser den en lille, blid vindstrøg gennem alle lanterner, så de klinger som klokker.',
-          '&laquo;Hu-hu!&raquo; siger Uffe. &laquo;Det er det smukkeste, jeg har hørt i hele mit liv.&raquo;'];
-      },
-      ask: 'Hvilken sang ville I synge for jeres bedste ven?'
-    },
-    f_endStille: {
-      title: 'Den stille undskyldning', end: true, all: true,
-      text: ['I sætter jer i græsset omkring Vinden uden at sige noget. Gæsterne ser på jer og sætter sig også, én efter én, til hele rundkredsen sidder i den bløde nat.',
-        'Til sidst lægger en lille, blød brise sig om alle som et tæppe. &laquo;Tak, fordi I ikke løb væk,&raquo; hvisker Vinden. Og lanternerne lyser stille og roligt videre.',
-        'Uffe lægger hovedet på skrå og smiler. &laquo;Nu er der ro i skoven igen,&raquo; hvisker han.'],
-      ask: 'Hvornår føles det rart bare at sidde stille sammen?'
-    }
+  /* Scener, magi- og mester-valg fyldes fra de registrerede historier. Scene-id'er er unikke på tværs af historierne,
+     og en historie må ikke give magi, mester-valg eller billeder til en scene, der allerede har dem. */
+  var S = {}, MAGIC_OPTS = {}, MAX_OPTS = {}, ART = {};
+  function addStory(st) {
+    var ids = Object.keys(st.scenes || {});
+    var dobbelt = ids.filter(function (id) { return S[id]; });
+    if (!st.id || !st.start || !st.scenes || !st.scenes[st.start]) throw new Error('Historien mangler id, start eller scener');
+    if (dobbelt.length) throw new Error('Scene-id findes allerede: ' + dobbelt.join(', '));
+    [['magi', MAGIC_OPTS, 'Magi'], ['mester', MAX_OPTS, 'Mester-valg'], ['billeder', ART, 'Billede']].forEach(function (f) {
+      var dob = Object.keys(st[f[0]] || {}).filter(function (id) { return f[1][id]; });
+      if (dob.length) throw new Error(f[2] + ' til scenen findes allerede: ' + dob.join(', '));
+    });
+    ids.forEach(function (id) { S[id] = st.scenes[id]; });
+    Object.keys(st.magi || {}).forEach(function (id) { MAGIC_OPTS[id] = st.magi[id]; });
+    Object.keys(st.mester || {}).forEach(function (id) { MAX_OPTS[id] = st.mester[id]; });
+    Object.keys(st.billeder || {}).forEach(function (id) { ART[id] = st.billeder[id]; });
+    STORIES.push(st);
+  }
+  LK.addStory = function (factory) {
+    try { addStory(factory(kit)); } catch (e) { console.error('Historien kunne ikke indlæses og springes over:', e); }
   };
-
-  var MAGIC_OPTS = {
-    bro: {
-      gnist: { l: 'Skab en gnist, der tegner en bro af lysprikker i luften', to: 'broOk' },
-      dyr: { l: 'Spørg en bæver, om den vil lægge et træ som bro', to: 'broOk' },
-      syn: { l: 'Se, hvilke sten der ligger lige under vandet', to: 'broOk' },
-      latter: { l: 'Strø latterstøv, så fiskene hopper og viser vejen', to: 'broOk' }
-    },
-    torn: {
-      gnist: { l: 'Skab en gnist, så Nusse ikke er bange for mørket', to: 'tornOk' },
-      dyr: { l: 'Tal med fuglene, så de skubber tornene til side', to: 'tornOk' },
-      syn: { l: 'Se, hvordan grenen sidder, og find den lette måde at løsne den på', to: 'tornOk' },
-      latter: { l: 'Strø latterstøv, så Nusse får lyst til at smile og række ud', to: 'tornOk' }
-    },
-    gaade: {
-      gnist: { l: 'Skab en gnist, så I kan se alle bøgerne i Molls hule', to: 'gaadeKig' },
-      dyr: { l: 'Spørg Molls tusindben, hvad hun elsker allermest', to: 'gaadeKig' },
-      syn: { l: 'Se på bogryggene, der gemmer sig i mørket', to: 'gaadeKig' },
-      latter: { l: 'Strø latterstøv, så Moll kommer til at grine svaret ud', to: 'gaadeOk' }
-    },
-    svamp: {
-      gnist: { l: 'Skab en gnist, der danser rundt og får Tut til at kigge op', to: 'svampOk' },
-      dyr: { l: 'Spørg den lille flue, hvad Tut savner', to: 'svampOk' },
-      syn: { l: 'Se, at Tut gemmer et lille legetøj under hatten', to: 'svampOk' },
-      latter: { l: 'Strø latterstøv på Tuts hat', to: 'svampOk' }
-    },
-    hub: {
-      syn: { l: 'Se den skjulte sti mellem træerne', to: 'svamp', show: function () { return state.visited.indexOf('svamp') < 0 && !!lockTxt('Nysgerrighed', 2); } }
-    },
-    tree: {
-      gnist: { l: 'Lav en ekstra gnist til træet', to: 'tree', eff: function (h) { state.gnists++; state.gnistList.push({ key: 'magi_' + h.id + '_' + state.gnists, c: 'magiske', def: gen(h.name) + ' gnist', col: '#F2C94C', ph: 'Stjerne', name: '' }); } },
-      dyr: { l: 'Bed skovens dyr om at hjælpe', to: 'endFriends' },
-      latter: { l: 'Strø latterstøv, så træet må grine', to: 'endSang' }
-    },
-    m_taage: {
-      gnist: { l: 'Skab en gnist, der lyser vejen', to: 'm_taageGnist', eff: function (h) { state.lastUse = gen(h.name) + ' gnist'; } },
-      dyr: { l: 'Spørg uglerne og flagermusene om vej', to: 'm_taageOk' },
-      syn: { l: 'Se de usynlige fodspor i tågen', to: 'm_taageOk' },
-      latter: { l: 'Strø latterstøv, så tågen kildes og letter', to: 'm_taageOk' }
-    },
-    m_sump: {
-      gnist: { l: 'Skab en gnist, der lyser stenene op', to: 'm_sumpGnist', eff: function (h) { state.lastUse = gen(h.name) + ' gnist'; } },
-      dyr: { l: 'Tal frøsprog og bed dem være stille', to: 'm_sumpOk' },
-      syn: { l: 'Se, hvilke tuer der kan bære jer', to: 'm_sumpOk' },
-      latter: { l: 'Strø latterstøv, så frøerne glemmer at kvække', to: 'm_sumpOk' }
-    },
-    m_maane: {
-      gnist: { l: 'Skab en ny gnist, der lyser sammen med månen', to: 'm_endGnister', eff: function (h) { state.gnisterIn.push(gen(h.name) + ' gnist'); } },
-      dyr: { l: 'Bed natsommerfuglene om at kigge op på månen', to: 'm_endHjem' },
-      syn: { l: 'Se, hvad månen drømmer om', to: 'm_endHjem' },
-      latter: { l: 'Strø latterstøv, så månen får sit første grin', to: 'm_endHjem' }
-    },
-    v_skov: {
-      gnist: { l: 'Skab en gnist, der lyser en rolig sti', to: 'v_skovGnist', eff: function (h) { state.lastUse = gen(h.name) + ' gnist'; } },
-      dyr: { l: 'Bed fuglene vise, hvor vinden er blidest', to: 'v_skovOk' },
-      syn: { l: 'Se mønstret i bladenes dans og find hullet', to: 'v_skovOk' },
-      latter: { l: 'Strø latterstøv, så bladene falder ned i et stort fnis', to: 'v_skovOk' }
-    },
-    v_bjerg: {
-      gnist: { l: 'Skab en gnist, der lyser op i blæsten', to: 'v_bjergGnist', eff: function (h) { state.lastUse = gen(h.name) + ' gnist'; } },
-      dyr: { l: 'Bed bjerggeden vise den lune sti', to: 'v_bjergOk' },
-      syn: { l: 'Se den skjulte sti i læ bag klipperne', to: 'v_bjergOk' },
-      latter: { l: 'Strø latterstøv, så blæsten bliver kildet og holder pause', to: 'v_bjergOk' }
-    },
-    v_vind: {
-      gnist: { l: 'Skab en ny gnist, der leger med Vinden', to: 'v_endGnister', eff: function (h) { state.gnisterIn.push(gen(h.name) + ' gnist'); } },
-      dyr: { l: 'Bed fuglene lære Vinden at lege', to: 'v_endHjem' },
-      syn: { l: 'Se, at Vinden egentlig bare er lille og bange', to: 'v_endHjem' },
-      latter: { l: 'Strø latterstøv, så Vinden får sit første grin', to: 'v_endHjem' }
-    },
-    f_lys: {
-      gnist: { l: 'Skab en gnist, der tænder de højeste lanterner', to: 'f_lysGnist', eff: function (h) { state.lastUse = gen(h.name) + ' gnist'; } },
-      dyr: { l: 'Bed ugler og flagermus hjælpe med de højeste grene', to: 'f_lysOk' },
-      syn: { l: 'Se, hvilke lanterner der er ødelagte, og ret dem først', to: 'f_lysOk' },
-      latter: { l: 'Strø latterstøv, så alle får lyst til at hjælpe', to: 'f_lysOk' }
-    },
-    f_musik: {
-      gnist: { l: 'Skab en gnist, der klinger som en lille klokke', to: 'f_musikGnist', eff: function (h) { state.lastUse = gen(h.name) + ' gnist'; } },
-      dyr: { l: 'Bed krager og frøer om at synge sammen', to: 'f_musikOk' },
-      syn: { l: 'Se, hvilke ting i skoven der kan klinge', to: 'f_musikOk' },
-      latter: { l: 'Strø latterstøv, så alle får lyst til at synge', to: 'f_musikOk' }
-    },
-    f_gaester: {
-      gnist: { l: 'Skab en gnist, der følger de bange gæster hele vejen', to: 'f_gaesterOk' },
-      dyr: { l: 'Tal blidt med de bange dyr på deres eget sprog', to: 'f_gaesterOk' },
-      syn: { l: 'Se, hvad hver enkelt gæst er mest bange for', to: 'f_gaesterOk' },
-      latter: { l: 'Strø latterstøv, så de bange gæster får lyst til at komme', to: 'f_gaesterOk' }
-    },
-    f_fest: {
-      gnist: { l: 'Skab en gnist, der danser ved siden af Vinden', to: 'f_endLys', eff: function (h) { state.gnisterIn.push(gen(h.name) + ' gnist'); } },
-      dyr: { l: 'Bed alle dyrene sige noget pænt til Vinden', to: 'f_endTilgiv' },
-      syn: { l: 'Se, at hele skoven faktisk allerede har tilgivet Vinden', to: 'f_endTilgiv' },
-      latter: { l: 'Strø latterstøv, så alle begynder at danse', to: 'f_endDans' }
-    }
-  };
-
-  /* Mester-valg: når en helt har 5 i et træk, åbner der sig et ekstra valg i scenen (uden terning).
-     Højst ét mester-valg pr. træk pr. eventyr (state.maxUsed). Vises først, når det er opnået. */
-  var MAX_OPTS = {
-    bro: [
-      { stat: 'Mod', l: 'Bær de andre over stammen, som var den en bred bro', to: 'broOk', n: function (n) { return n + ' går roligt ud på stammen, og den holder helt stille under de modige fødder. Én efter én kommer alle sikkert over.'; } },
-      { stat: 'List', l: 'Find den tørre genvej, som kun en snedig helt får øje på', to: 'broOk', n: function (n) { return n + ' får øje på nogle flade sten, der gemmer sig under bregnerne, og leder alle tørskoede rundt om det værste vand.'; } },
-      { stat: 'Fantasi', l: 'Tegn en lysende regnbuebro op i luften', to: 'broOk', n: function (n) { return n + ' lukker øjnene og tegner med fingrene. En regnbuebro bygger sig selv hen over bækken, og alle går over uden at vippe.'; } }
-    ],
-    torn: [
-      { stat: 'Venlighed', l: 'Lyt længe til Nusse, til han selv vil række ud', to: 'tornOk', n: function (n) { return n + ' sætter sig ned og lytter længe, uden at skynde på. Til sidst rækker Nusse selv ud efter sin gnist og smiler.'; } },
-      { stat: 'Mod', l: 'Åbn krattet som en port med bare hænder', to: 'tornOk', n: function (n) { return n + ' bøjer tornene til side så roligt, at de næsten glemmer at stikke. Nusse og gnisten kommer sikkert ud.'; } },
-      { stat: 'Humor', l: 'Lav den sjoveste lyd i hele skoven', to: 'tornOk', n: function (n) { return n + ' laver en lyd som en ged med hikke på en trampolin, og Nusse må holde sig for munden af grin. Så er han slet ikke bange mere.'; } }
-    ],
-    gaade: [
-      { stat: 'Nysgerrighed', l: 'Læs bogryggene, og find svaret med det samme', to: 'gaadeKig', n: function (n) { return n + ' løber øjnene hen over bogryggene og får øje på ét ord: HISTORIER. Så er svaret let.'; } },
-      { stat: 'Venlighed', l: 'Bed Moll fortælle om sin yndlingsbog', to: 'gaadeOk', n: function (n) { return n + ' spørger Moll, hvad hun elsker allermest, og hun begynder at fortælle om sin yndlingsbog. Midt i fortællingen kommer svaret af sig selv.'; } }
-    ],
-    svamp: [
-      { stat: 'Humor', l: 'Lav en hel lille forestilling for Tut', to: 'svampOk', n: function (n) { return n + ' laver en forestilling med en hikkende frø, en dansende svamp og et meget langt gabe. Tut må tørre øjnene af grin.'; } },
-      { stat: 'Venlighed', l: 'Sæt dig ved siden af Tut, og lyt, til han selv smiler', to: 'svampOk', n: function (n) { return n + ' sætter sig stille ved siden af Tut og lytter. Efter lidt tid begynder Tut selv at smile.'; } },
-      { stat: 'Fantasi', l: 'Fortæl, hvordan svampene engang var natlamper for en tudsekonge', to: 'svampOk', n: function (n) { return n + ' fortæller om en tudsekonge, hvis natlamper voksede op af jorden. Tut lytter med åben mund og glemmer helt at være trist.'; } }
-    ],
-    m_taage: [
-      { stat: 'Nysgerrighed', l: 'Læs sporene i tågen som en bog', to: 'm_taageOk', n: function (n) { return n + ' kigger tæt på og læser små spor i tågen: en fjer, en pote, en dugdråbe. Sporene fører lige til søen.'; } },
-      { stat: 'List', l: 'Find vej med ører og næse, helt uden at se', to: 'm_taageOk', n: function (n) { return n + ' lukker øjnene, lytter efter vandet og dufter sig frem. Alle følger efter, og tågen når slet ikke at narre dem.'; } },
-      { stat: 'Venlighed', l: 'Syng en stille sang, så alle holder sammen', to: 'm_taageOk', n: function (n) { return n + ' nynner en stille sang, så ingen farer vild. Alle holder hinanden i hænderne og følger melodien.'; } },
-      { stat: 'Fantasi', l: 'Mal en lysende sti, som tågen ikke kan skjule', to: 'm_taageOk', n: function (n) { return n + ' maler en lysende sti i tågen med fingrene, og stien bliver ved med at lyse, indtil alle er kommet igennem.'; } }
-    ],
-    m_sump: [
-      { stat: 'Humor', l: 'Hold en frøkoncert, hvor I dirigerer hele sumpen', to: 'm_sumpOk', n: function (n) { return n + ' hopper op på en sten og dirigerer. Frøerne kvækker i takt, og larmen bliver til en stor, glad koncert.'; } },
-      { stat: 'Mod', l: 'Spring over sumpen i ét stort hop', to: 'm_sumpOk', n: function (n) { return n + ' tager tilløb og springer helt over sumpen i ét eneste stort hop. De andre klapper og følger efter.'; } },
-      { stat: 'Fantasi', l: 'Forvandl sumpen til en dansesal med lysende sten', to: 'm_sumpOk', n: function (n) { return n + ' forestiller sig, at sumpen er en dansesal. Stenene begynder at lyse, og frøerne danser med.'; } }
-    ],
-    m_maane: [
-      { stat: 'Venlighed', l: 'Sig noget fra hjertet, så månen mærker, at den er savnet', to: 'm_endHjem', n: function (n) { return n + ' siger stille: &laquo;Vi har savnet dig.&raquo; Det er ikke meget, men månen mærker, at det er sandt.'; } },
-      { stat: 'Fantasi', l: 'Fortæl månen en helt ny historie, hvor den er hovedperson', to: 'm_endHjem', n: function (n) { return n + ' begynder at fortælle en historie, hvor månen er den modigste i hele natten. Månen lytter med store øjne.'; } },
-      { stat: 'Humor', l: 'Få månen til at grine, så den ryster op af søen', to: 'm_endHjem', n: function (n) { return n + ' laver en grimasse, som ingen har set før. Månen prøver at holde masken, men så kommer grinet.'; } },
-      { stat: 'Mod', l: 'Gå ud i søen og løft månen blidt op, helt uden frygt', to: 'm_endHjem', n: function (n) { return n + ' vader ud i det kolde vand og løfter månen blidt op i armene. Månen gisper, men den bliver varm om kinderne.'; } }
-    ],
-    v_skov: [
-      { stat: 'Mod', l: 'Gå gennem bladene som en modig vandrer', to: 'v_skovOk', n: function (n) { return n + ' går lige ind i bladhvirvlen uden at blinke, og bladene deler sig som et gardin foran de modige skridt.'; } },
-      { stat: 'List', l: 'Find den vindstille sti midt i hvirvlen', to: 'v_skovOk', n: function (n) { return n + ' lægger mærke til, at midten af hvirvlen er stille som øjet i en storm, og leder alle derind.'; } },
-      { stat: 'Fantasi', l: 'Forvandl bladene til et grønt, flyvende tæppe', to: 'v_skovOk', n: function (n) { return n + ' forestiller sig, at bladene er et flyvende tæppe, og pludselig bærer de alle sammen blidt gennem skoven.'; } }
-    ],
-    v_bjerg: [
-      { stat: 'Mod', l: 'Tag de mindste ved hånden og gå forrest i blæsten', to: 'v_bjergOk', n: function (n) { return n + ' tager de mindste ved hånden og går forrest i blæsten. Hvert skridt er sikkert, og snart er alle på toppen.'; } },
-      { stat: 'List', l: 'Find den skjulte sti, der snor sig i læ hele vejen op', to: 'v_bjergOk', n: function (n) { return n + ' opdager en smal sti, der snor sig i læ bag klipperne hele vejen til toppen.'; } },
-      { stat: 'Nysgerrighed', l: 'Læs blæstens spor, og følg den til dens kilde', to: 'v_bjergOk', n: function (n) { return n + ' lægger mærke til, hvordan græsset bøjer, og følger blæsten helt op til dens kilde.'; } }
-    ],
-    v_vind: [
-      { stat: 'Venlighed', l: 'Fortæl Vinden, at I har savnet at lege med den', to: 'v_endHjem', n: function (n) { return n + ' siger blidt, at alle har savnet at lege med Vinden. Det er ikke meget, men det er sandt, og Vinden mærker det.'; } },
-      { stat: 'Humor', l: 'Lav en vindpuster-konkurrence, hvor Vinden vinder', to: 'v_endHjem', n: function (n) { return n + ' udfordrer Vinden til en vindpuster-konkurrence. Vinden vinder hver gang og griner for første gang i mange år.'; } },
-      { stat: 'Fantasi', l: 'Fortæl om et sted, hvor Vinden kan lege uden at slukke noget', to: 'v_endHjem', n: function (n) { return n + ' fortæller om en stor, åben eng, hvor Vinden kan lege med drager og vindmøller uden at slukke noget som helst.'; } }
-    ],
-    f_lys: [
-      { stat: 'List', l: 'Lav et system, hvor alle har deres egen række lanterner', to: 'f_lysOk', n: function (n) { return n + ' deler alle op i hold, så hver har sin egen række af lanterner at passe. Pludselig går det som en leg.'; } },
-      { stat: 'Mod', l: 'Klatr op i det højeste træ og tænd den øverste lanterne', to: 'f_lysOk', n: function (n) { return n + ' klatrer helt op i det højeste træ og tænder den øverste lanterne. Så følger de andre efter.'; } },
-      { stat: 'Fantasi', l: 'Kald på lanternerne, som var de små drager', to: 'f_lysOk', n: function (n) { return n + ' kalder på lanternerne, som var de små drager. Én efter én svæver de ned og lader sig tænde.'; } }
-    ],
-    f_musik: [
-      { stat: 'Humor', l: 'Fortæl en vittighed, så alle griner i takt', to: 'f_musikOk', n: function (n) { return n + ' fortæller en vittighed, hvor alle grin kommer i takt, og pludselig er latteren selv blevet til musik.'; } },
-      { stat: 'Venlighed', l: 'Bed den mindste i skoven om at starte sangen', to: 'f_musikOk', n: function (n) { return n + ' beder den mindste mus om at starte sangen. Hun synger tyndt og sødt, og alle de andre falder ind.'; } },
-      { stat: 'Nysgerrighed', l: 'Find en hul stamme, der kan spille som en tromme', to: 'f_musikOk', n: function (n) { return n + ' finder en gammel, hul stamme og opdager, at den lyder som den fineste tromme. Snart svarer hele skoven.'; } }
-    ],
-    f_gaester: [
-      { stat: 'Venlighed', l: 'Lyt til alle de bange, til de selv vil komme', to: 'f_gaesterOk', n: function (n) { return n + ' sætter sig blidt hos hver eneste bange gæst og lytter, til de er klar. Én efter én rejser de sig og går med.'; } },
-      { stat: 'Mod', l: 'Gå forrest og bær den lille mus hele vejen', to: 'f_gaesterOk', n: function (n) { return n + ' løfter den lille mus op på skulderen og går forrest. Så tør de andre også.'; } },
-      { stat: 'Humor', l: 'Lav en invitation som en sjov sang', to: 'f_gaesterOk', n: function (n) { return n + ' laver en invitation som en pudsig sang, og alle de bange gæster kommer hoppende efter.'; } }
-    ],
-    f_fest: [
-      { stat: 'Venlighed', l: 'Tag Vindens hånd, og sig, at den er en del af skoven', to: 'f_endTilgiv', n: function (n) { return n + ' tager Vindens usynlige hånd og siger, at Vinden er en del af skoven lige så meget som alle andre.'; } },
-      { stat: 'Humor', l: 'Bed Vinden puste en tryllebobbel til hver gæst', to: 'f_endDans', n: function (n) { return n + ' beder Vinden om at puste store, skinnende tryllebobler, og snart danser alle rundt mellem dem.'; } },
-      { stat: 'Fantasi', l: 'Foreslå, at Vinden løfter lanternerne som balloner', to: 'f_endLys', n: function (n) { return n + ' foreslår, at Vinden løfter lanternerne op som balloner. Vinden prøver, og det virker.'; } }
-    ],
-    tree: []
-  };
-  var MESTER_TXT = {
-    Mod: function (n) { return n + ' træder helt hen til Lanternetræet uden at tøve og lægger hånden på stammen. Træet mærker modet og varmer, og de første lanterner tænder af sig selv.'; },
-    List: function (n) { return n + ' finder det gamle, skjulte gnistkammer i træets rod, hvor vinden aldrig kom. Derinde ligger de sidste gnister og venter.'; },
-    Venlighed: function (n) { return n + ' lægger øret mod træet og lytter længe. Træet fortæller om sine drømme, og af ren glæde over at blive hørt begynder det at lyse.'; },
-    Fantasi: function (n) { return n + ' finder på en ny farve, som ingen har set før, og maler den med fingrene op ad træet. Lanterne efter lanterne tænder i den nye farve.'; },
-    Humor: function (n) { return n + ' fortæller den allerbedste vittighed i hele skoven. Træet griner så meget, at alle lanternerne rasler og tænder.'; },
-    Nysgerrighed: function (n) { return n + ' kigger helt tæt på barken og opdager en lille, skjult lås i træet. Bag den sidder alle de forsvundne gnister.'; }
-  };
-  STATS.forEach(function (t) {
-    MAX_OPTS.tree.push({ stat: t[0], l: 'Brug mester-trækket ' + t[0] + ' til at tænde træet', to: 'endMester', eff: function (h, stat) { state.mester = { name: h.name, stat: stat }; } });
-  });
   function maxChoices(id) {
     var list = MAX_OPTS[id], out = [];
     if (!list) return out;
@@ -1577,9 +670,9 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   function miniStats(h) { return '<div class="mini">' + STATS.map(function (t) { return '<div class="srow"><span class="sn">' + t[0] + '</span><span class="pips">' + pips(h.stats[t[0]] || 0) + '</span></div>'; }).join('') + '</div>'; }
 
   var welcomed = false;
-  try { welcomed = localStorage.getItem('lk-welcomed') === '1'; } catch (e) {}
+  welcomed = store.get('lk-welcomed') === '1';
   function renderWelcome(fromLink) {
-    stopSpeak(); setLamps(2); setSpark();
+    stopSpeak(); setSpark();
     $('epi').textContent = 'Velkommen';
     stage.innerHTML =
       '<h2>Velkommen til Lanterneskoven!</h2>' +
@@ -1590,7 +683,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       '<li>Hver del har en god slutning, så I kan stoppe, når I har lyst.</li></ul>' +
       '<button class="btn main" id="wgo" type="button">' + (fromLink ? 'Tilbage' : 'Så går vi i gang') + '</button>';
     $('wgo').onclick = function () {
-      welcomed = true; try { localStorage.setItem('lk-welcomed', '1'); } catch (e) {}
+      welcomed = true; store.set('lk-welcomed', '1');
       if (state.scene) render(); else renderSetup();
     };
     stage.scrollIntoView({ block: 'start', behavior: 'auto' });
@@ -1598,8 +691,8 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   function renderSetup() { if (setup.view === 'builder') renderEdit(); else renderLib(); }
 
   function renderLib() {
-    setLamps(1); setSpark();
-    if (!setup.story) { var nx = STORIES.filter(function (x) { return !lib.world['done_' + x.id]; })[0]; setup.story = nx ? nx.id : 'lantern'; }
+    setSpark();
+    if (!setup.story) { var nx = STORIES.filter(function (x) { return !lib.world['done_' + x.id]; })[0]; setup.story = nx ? nx.id : STORIES[0] ? STORIES[0].id : null; }
     $('epi').textContent = 'Vælg eventyr';
     var sel = lib.heroes.filter(function (h) { return lib.play[h.id]; }).length;
     stage.innerHTML =
@@ -1612,7 +705,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
           '<button type="button" class="chip" data-edit="' + h.id + '">' + (h.pts > 0 ? 'Forbedre' : 'Rediger') + '</button></div>';
       }).join('') +
       (lib.heroes.length < 8 ? '<button class="btn" id="newh" type="button">+ Ny helt</button>' : '') +
-      '<label class="lab">Vælg del af historien</label>' +
+      '<label class="lab">Vælg historie</label>' +
       '<div class="comps" role="radiogroup">' + STORIES.map(function (st) {
         return '<label class="comp"><input type="radio" name="story" value="' + st.id + '"' + (setup.story === st.id ? ' checked' : '') + '><span><span class="nm">' + st.title + '</span><br><span class="ds">' + st.blurb + (lib.world['done_' + st.id] ? ' Gennemført.' : '') + '</span></span><span class="pl">' + st.tag + '</span></label>';
       }).join('') + '</div>' +
@@ -1651,6 +744,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     $('go').onclick = function () {
       var players = lib.heroes.filter(function (h) { return lib.play[h.id]; });
       var err = $('err');
+      if (!storyById(setup.story)) { err.textContent = 'Der er ingen historier at vælge lige nu. Prøv igen senere, når der er internet.'; err.hidden = false; return; }
       if (!players.length) { err.textContent = 'Vælg mindst én helt.'; err.hidden = false; return; }
       if (!setup.comp) { err.textContent = 'Vælg en følgesvend først.'; err.hidden = false; return; }
       fresh({ players: players, comp: setup.comp, story: setup.story });
@@ -1659,7 +753,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   }
 
   function renderEdit() {
-    setLamps(1); setSpark();
+    setSpark();
     $('epi').textContent = 'Vælg eventyr';
     var h = setup.edit;
     stage.innerHTML =
@@ -1750,9 +844,11 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
         /* 1 point efter hvert gennemført eventyr (ikke længere begrænset til én gang pr. måned) */
         p.pts = (p.pts || 0) + 1; p.bonusMonth = m; got.push(p.name); state.gotNow = (state.gotNow || []).concat(p.name);
       });
-      FRIEND_FLAGS.forEach(function (k) { if (state.flags[k]) lib.world[k] = true; });
+      /* En månedshistorie står for sig selv: den gemmer kun, at den er spillet, og ændrer ikke sagaens venner og gnister. */
+      var saga = !erMaaned(state.story);
+      if (saga) FRIEND_FLAGS.forEach(function (k) { if (state.flags[k]) lib.world[k] = true; });
       lib.world['done_' + state.story] = true;
-      if (state.story === 'lantern' && state.gnistList.length) lib.world.gnistNavne = gnistNames();
+      if (saga && state.story === 'lantern' && state.gnistList.length) lib.world.gnistNavne = gnistNames();
       saveLib();
       state.hadNow = had;
     }
@@ -1785,7 +881,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     var id = state.scene, sc = S[id];
     stopSpeak();
     setSpark();
-    setLamps(sc.all ? 6 : sc.lit != null ? sc.lit : 1 + state.gnists * 2 + (state.visited.length > 0 ? 1 : 0));
+    var lit = sc.all ? 6 : sc.lit != null ? sc.lit : 1 + state.gnists * 2 + (state.visited.length > 0 ? 1 : 0);
     var paras = typeof sc.text === 'function' ? sc.text() : sc.text;
     if (state.magicNote) { paras = [state.magicNote].concat(paras); state.magicNote = ''; }
     if (state.compNote) paras = paras.concat([state.compNote]);
@@ -1795,7 +891,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     var askTxt = typeof sc.ask === 'function' ? sc.ask() : sc.ask;
     var gi = sc.gnist ? state.gnistList.filter(function (g) { return g.key === id; })[0] : null;
     var nameBox = gi ? '<div class="namebox"><label class="lab" for="gn"><i class="gdot" style="background:' + gi.col + '"></i>Giv den ' + gi.c + ' gnist et navn</label><input class="nm-in" id="gn" maxlength="14" placeholder="Fx ' + gi.ph + '" value="' + esc(gi.name) + '"></div>' : '';
-    var h = (sc.end ? '<div class="end" aria-hidden="true">Slut</div>' : '') +
+    var h = artHtml(id) + lampsHtml(lit) + (sc.end ? '<div class="end" aria-hidden="true">Slut</div>' : '') +
       '<h2>' + sc.title + '</h2>' + turnLine(isChoice) + toolsHtml() +
       '<div class="story">' + storyHtml(paras) + '</div>' + nameBox +
       '<div class="ask"><b>Spørg børnene:</b> ' + askTxt + '</div>';
@@ -1803,19 +899,20 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       if (state.players.length) h += '<div class="heroes">' + state.players.map(function (p) { return '<figure>' + avatar(p, 72) + '<figcaption>' + esc(p.name) + '</figcaption></figure>'; }).join('') + '</div>';
       h += awardHtml();
       h += '<div class="stats">' + (state.story === 'lantern' ? '<span>Gnister: ' + (state.gnists ? joinNames(gnistNames()) : '0') + '</span>' : '') + (friendNames(state.flags).length ? '<span>Venner: ' + joinNames(friendNames(state.flags)) + '</span>' : '') + '<span>Terningkast: ' + state.rolls + '</span><span>Følgesvend: ' + esc(state.compName) + '</span></div>' +
-        '<div class="choices"><button class="btn main" id="again" type="button">Læs eventyret igen</button>' + (nextStory(state.story) ? '<button class="btn" id="nextstory" type="button">Spil næste del: ' + nextStory(state.story).title + '</button>' : '') + '<button class="btn" id="team" type="button">Forbedre helte</button></div>';
+        '<div class="choices"><button class="btn main" id="again" type="button">Læs eventyret igen</button>' + (erMaaned(state.story) ? '<button class="btn" id="back" type="button">Tilbage til historierne</button>' : nextStory(state.story) ? '<button class="btn" id="nextstory" type="button">Spil næste del: ' + nextStory(state.story).title + '</button>' : '') + '<button class="btn" id="team" type="button">Forbedre helte</button></div>';
     } else {
       h += magiBar() + '<p class="note" id="wrongnote" hidden></p><div class="choices" id="choices"></div>';
     }
     stage.innerHTML = h;
     bindTools(choices, !!sc.end);
     if (gi) $('gn').oninput = function () { gi.name = this.value; };
-    $('epi').textContent = 'Del ' + (storyIndex(state.story) + 1) + ' af ' + STORIES.length;
+    $('epi').textContent = overskrift(state.story);
     stage.scrollIntoView({ block: 'start', behavior: 'auto' });
     if (sc.end) {
       $('again').onclick = function () { var st = state.story; fresh({ players: state.players, comp: state.comp, story: st }); enter(storyStart(st)); };
       if ($('nextstory')) $('nextstory').onclick = function () { var ns = nextStory(state.story); fresh({ players: state.players, comp: state.comp, story: ns.id }); enter(ns.start); };
       $('team').onclick = function () { var c = state.comp; fresh({ players: state.players, comp: c }); setup.comp = c; setup.view = 'lib'; renderSetup(); };
+      if ($('back')) $('back').onclick = $('team').onclick;
       return;
     }
     var box = $('choices');
@@ -1911,9 +1008,89 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     $('roll').onclick = rollOnce;
   }
 
-  $('about').onclick = function (e) { e.preventDefault(); renderWelcome(true); };
-  if (welcomed) renderSetup(); else renderWelcome(false);
+  /* Forhåndsvisningens eksempelhold: Asta og Bo med 2 i hvert træk og Bastian Bjørn. Gemmes aldrig. */
+  function startPreview() {
+    $('pvtag').hidden = false;
+    var st = storyById(PREVIEW_ID);
+    var helte = ['Asta', 'Bo'].map(function (navn, i) {
+      var h = makeHero(i);
+      h.id = 'eksempel' + (i + 1); h.name = navn; h.pts = 0;
+      STATS.forEach(function (t) { h.stats[t[0]] = 2; });
+      return h;
+    });
+    lib = { heroes: helte, play: { eksempel1: true, eksempel2: true }, world: {} };
+    setup.view = 'lib'; setup.edit = null; setup.isNew = false; setup.comp = 'bjorn';
+    if (!st) {
+      $('epi').textContent = 'Forhåndsvisning';
+      stage.innerHTML = '<h2>Historien findes ikke</h2><p>Forhåndsvisningen kunne ikke finde historien &laquo;' + esc(PREVIEW_ID) + '&raquo;.</p><button class="btn main" id="tilliste" type="button">Til historierne</button>';
+      $('tilliste').onclick = function () { renderSetup(); };
+      return;
+    }
+    setup.story = st.id;
+    fresh({ players: helte, comp: 'bjorn', story: st.id });
+    enter(st.start);
+  }
+
+  /* ?katalog=<sti> er kun til testene: et andet katalog, fx tests/fixtures/stories-maaned/katalog.js.
+     Det virker kun på testmaskinen (localhost, 127.0.0.1 og file:), aldrig fra den rigtige adresse. */
+  function hentKatalog(videre) {
+    var sti = PARAMS.get('katalog');
+    var lokalt = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (!sti || !lokalt || !/^[A-Za-z0-9_\-\/]+\.js$/.test(sti) || sti.charAt(0) === '/') return videre();
+    var el = document.createElement('script');
+    el.src = sti;
+    el.onload = el.onerror = function (e) { if (e.type === 'error') console.error('Kunne ikke hente kataloget ' + sti); videre(); };
+    document.head.appendChild(el);
+  }
+
+  /* Læs kataloget, hent de synlige historier som <script>, og start appen, når alle er hentet eller fejlet. */
+  LK.start = function () { hentKatalog(function () { hentHistorier(vis); }); };
+  function vis() {
+    $('about').onclick = function (e) { e.preventDefault(); renderWelcome(true); };
+    if (PREVIEW_ID) startPreview();
+    else if (welcomed) renderSetup(); else renderWelcome(false);
+  }
+  var hentetDato = null, henter = false; /* datoen, listen sidst blev lavet for, og om den er ved at blive lavet */
+  function hentHistorier(videre) {
+    henter = true;
+    var nu = new Date(), alle = LK.katalogPoster || [];
+    var poster = LK.synlige(alle, nu, PREVIEW_ID);
+    var nye = poster.filter(function (p) { return !ENTRY[p.id]; });
+    var mangler = nye.length;
+    nye.forEach(function (p) { ENTRY[p.id] = p; });
+    /* Alle katalogets filer, også de kommende historier, gemmes af service workeren (se nederst og sw.js),
+       så en kommende historie også åbner på sin udgivelsesdag uden net. De registreres og vises ikke før. */
+    if (!PREVIEW_ID) {
+      LK.offlineFiler = alle.map(function (p) { return new URL(p.fil, location.href).href; });
+      if (LK.gemOffline) LK.gemOffline();
+    }
+    function klar() {
+      var orden = poster.map(function (p) { return p.id; });
+      function plads(id) { var i = orden.indexOf(id); return i < 0 ? orden.length : i; }
+      STORIES.sort(function (a, b) { return plads(a.id) - plads(b.id); });
+      hentetDato = LK.datoStreng(nu); henter = false;
+      videre();
+    }
+    if (!mangler) return klar();
+    nye.forEach(function (p) {
+      var el = document.createElement('script');
+      el.src = p.fil;
+      el.async = false;
+      el.onload = el.onerror = function (e) {
+        if (e.type === 'error') console.error('Kunne ikke hente historien ' + p.fil);
+        if (--mangler === 0) klar();
+      };
+      document.head.appendChild(el);
+    });
+  }
+  /* En installeret app kan ligge åben i flere dage. Vågner den på en ny dato (fx den 1.), hentes de historier,
+     der er udkommet siden. Listen tegnes kun igen, hvis den står fremme; en historie, I er i gang med, afbrydes ikke. */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible' || PREVIEW_ID || henter || !hentetDato || LK.datoStreng(new Date()) === hentetDato) return;
+    hentHistorier(function () { if (!state.scene && setup.view === 'lib' && $('go')) renderLib(); });
+  });
 })();
+LK.start();
 </script>
 
 <script>
@@ -1923,8 +1100,16 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); evt = e; link.hidden = false; });
   window.addEventListener('appinstalled', function () { evt = null; link.hidden = true; });
   link.onclick = function (e) { e.preventDefault(); if (!evt) return; evt.prompt(); evt.userChoice.finally(function () { evt = null; link.hidden = true; }); };
-  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  /* Forhåndsvisningen (?preview=) bruger ingen service worker, så et rettet udkast altid vises friskt. */
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !new URLSearchParams(location.search).get('preview')) {
+    window.addEventListener('load', function () {
+      var sw = navigator.serviceWorker;
+      /* Bed service workeren gemme katalogets filer (LK.offlineFiler, se hentHistorier). Det virker også ved
+         første besøg, hvor siden endnu ikke går gennem service workeren, og igen, når en ny udgave tager over. */
+      function gem() { sw.ready.then(function (reg) { if (reg.active && LK.offlineFiler) reg.active.postMessage({ gem: LK.offlineFiler }); }); }
+      sw.register('sw.js').then(function () { LK.gemOffline = gem; gem(); }).catch(function () {});
+      sw.addEventListener('controllerchange', gem);
+    });
   }
 })();
 </script>
