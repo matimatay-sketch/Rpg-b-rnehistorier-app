@@ -123,7 +123,7 @@ LK.addStory(function (k) {
     },
     pj3BaekFejl: {
       title: 'Igen, igen!', flag: 'pj3Lyn',
-      text: ['I går forsigtigt, men så vipper det. Lyn triller ned, rutsjer over en skulder og lander blødt i en stor mospude. Plop!',
+      text: ['Lyn læner sig lidt for langt frem, og så vipper det. Han triller ned, rutsjer hen over mosset og lander blødt i en stor mospude. Plop!',
         'Først er der stille. Så griner Lyn så højt, at han lyser en lille smule. &laquo;Igen! Igen!&raquo; Han vil hellere blive og rutsje i mosset med musene. &laquo;Kig efter mig nede fra bakken,&raquo; råber han. &laquo;Jeg blinker til jer!&raquo;'],
       ask: 'Hvad er det sjoveste, I har rutsjet ned ad?',
       next: 'pj3Hub'

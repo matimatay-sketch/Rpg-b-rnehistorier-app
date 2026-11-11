@@ -157,7 +157,7 @@ LK.addStory(function (k) {
     },
     pj2VindFejl: {
       title: 'Bladet flyver',
-      text: ['Vinden prøver at blæse lige, men et blad flyver skævt, snurrer rundt og lander lige på Uffes næb. &laquo;Hu-hu!&raquo; siger Uffe forbløffet og skeler til den.',
+      text: ['Vinden prøver at blæse lige, men et blad flyver skævt, snurrer rundt og lander lige på Uffes næb. &laquo;Hu-hu!&raquo; siger Uffe forbløffet og skeler til det.',
         'Vinden griner, så alle bladene danser. &laquo;Det var det sjoveste, jeg har set i hele efteråret!&raquo; suser den. &laquo;Nu er jeg ikke ked af det mere. Jeg øver mig på at blæse lige til i aften.&raquo;'],
       ask: 'Hvad hjælper jer, når I er kede af det?',
       next: 'pj2Hub'
