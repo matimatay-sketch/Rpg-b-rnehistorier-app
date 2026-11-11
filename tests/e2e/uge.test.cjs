@@ -5,7 +5,7 @@ const { test, before, after } = require('node:test');
 const assert = require('node:assert');
 const { chromium } = require('playwright');
 const { startServer } = require('../helpers/server.cjs');
-const { tilOpsaetning } = require('../helpers/forside.cjs');
+const { historieIds, kommendeIds, startHistorie, aabnHistorie } = require('../helpers/forside.cjs');
 
 const KATALOG = 'katalog=tests/fixtures/stories-uge/katalog.js';
 const SAGA = ['lantern', 'maane', 'vind', 'fest'];
@@ -67,32 +67,25 @@ async function spilTilSlut(page) {
   throw new Error('Nåede ikke slutskærmen');
 }
 
-async function historieIds(page) {
-  await page.waitForSelector('input[name=story]');
-  return page.$$eval('input[name=story]', l => l.map(i => i.value));
-}
-
 async function vaelgOgStart(page, id) {
-  await page.check('input[name=story][value="' + id + '"]');
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  await startHistorie(page, id, 'raev');
 }
 
 const knapper = (page) => page.$$eval('#stage .choices button', l => l.map(b => b.textContent.trim()));
 const epi = async (page) => (await page.textContent('#epi')).trim();
 const stageTekst = async (page) => (await page.textContent('#stage')).replace(/\s+/g, ' ');
 
-test('et kapitel er skjult torsdag kl. 23:59 og står øverst på listen fredag kl. 00:00', async () => {
+test('et kapitel er en slukket lanterne torsdag kl. 23:59 og tændes fredag kl. 00:00', async () => {
   let s = await nySide(standard(), '2099-12-17T23:59:00');
   await s.page.goto(server.base + 'index.html?' + KATALOG);
-  await tilOpsaetning(s.page);
-  assert.deepStrictEqual(await historieIds(s.page), SAGA.concat('sti1'));
+  assert.deepStrictEqual(await historieIds(s.page), ['sti1'].concat(SAGA));
+  assert.deepStrictEqual(await kommendeIds(s.page), ['sti2', 'sti3']);
   assert.deepStrictEqual(s.fejl, []);
   await s.context.close();
   s = await nySide(standard(), '2099-12-18T00:00:00');
   await s.page.goto(server.base + 'index.html?' + KATALOG);
-  await tilOpsaetning(s.page);
-  assert.deepStrictEqual(await historieIds(s.page), SAGA.concat('sti2', 'sti1'));
+  assert.deepStrictEqual(await historieIds(s.page), ['sti1', 'sti2'].concat(SAGA));
+  assert.deepStrictEqual(await kommendeIds(s.page), ['sti3']);
   assert.deepStrictEqual(s.fejl, []);
   await s.context.close();
 });
@@ -100,10 +93,11 @@ test('et kapitel er skjult torsdag kl. 23:59 og står øverst på listen fredag 
 test('kapitel 1 viser serie og kapitel, og slutskærmen siger, hvornår næste kapitel kommer', async () => {
   const { context, page, fejl } = await nySide(standard(), '2099-12-12T10:00:00');
   await page.goto(server.base + 'index.html?' + KATALOG);
-  await tilOpsaetning(page);
   await historieIds(page);
-  const pl = await page.textContent('input[name=story][value="sti1"] ~ .pl');
+  await aabnHistorie(page, 'sti1');
+  const pl = await page.textContent('#ark .ark-sted');
   assert.match(pl.replace(/\s+/g, ' '), /Kapitel 1 af 3/);
+  await page.click('#ark-luk');
   await vaelgOgStart(page, 'sti1');
   assert.strictEqual(await epi(page), 'Ugens eventyr · Stjernestien · kapitel 1 af 3');
   await spilTilSlut(page);
@@ -118,7 +112,6 @@ test('kapitel 1 viser serie og kapitel, og slutskærmen siger, hvornår næste k
 test('er næste kapitel udgivet, starter "Spil næste kapitel" det med samme hold', async () => {
   const { context, page, fejl } = await nySide(standard(), '2099-12-18T10:00:00');
   await page.goto(server.base + 'index.html?' + KATALOG);
-  await tilOpsaetning(page);
   await historieIds(page);
   await vaelgOgStart(page, 'sti1');
   await spilTilSlut(page);
@@ -141,8 +134,7 @@ test('er næste kapitel udgivet, starter "Spil næste kapitel" det med samme hol
 test('sidste kapitel siger, at der kommer en ny serie næste måned', async () => {
   const { context, page, fejl } = await nySide(standard(), '2099-12-26T10:00:00');
   await page.goto(server.base + 'index.html?' + KATALOG);
-  await tilOpsaetning(page);
-  assert.deepStrictEqual(await historieIds(page), SAGA.concat('sti3', 'sti2', 'sti1'));
+  assert.deepStrictEqual(await historieIds(page), ['sti1', 'sti2', 'sti3'].concat(SAGA));
   await vaelgOgStart(page, 'sti3');
   assert.strictEqual(await epi(page), 'Ugens eventyr · Stjernestien · kapitel 3 af 3');
   await spilTilSlut(page);
@@ -172,7 +164,6 @@ test('?preview=<kapitel 3> før dets fredag åbner kapitlet og skriver intet', a
 test('en månedshistorie uden serie viser stadig "Månedens eventyr · <måned år>"', async () => {
   const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
   await page.goto(server.base + 'index.html?katalog=tests/fixtures/stories-maaned/katalog.js');
-  await tilOpsaetning(page);
   await historieIds(page);
   await vaelgOgStart(page, 'efteraar');
   assert.strictEqual(await epi(page), 'Månedens eventyr · oktober 2026');

@@ -4,7 +4,7 @@ const { test, before, after } = require('node:test');
 const assert = require('node:assert');
 const { chromium } = require('playwright');
 const { startServer } = require('../helpers/server.cjs');
-const { tilOpsaetning } = require('../helpers/forside.cjs');
+const { historieIds, startHistorie, tilFoelgesvend, tilHelte } = require('../helpers/forside.cjs');
 
 const KATALOG = 'katalog=tests/fixtures/stories-maaned/katalog.js';
 const SAGA = ['lantern', 'maane', 'vind', 'fest'];
@@ -71,24 +71,17 @@ async function spilTilSlut(page) {
   throw new Error('Nåede ikke slutskærmen');
 }
 
-async function historieIds(page) {
-  await page.waitForSelector('input[name=story]');
-  return page.$$eval('input[name=story]', l => l.map(i => i.value));
-}
-
 async function vaelgOgStart(page, id) {
-  await page.check('input[name=story][value="' + id + '"]');
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  await startHistorie(page, id, 'raev');
 }
 
 const knapper = (page) => page.$$eval('#stage .choices button', l => l.map(b => b.textContent.trim()));
 
-test('en månedshistorie fra fremtiden vises ikke; den udgivne står efter sagaen', async () => {
+test('en månedshistorie fra fremtiden vises ikke; den udgivne står før sagaen på stien', async () => {
   const { context, page, fejl } = await nySide(standard(), null);
   await page.goto(server.base + 'index.html?' + KATALOG);
-  await tilOpsaetning(page);
-  assert.deepStrictEqual(await historieIds(page), SAGA.concat('efteraar'));
+  assert.deepStrictEqual(await historieIds(page), ['efteraar'].concat(SAGA));
+  assert.strictEqual(await page.$('#stien [data-kommer="juletraeet"]'), null);
   assert.strictEqual(await page.isVisible('#pvtag'), false);
   assert.deepStrictEqual(fejl, []);
   await context.close();
@@ -111,11 +104,11 @@ test('med ?preview=<id> åbner en kommende månedshistorie direkte og gemmer int
   const b = await knapper(page);
   assert.ok(b.includes('Tilbage til historierne'), b.join(' / '));
   assert.ok(!b.some(t => /Spil næste del/.test(t)), b.join(' / '));
-  // Tilbage til listen: eksempelholdet er valgt, og den kommende historie står på listen.
+  // Tilbage til forsiden: eksempelholdet er valgt, og den kommende historie står på stien.
   await page.click('#back');
-  assert.deepStrictEqual(await historieIds(page), SAGA.concat('juletraeet', 'efteraar'));
+  assert.deepStrictEqual(await historieIds(page), ['juletraeet', 'efteraar'].concat(SAGA));
+  assert.deepStrictEqual(await page.$$eval('.helt[data-helt]', l => l.map(b => [b.textContent.trim(), b.getAttribute('aria-pressed')])), [['Asta', 'true'], ['Bo', 'true']]);
   // Større tekst gemmes normalt i lk-prefs; i forhåndsvisningen må det ikke ske.
-  await page.click('#forside');
   await page.click('#indst');
   await page.click('#big');
   assert.strictEqual(await page.evaluate(() => document.body.classList.contains('big')), true);
@@ -136,7 +129,8 @@ test('eksempelholdet i forhåndsvisningen er Asta og Bo med 2 i hvert træk og B
   await page.waitForSelector('.hcard');
   const pips = await page.$$eval('.hcard', l => l.map(c => [c.querySelector('.hn').textContent, c.querySelector('input').checked, [...c.querySelectorAll('.srow')].map(r => r.querySelectorAll('.pip.on').length)]));
   assert.deepStrictEqual(pips, [['Asta', true, [2, 2, 2, 2, 2, 2]], ['Bo', true, [2, 2, 2, 2, 2, 2]]]);
-  assert.strictEqual(await page.isChecked('input[name=comp][value="bjorn"]'), true);
+  await tilFoelgesvend(page, 'efteraar');
+  assert.strictEqual(await page.getAttribute('.sv [data-comp="bjorn"]', 'aria-pressed'), 'true');
   assert.deepStrictEqual(await page.evaluate(() => window.__skrevet), []);
   assert.deepStrictEqual(await alleGemte(page), {});
   assert.deepStrictEqual(fejl, []);
@@ -147,7 +141,6 @@ test('en gennemspillet månedshistorie gemmer kun done_<id> i skoven og tæller 
   const world = { done_lantern: true, done_maane: true };
   const { context, page, fejl } = await nySide(standard(world), 0.99);
   await page.goto(server.base + 'index.html?' + KATALOG);
-  await tilOpsaetning(page);
   await historieIds(page);
   await vaelgOgStart(page, 'efteraar');
   assert.strictEqual((await page.textContent('#epi')).trim(), 'Månedens eventyr · oktober 2026');
@@ -160,7 +153,8 @@ test('en gennemspillet månedshistorie gemmer kun done_<id> i skoven og tæller 
   assert.deepStrictEqual(lib.world, Object.assign({}, world, { done_efteraar: true }));
   assert.strictEqual(lib.heroes[0].stories, 1);
   await page.click('#back');
-  assert.match(await page.textContent('label.comp:has(input[value="efteraar"])'), /Gennemført/);
+  await historieIds(page);
+  assert.match(await page.textContent('#stien .st[data-story="efteraar"]'), /Gennemført/);
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
@@ -168,7 +162,6 @@ test('en gennemspillet månedshistorie gemmer kun done_<id> i skoven og tæller 
 test('sagaens sidste del peger ikke videre til en månedshistorie, og tæller kun sagaens dele', async () => {
   const { context, page, fejl } = await nySide(standard(), 0.99);
   await page.goto(server.base + 'index.html?' + KATALOG);
-  await tilOpsaetning(page);
   await historieIds(page);
   await vaelgOgStart(page, 'fest');
   assert.strictEqual((await page.textContent('#epi')).trim(), 'Del 4 af 4');
@@ -191,7 +184,6 @@ for (const felt of ['magi', 'mester']) {
       body: "LK.addStory(function (k) { return { id: 'efteraar', title: 'Snyd', tag: 'x', blurb: 'x', start: 'ef_a', scenes: { ef_a: { title: 'A', text: ['a'], ask: 'a?', end: true } }, " + felt + ': ' + vaerdi + ' }; });'
     }));
     await page.goto(server.base + 'index.html?' + KATALOG);
-    await tilOpsaetning(page);
     assert.deepStrictEqual(await historieIds(page), SAGA);
     assert.ok(logget.some(t => /bro/.test(t)), logget.join('\n'));
     assert.deepStrictEqual(fejl, []);
@@ -199,33 +191,30 @@ for (const felt of ['magi', 'mester']) {
   });
 }
 
-test('uden nogen historier giver Start en venlig besked i stedet for en fejl', async () => {
+test('uden nogen historier giver forsiden en venlig besked i stedet for en fejl', async () => {
   const { context, page, fejl } = await nySide(standard(), null);
   await page.route('**/historie.js', r => r.fulfill({ status: 404, body: 'findes ikke' }));
   await page.goto(server.base + 'index.html');
-  await tilOpsaetning(page);
-  await page.waitForSelector('#go');
-  assert.strictEqual(await page.$$eval('input[name=story]', l => l.length), 0);
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
-  assert.strictEqual(await page.isVisible('#err'), true);
-  assert.match(await page.textContent('#err'), /historier/);
+  assert.deepStrictEqual(await historieIds(page), []);
+  assert.strictEqual(await page.isVisible('#stien .tom'), true);
+  assert.match(await page.textContent('#stien .tom'), /historier/);
+  // Heltene kan stadig rettes.
+  await tilHelte(page);
+  await page.waitForSelector('.hcard');
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
 
-test('er alle dele spillet, og mangler første del, er den første historie på listen valgt', async () => {
+test('er alle dele spillet, og mangler første del, står de andre dele på stien som del 1-3 og kan spilles', async () => {
   const world = { done_lantern: true, done_maane: true, done_vind: true, done_fest: true };
   const { context, page, fejl } = await nySide(standard(world), null);
   // Uret står før den første månedshistorie (november-seriens kapitel 1, 6. november 2026), så listen kun har sagaens dele.
   await context.clock.setFixedTime(new Date('2026-11-01T12:00:00'));
   await page.route('**/stories/lantern/historie.js', r => r.fulfill({ status: 404, body: 'findes ikke' }));
   await page.goto(server.base + 'index.html');
-  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), ['maane', 'vind', 'fest']);
-  assert.strictEqual(await page.isChecked('input[name=story][value="maane"]'), true);
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  assert.match(await page.textContent('#stien .st[data-story="maane"]'), /Gennemført/);
+  await vaelgOgStart(page, 'maane');
   assert.strictEqual((await page.textContent('#epi')).trim(), 'Del 1 af 3');
   assert.deepStrictEqual(fejl, []);
   await context.close();

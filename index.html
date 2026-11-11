@@ -60,7 +60,7 @@ button, input { font: inherit; color: inherit; }
 
 .banner { border-radius: 20px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
 .banner svg { display: block; width: 100%; height: auto; }
-.bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--muted); }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--muted); }
 .bar .brand { color: var(--ink); font-weight: 800; font-size: 18px; }
 .spark { display: inline-flex; gap: 6px; align-items: center; }
 .spark i { width: 14px; height: 18px; border-radius: 4px 4px 7px 7px; background: var(--line); display: inline-block; }
@@ -106,14 +106,6 @@ button, input { font: inherit; color: inherit; }
 @media (max-width: 440px) { .field { grid-template-columns: 1fr; } }
 .field input { width: 100%; border: 2px solid var(--line); background: var(--bg); border-radius: 12px; padding: 12px 14px; min-height: 48px; }
 .field input:focus { border-color: var(--sky); outline: none; }
-.comps { display: grid; gap: 10px; }
-.comp { display: flex; align-items: center; gap: 12px; border: 2px solid var(--line); border-radius: 16px; padding: 12px 14px; cursor: pointer; background: var(--bg); }
-.comp input { position: absolute; opacity: 0; }
-.comp:has(input:checked) { border-color: var(--ink); background: var(--lantern); color: var(--lantern-ink); }
-.comp:has(input:focus-visible) { outline: 3px solid var(--sky); outline-offset: 2px; }
-.comp .nm { font-family: var(--font-display); font-weight: 800; font-size: 19px; line-height: 1.2; }
-.comp .ds { font-size: 15px; }
-.comp .pl { margin-left: auto; font-family: var(--font-display); font-weight: 800; font-size: 14px; white-space: nowrap; border: 2px solid currentColor; border-radius: 999px; padding: 2px 10px; }
 label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px; }
 .stats { display: flex; gap: 8px; flex-wrap: wrap; font-family: var(--font-display); font-weight: 600; font-size: 14px; color: var(--muted); }
 .stats span { border: 1.5px solid var(--line); border-radius: 999px; padding: 2px 10px; }
@@ -199,7 +191,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 /* Topbjælken: navnet og tandhjulet på forsiden; "‹ Forside" alle andre steder, hvor navnet stod. */
 .bar .barl { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
 .bar .barl .pvtag { margin-left: 0; }
-.tilbage { font-family: var(--font-display); font-weight: 600; font-size: 16px; color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 6px 16px 6px 12px; min-height: 44px; cursor: pointer; }
+.tilbage { white-space: nowrap; flex: none; font-family: var(--font-display); font-weight: 600; font-size: 16px; color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 6px 16px 6px 12px; min-height: 44px; cursor: pointer; }
 .tilbage:hover, .gear:hover { border-color: var(--ink); }
 .gear { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); color: var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; margin-left: auto; }
 .gear svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -208,32 +200,100 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 .spoerg p { font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.3; }
 .to-knapper { display: flex; flex-wrap: wrap; gap: 10px; }
 .to-knapper .btn { flex: 1 1 200px; justify-content: center; text-align: center; }
-#barr { text-wrap: balance; }
 
-/* Forsiden: ugens eventyr som et stort kort, så alle historier som en indholdsfortegnelse, så heltene. */
-#stage.home { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.home > h2 { font-size: 22px; font-weight: 800; margin-top: 14px; }
-.home > h2:first-child { margin-top: 0; }
-.ugens { border: 2px solid var(--lantern); }
-.ugens .scene-art { margin: -22px -20px 0; border-radius: 18px 18px 0 0; }
-.ugens h3 { font-size: 28px; font-weight: 800; }
-.kap { display: flex; justify-content: space-between; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; font-family: var(--font-display); font-weight: 600; font-size: 16px; color: var(--muted); line-height: 1.3; }
-.kap .serie { color: var(--ink); }
-.lyg { width: 12px; height: 16px; border-radius: 4px 4px 6px 6px; background: var(--line); display: block; flex: none; position: relative; margin-top: 5px; }
-.lyg::before { content: ""; position: absolute; left: 5px; top: -5px; width: 2px; height: 5px; background: var(--line); }
-.lyg.on { background: var(--lantern); box-shadow: 0 0 10px var(--lantern); }
-.liste { gap: 4px; padding-block: 16px 10px; }
-.liste h3 { font-size: 18px; font-weight: 800; margin-top: 14px; }
-.liste h3:first-child { margin-top: 0; }
-.hl { list-style: none; margin: 0; padding: 0; }
-.hist { width: 100%; display: flex; align-items: center; gap: 14px; text-align: left; background: none; border: 0; border-bottom: 1px dotted var(--line); border-radius: 0; padding: 10px 6px; min-height: 58px; cursor: pointer; }
-.hl li:last-child .hist { border-bottom: 0; }
-.hist:hover { background: var(--bg); }
-.hist .ht { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-.hist .htt { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.25; }
-.hist .hs { font-size: 14px; color: var(--muted); line-height: 1.4; }
-.hist .gf { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--muted); white-space: nowrap; }
-.helte-kort .heroes { justify-content: flex-start; }
+/* Forsiden: heltene øverst og så Lanternestien. Én lanterne pr. historie i zigzag ned ad en prikket sti;
+   en tændt lanterne kan spilles, en slukket er et kommende kapitel. Stien er det ene dristige greb på siden. */
+#stage.home, #stage.ledsager { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.helte-tekst { font-size: 15px; color: var(--muted); }
+.helte2 { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: flex-start; }
+.helt { display: grid; justify-items: center; gap: 2px; width: 70px; background: none; border: 0; padding: 4px 0; cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 14px; line-height: 1.2; color: var(--ink); }
+.helt .ring { width: 62px; height: 62px; border-radius: 50%; border: 3px solid var(--lantern); box-shadow: 0 0 12px color-mix(in srgb, var(--lantern) 45%, transparent); overflow: hidden; display: grid; place-items: center; background: var(--surface); transition: opacity .15s, border-color .15s; }
+.helt .ring svg { width: 58px; height: 58px; display: block; }
+.helt .hn { max-width: 70px; overflow-wrap: anywhere; text-align: center; }
+.helt.fra .ring { border-color: var(--line); box-shadow: none; }
+.helt.fra .ring svg { opacity: .45; filter: saturate(.6); }
+.helt.fra .hn { color: var(--muted); }
+.helt.ny .ring { border: 2px dashed var(--muted); box-shadow: none; background: none; font-size: 30px; font-weight: 600; color: var(--muted); }
+.helt.ny .hn { color: var(--muted); }
+.helt.ny:only-child { width: auto; }
+.helt.ny:only-child .hn { max-width: 140px; }
+.helt:hover .ring { border-color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .helt .ring { transition: none; } }
+#helt-besked { margin-top: -4px; }
+#helt-besked:empty { margin: 0; }
+#ledsager-titel:focus:not(:focus-visible) { outline: none; }
+.gruppe { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; }
+.gruppe > h2 { font-size: 24px; font-weight: 800; }
+.gruppe > h2 span { display: block; font-family: var(--font-body); font-weight: 400; font-size: 15px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+.sti2 { position: relative; display: grid; }
+.sti2 > svg.vej { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; overflow: visible; pointer-events: none; }
+.st { position: relative; z-index: 1; display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 12px; align-items: center; padding: 9px 0; min-height: 86px; background: none; border: 0; font: inherit; color: inherit; text-align: left; width: 100%; }
+button.st { cursor: pointer; border-radius: 16px; }
+.st.h { grid-template-columns: minmax(0, 1fr) 58px; text-align: right; }
+.st.h .lys2 { order: 2; }
+.lys2 { width: 58px; height: 68px; display: block; }
+.st .tx { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.st.h .tx { align-items: flex-end; }
+.st .tx b, .st .tx small { background: var(--bg); box-shadow: 0 0 0 5px var(--bg); border-radius: 4px; max-width: 100%; }
+.st .tx b { font-family: var(--font-display); font-weight: 800; font-size: 18px; line-height: 1.2; text-wrap: balance; }
+.st .tx small { color: var(--muted); font-size: 14px; line-height: 1.3; }
+.st.nu .tx small { color: var(--good); font-weight: 600; }
+.st.slukket .tx b { color: var(--muted); font-weight: 600; }
+button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(--lantern); text-decoration-thickness: 3px; text-underline-offset: 4px; }
+.tom { color: var(--muted); }
+
+/* Arket, der glider op nedefra, når man trykker på en lanterne. */
+#ark-bag { position: fixed; inset: 0; z-index: 20; }
+#ark-dim { position: absolute; inset: 0; background: rgba(16, 28, 25, .5); }
+.ark { position: absolute; left: 0; right: 0; bottom: 0; max-width: 640px; margin-inline: auto; max-height: calc(100% - 24px); overflow-y: auto; overscroll-behavior: contain; background: var(--surface); border-radius: 24px 24px 0 0; box-shadow: 0 -6px 24px rgba(0, 0, 0, .2); padding-bottom: env(safe-area-inset-bottom, 0px); animation: op .22s ease-out; }
+@keyframes op { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .ark { animation: none; } }
+.ark .greb { width: 44px; height: 5px; border-radius: 3px; background: var(--line); margin: 8px auto 6px; }
+.ark .scene-art { margin: 0; border-radius: 0; }
+.ark .scene-art svg { max-height: 34vh; }
+.ark .ak { padding: 14px 20px 20px; display: flex; flex-direction: column; gap: 10px; }
+.ark-sted { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--muted); line-height: 1.3; }
+.ark h2 { font-size: 28px; font-weight: 800; }
+.ark p.blurb { font-size: 17px; }
+.btn.lys { background: var(--lantern); color: var(--lantern-ink); border-color: var(--lantern); justify-content: center; text-align: center; font-weight: 800; }
+.btn.lys:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.lys[disabled] { text-decoration: none; background: var(--surface); color: var(--muted); border-color: var(--line); opacity: 1; }
+.luk { align-self: center; background: none; border: 0; padding: 8px 16px; min-height: 44px; cursor: pointer; font-family: var(--font-body); font-size: 16px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.luk:hover { color: var(--ink); }
+
+/* Vælg følgesvend: historien øverst, så seks kort i to kolonner. */
+.valgt-hist { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: center; }
+.valgt-hist .mini { border-radius: 10px; overflow: hidden; width: 72px; height: 45px; }
+.valgt-hist .mini svg { width: 100%; height: 100%; display: block; }
+.valgt-hist small { display: block; font-family: var(--font-display); font-weight: 600; font-size: 14px; color: var(--muted); line-height: 1.3; }
+.valgt-hist b { display: block; font-family: var(--font-display); font-weight: 800; font-size: 19px; line-height: 1.2; }
+.ledsager h2 { font-size: 24px; font-weight: 800; margin-top: 8px; }
+.sv { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sv button { display: flex; flex-direction: column; text-align: left; border: 2px solid var(--line); background: var(--surface); border-radius: 16px; overflow: hidden; padding: 0; font: inherit; color: var(--ink); cursor: pointer; }
+.sv .bill { display: block; }
+.sv button svg { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; }
+.sv button[aria-pressed="true"] { border-color: var(--lantern); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lantern) 40%, transparent); }
+.sv button:hover { border-color: var(--ink); }
+.sv button[aria-pressed="true"]:hover { border-color: var(--lantern); }
+.sv .t { padding: 7px 10px 10px; display: flex; flex-direction: column; gap: 2px; }
+.sv b { font-family: var(--font-display); font-weight: 800; font-size: 16px; line-height: 1.15; }
+.sv small { color: var(--muted); font-size: 13px; line-height: 1.3; }
+.sv .plus { font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--good); margin-top: 2px; }
+#afsted { margin-top: 6px; }
+
+/* Topbjælken sidder fast øverst, når den har "‹ Forside", så man altid kan komme ud af en lang scene.
+   Spørgsmålet "Vil I stoppe historien her?" står lige under den. */
+.topp { display: flex; flex-direction: column; gap: 10px; }
+.topp.fast { position: sticky; top: 0; z-index: 10; background: var(--bg); margin-inline: -16px; padding: 8px 16px; margin-block: -8px; }
+.bar { flex-wrap: nowrap; }
+#barr { min-width: 0; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+#barr .spark { flex: none; }
+#epi, #epi-kort { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#epi-kort { display: none; }
+@media (max-width: 560px) {
+  #epi { display: none; }
+  #epi-kort { display: inline; }
+}
 
 /* Indstillinger: én række pr. valg; en kontakt, der lyser som en lanterne, når den er slået til. */
 .indst { display: flex; flex-direction: column; }
@@ -270,15 +330,23 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     </svg>
   </div>
 
-  <div class="bar" id="bar"><span class="barl"><button type="button" class="tilbage" id="forside" hidden>&lsaquo; Forside</button><span class="brand" id="brand">Lanterneskoven</span><span class="pvtag" id="pvtag" hidden>Forhåndsvisning</span></span><span id="barr"><span id="epi">Del 1 af 4</span> &middot; <span class="spark" id="spark" aria-label="Gnister fundet"></span></span><button type="button" class="gear" id="indst" aria-label="Indstillinger" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
+  <div class="topp" id="topp">
+  <div class="bar" id="bar"><span class="barl"><button type="button" class="tilbage" id="forside" hidden>&lsaquo; Forside</button><span class="brand" id="brand">Lanterneskoven</span><span class="pvtag" id="pvtag" hidden>Forhåndsvisning</span></span><span id="barr"><span id="epi">Del 1 af 4</span><span id="epi-kort" aria-hidden="true">Del 1 af 4</span> &middot; <span class="spark" id="spark" aria-label="Gnister fundet"></span></span><button type="button" class="gear" id="indst" aria-label="Indstillinger" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
 
   <div class="spoerg" id="stopbox" role="alertdialog" aria-labelledby="stopq" hidden>
     <p id="stopq">Vil I stoppe historien her? I kan altid starte forfra.</p>
     <div class="to-knapper"><button type="button" class="btn" id="stop-ja">Stop historien</button><button type="button" class="btn main" id="stop-nej">Bliv i historien</button></div>
   </div>
+  </div>
 
   <main id="stage" class="card"></main>
   <p class="foot">Prøvehistorie til 6&ndash;9 år. Læs højt sammen, vælg på skift og slå med terningen.</p>
+</div>
+
+<!-- Arket med historien, når man trykker på en tændt lanterne (fyldes af aabnArk). -->
+<div id="ark-bag" hidden>
+  <div id="ark-dim"></div>
+  <div class="ark" id="ark" role="dialog" aria-modal="true" aria-labelledby="ark-titel"></div>
 </div>
 
 <script src="js/katalog.js"></script>
@@ -433,8 +501,9 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     return '';
   }
   function fresh(keep) {
+    if (state) { clearTimeout(state.rollTimer); clearInterval(state.rollIv); }
     state = { players: keep ? keep.players : [], comp: keep ? keep.comp : null, compName: '', compStat: '',
-      visited: [], gnists: 0, feather: false, featherUsed: false, turn: 0, rolls: 0, bevaegelser: 0, wrong: {}, scene: null, awarded: false, flags: {}, remembered: [], story: (keep && keep.story) || 'lantern', gnistList: [], usedG: {}, lastUse: '',
+      valgt: false, visited: [], gnists: 0, feather: false, featherUsed: false, turn: 0, rolls: 0, bevaegelser: 0, wrong: {}, scene: null, awarded: false, flags: {}, remembered: [], story: (keep && keep.story) || 'lantern', gnistList: [], usedG: {}, lastUse: '',
       gnisterIn: ((lib && lib.world && lib.world.gnistNavne) || []).slice(0, 4), magicUsed: {}, magicNote: '', maxUsed: {}, mester: null };
     var wd = (lib && lib.world) || {};
     FRIEND_FLAGS.forEach(function (k) { if (wd[k]) state.flags[k] = true; });
@@ -620,15 +689,20 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 
   /* bevaeg: bevægelsesudfordringer slået til. Mangler feltet (gamle indstillinger), er de slået til.
      Andre felter i de gemte indstillinger bliver stående, når der gemmes. */
-  var prefs = { auto: false, big: false, bevaeg: true }, prefsGemt = {};
+  /* comp: sidst valgte følgesvend (findes kun, når der er startet en historie, siden feltet kom til). */
+  var prefs = { auto: false, big: false, bevaeg: true, comp: null }, prefsGemt = {};
   try {
     var sp = JSON.parse(store.get('lk-prefs') || '{}');
-    if (sp && typeof sp === 'object' && !Array.isArray(sp)) { prefsGemt = sp; prefs.auto = !!sp.auto; prefs.big = !!sp.big; prefs.bevaeg = sp.bevaeg !== false; }
+    if (sp && typeof sp === 'object' && !Array.isArray(sp)) {
+      prefsGemt = sp; prefs.auto = !!sp.auto; prefs.big = !!sp.big; prefs.bevaeg = sp.bevaeg !== false;
+      if (COMPS.some(function (c) { return c.id === sp.comp; })) prefs.comp = sp.comp;
+    }
   } catch (e) {}
   function savePrefs() {
     var o = {};
     for (var k in prefsGemt) if (Object.prototype.hasOwnProperty.call(prefsGemt, k)) o[k] = prefsGemt[k];
     o.auto = prefs.auto; o.big = prefs.big; o.bevaeg = prefs.bevaeg;
+    if (prefs.comp) o.comp = prefs.comp;
     store.set('lk-prefs', JSON.stringify(o));
   }
   document.body.classList.toggle('big', prefs.big);
@@ -717,8 +791,14 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     Object.keys(st.billeder || {}).forEach(function (id) { ART[id] = st.billeder[id]; });
     STORIES.push(st);
   }
+  /* Et kommende kapitel i en synlig serie hentes kun for at vise sin titel på Lanternestien; det registreres først
+     (og kan først spilles), når det er udgivet og hentes igen (se hentHistorier). */
   LK.addStory = function (factory) {
-    try { addStory(factory(kit)); } catch (e) { console.error('Historien kunne ikke indlæses og springes over:', e); }
+    try {
+      var st = factory(kit);
+      if (st && VENTER[st.id] && !ENTRY[st.id]) { KOMMENDE[st.id] = { title: st.title }; return; }
+      addStory(st);
+    } catch (e) { console.error('Historien kunne ikke indlæses og springes over:', e); }
   };
   function maxChoices(id) {
     var list = MAX_OPTS[id], out = [];
@@ -735,26 +815,31 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 
   var stage = $('stage');
 
-  /* Hvilken side der står fremme: home (forsiden), settings, welcome, setup (heltelisten), builder (heltebyggeren)
-     eller scene. Topbjælken viser navnet og tandhjulet på forsiden og "‹ Forside" alle andre steder end velkomsten. */
+  /* Hvilken side der står fremme: home (forsiden), settings, welcome, setup (heltelisten), builder (heltebyggeren),
+     ledsager (vælg følgesvend) eller scene. Topbjælken viser navnet og tandhjulet på forsiden, "‹ Forside" alle andre
+     steder end velkomsten, og tandhjulet også ved valget af følgesvend. Med "‹ Forside" sidder den fast øverst
+     (undtagen i heltebyggeren, hvor heltens billede sidder fast). */
   var view = '';
   function setView(v) {
+    lukArk(true);
     view = v;
-    stage.className = v === 'home' ? 'home' : 'card';
+    stage.className = v === 'home' || v === 'ledsager' ? v : 'card';
     var hjem = v === 'home', velkommen = v === 'welcome';
     $('brand').hidden = !(hjem || velkommen);
-    $('indst').hidden = !hjem;
+    $('indst').hidden = !(hjem || v === 'ledsager');
     $('forside').hidden = hjem || velkommen;
-    $('barr').hidden = hjem || v === 'settings';
+    $('barr').hidden = hjem || v === 'settings' || v === 'ledsager';
     $('stopbox').hidden = true;
+    $('topp').classList.toggle('fast', !(hjem || velkommen || v === 'builder'));
   }
+  /* Overskriften i topbjælken: den fulde tekst og en kort udgave, der står på telefoner, så linjen holder sig på én linje. */
+  function saetEpi(lang, kort) { $('epi').textContent = lang; $('epi-kort').textContent = kort || lang; }
   function tilToppen() { try { window.scrollTo(0, 0); } catch (e) {} }
   /* "‹ Forside": midt i en historie spørges der først (på siden selv, så terning og valg står urørt bagved);
-     på slutskærmen og alle andre steder går den direkte. */
+     på historiens første scene, før der er valgt noget, på slutskærmen og alle andre steder går den direkte. */
   $('forside').onclick = function () {
-    if (view === 'scene' && state.scene && !S[state.scene].end) {
+    if (view === 'scene' && state.scene && !S[state.scene].end && (state.valgt || state.scene !== storyStart(state.story))) {
       $('stopbox').hidden = false;
-      $('stopbox').scrollIntoView({ block: 'nearest', behavior: 'auto' });
       $('stop-nej').focus();
       return;
     }
@@ -775,77 +860,224 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     renderHome();
     tilToppen();
   }
-  function vaelgHistorie(id) { setup.story = id; renderSetup(); tilToppen(); }
 
-  /* Lanterner på række: antal i alt og de første `taendt` tændt. */
-  function lygter(antal, taendt) {
-    var o = '';
-    for (var i = 0; i < antal; i++) o += '<i class="lyg' + (i < taendt ? ' on' : '') + '"></i>';
-    return o;
+  var MDR = ['jan.', 'feb.', 'mar.', 'apr.', 'maj', 'jun.', 'jul.', 'aug.', 'sep.', 'okt.', 'nov.', 'dec.'];
+  var UGEDAGE = ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'];
+  /* 'ÅÅÅÅ-MM-DD' -> 'fredag 13. nov.' (ugedagen regnes på kalenderdatoen alene, så tidszonen ikke flytter den) */
+  function kortDato(dato) {
+    var d = String(dato || '').split('-').map(Number);
+    return UGEDAGE[new Date(Date.UTC(d[0], d[1] - 1, d[2])).getUTCDay()] + ' ' + d[2] + '. ' + (MDR[d[1] - 1] || '');
   }
-  /* Ugens eventyr: det nyeste udgivne kapitel. Findes intet, sagaens første del, familien ikke har gennemført. */
-  function ugensHistorie() {
-    var kap = STORIES.filter(function (s) { return ENTRY[s.id] && ENTRY[s.id].serie; });
-    kap.sort(function (a, b) { var x = ENTRY[a.id], y = ENTRY[b.id]; return x.udgives < y.udgives ? 1 : x.udgives > y.udgives ? -1 : y.kapitel - x.kapitel; });
-    if (kap[0]) return { st: kap[0], kapitel: true };
-    var dele = sagaDele(), ny = dele.filter(function (s) { return !lib.world['done_' + s.id]; })[0];
-    var st = ny || dele[0] || STORIES[0];
-    return st ? { st: st, kapitel: false } : null;
+  function foersteStort(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
+  /* Hvor historien hører til: "Kapitel n af N i <serie>", "Del n af 4" eller "Månedens eventyr fra <måned år>". */
+  function stedTekst(id) {
+    var e = ENTRY[id] || {};
+    if (e.serie) return 'Kapitel ' + e.kapitel + ' af ' + e.kapitler + ' i ' + e.serie.titel;
+    if (erMaaned(id)) return 'Månedens eventyr fra ' + maanedTekst(e.udgives);
+    return 'Del ' + (sagaIndex(id) + 1) + ' af ' + sagaDele().length;
   }
-  /* Hvor historien hører til, og hvor i rækken den står: [overskrift, undertekst, antal lanterner, tændte]. */
-  function placering(st) {
-    var e = ENTRY[st.id] || {};
-    if (e.serie) return [e.serie.titel, 'Kapitel ' + e.kapitel + ' af ' + e.kapitler, e.kapitler, e.kapitel];
-    if (erMaaned(st.id)) return ['Månedens eventyr', 'Udkom i ' + maanedTekst(e.udgives), 0, 0];
-    return ['Sagaen om Lanterneskoven', 'Del ' + (sagaIndex(st.id) + 1) + ' af ' + sagaDele().length, sagaDele().length, sagaIndex(st.id) + 1];
+  /* Den korte udgave af scenens overskrift til telefoner. */
+  function kortOverskrift(id) {
+    var e = ENTRY[id];
+    if (erMaaned(id) && e.serie) return 'Kapitel ' + e.kapitel + ' af ' + e.kapitler;
+    if (erMaaned(id)) return foersteStort(maanedTekst(e.udgives));
+    return 'Del ' + (sagaIndex(id) + 1) + ' af ' + sagaDele().length;
   }
-  /* Alle historier: serierne (nyeste først, kapitlerne i rækkefølge), månedshistorier uden serie og så sagaen. */
-  function historieGrupper() {
-    var serier = {}, liste = [], enkelte = [];
+
+  /* Titlerne på de kommende kapitler i de synlige serier (hentes med historierne, men registreres ikke; se hentHistorier). */
+  var KOMMENDE = {}, VENTER = {};
+  /* Lanternestiens grupper: de synlige serier (nyeste først) med alle deres kapitler, også de kommende,
+     så månedshistorier uden serie og til sidst Den store fortælling. Hvert stop: { id, nr, titel, linje, kommer, nu }. */
+  function stiGrupper() {
+    var serier = {}, liste = [], enkelte = [], katalog = LK.katalogPoster || [];
+    function stop(st, nr) {
+      var done = !!lib.world['done_' + st.id];
+      return { id: st.id, nr: nr, titel: st.title, linje: done ? 'Gennemført' : 'Ude nu', nu: !done };
+    }
     STORIES.forEach(function (st) {
       var e = ENTRY[st.id];
       if (!erMaaned(st.id)) return;
-      if (!e.serie) { enkelte.push(st); return; }
+      if (!e.serie) { enkelte.push(stop(st, 0)); return; }
       var g = serier[e.serie.id];
-      if (!g) { g = serier[e.serie.id] = { titel: e.serie.titel, nyeste: '', st: [] }; liste.push(g); }
-      g.st.push(st);
+      if (!g) { g = serier[e.serie.id] = { id: e.serie.id, titel: e.serie.titel, linje: '', nyeste: '', stop: [] }; liste.push(g); }
       if (e.udgives > g.nyeste) g.nyeste = e.udgives;
     });
+    liste.forEach(function (g) {
+      var kap = katalog.filter(function (p) { return p.serie && p.serie.id === g.id; }).sort(function (a, b) { return a.kapitel - b.kapitel; });
+      g.linje = 'En lanterne tændes hver fredag i ' + (MAANEDER[+String(kap[0].udgives).split('-')[1] - 1] || '');
+      kap.forEach(function (p) {
+        var st = ENTRY[p.id] ? storyById(p.id) : null;
+        if (st) { g.stop.push(stop(st, p.kapitel)); return; }
+        if (ENTRY[p.id]) return; /* udgivet, men kunne ikke hentes */
+        g.stop.push({ id: p.id, nr: p.kapitel, titel: KOMMENDE[p.id] ? KOMMENDE[p.id].title : 'Kapitel ' + p.kapitel, linje: 'Tændes ' + kortDato(p.udgives), kommer: true });
+      });
+    });
     liste.sort(function (a, b) { return a.nyeste < b.nyeste ? 1 : a.nyeste > b.nyeste ? -1 : 0; });
-    liste.forEach(function (g) { g.st.sort(function (a, b) { return ENTRY[a.id].kapitel - ENTRY[b.id].kapitel; }); });
-    if (enkelte.length) liste.push({ titel: 'Månedens eventyr', st: enkelte });
-    if (sagaDele().length) liste.push({ titel: 'Sagaen om Lanterneskoven', st: sagaDele() });
+    if (enkelte.length) liste.push({ titel: 'Månedens eventyr', linje: 'Historier, der står for sig selv', stop: enkelte });
+    if (sagaDele().length) liste.push({ titel: 'Den store fortælling', linje: 'Fire dele, der hænger sammen', stop: sagaDele().map(function (st, i) {
+      var s = stop(st, i + 1);
+      if (s.nu) { s.linje = 'Del ' + (i + 1) + ' af ' + sagaDele().length; s.nu = false; }
+      return s;
+    }) });
     return liste;
   }
+  /* En lanterne: tændt (gul med glød, der blafrer let ved "Ude nu") eller slukket. */
+  function lygte(taendt, nu) {
+    return '<svg class="lys2" viewBox="0 0 58 68" aria-hidden="true">' +
+      (taendt ? '<g' + (nu ? ' class="lk-blafr"' : '') + '><circle cx="29" cy="36" r="26" fill="var(--lantern)" opacity=".3"/></g>' : '') +
+      '<line x1="29" y1="2" x2="29" y2="13" stroke="var(--muted)" stroke-width="2"/><rect x="16" y="13" width="26" height="5" rx="2" fill="var(--muted)"/>' +
+      '<rect x="17" y="18" width="24" height="32" rx="7" fill="' + (taendt ? 'var(--lantern)' : 'var(--line)') + '"/>' +
+      '<rect x="22" y="23" width="14" height="22" rx="4" fill="' + (taendt ? '#FFE08A' : 'var(--bg)') + '"/>' +
+      '<rect x="16" y="50" width="26" height="5" rx="2" fill="var(--muted)"/></svg>';
+  }
+  function stopHtml(s, i) {
+    var kl = 'st' + (i % 2 === 0 ? ' h' : '') + (s.kommer ? ' slukket' : '') + (s.nu ? ' nu' : '');
+    var tx = '<span class="tx"><b>' + (s.nr ? s.nr + '. ' : '') + esc(s.titel) + '</b> <small>' + s.linje + '</small></span>';
+    if (s.kommer) return '<div class="' + kl + '" data-kommer="' + s.id + '">' + lygte(false) + tx + '</div>';
+    return '<button type="button" class="' + kl + '" data-story="' + s.id + '">' + lygte(true, s.nu) + tx + '</button>';
+  }
+  /* Den prikkede, buede linje mellem lanternerne i en gruppe. Tegnes efter lanternernes rigtige placering,
+     og igen, når stien skifter størrelse (skrift, der hentes, eller en drejet skærm). */
+  var stiObs = null;
+  function tegnSti(sti) {
+    var r = sti.getBoundingClientRect(), pkt = [].map.call(sti.querySelectorAll('.lys2'), function (l) {
+      var b = l.getBoundingClientRect();
+      return [Math.round(b.left + b.width / 2 - r.left), Math.round(b.top + b.height / 2 - r.top)];
+    });
+    var d = '';
+    pkt.forEach(function (p, i) {
+      if (!i) { d = 'M' + p[0] + ' ' + p[1]; return; }
+      var q = pkt[i - 1], my = (q[1] + p[1]) / 2;
+      d += ' C ' + q[0] + ' ' + my + ', ' + p[0] + ' ' + my + ', ' + p[0] + ' ' + p[1];
+    });
+    var svg = sti.querySelector('svg.vej');
+    svg.setAttribute('viewBox', '0 0 ' + Math.max(1, Math.round(r.width)) + ' ' + Math.max(1, Math.round(r.height)));
+    svg.querySelector('path').setAttribute('d', d || 'M0 0');
+  }
+  function tegnStier() { stage.querySelectorAll('.sti2').forEach(tegnSti); }
 
+  function heltKnap(h) {
+    var med = !!lib.play[h.id];
+    return '<button type="button" class="helt' + (med ? '' : ' fra') + '" data-helt="' + h.id + '" aria-pressed="' + med + '"><span class="ring" aria-hidden="true">' + avatar(h, 58) + '</span> <span class="hn">' + esc(h.name) + '</span></button>';
+  }
   function renderHome() {
     stopSpeak();
     setView('home');
-    var u = ugensHistorie(), h = '';
-    if (u) {
-      var pl = placering(u.st);
-      h += '<h2>Ugens eventyr</h2><section class="card ugens">' + artHtml(u.st.start) +
-        '<p class="kap"><span class="serie">' + pl[0] + '</span><span>' + pl[1] + '</span></p>' +
-        '<h3>' + u.st.title + '</h3><p>' + u.st.blurb + '</p>' +
-        '<button class="btn main" id="ugens" type="button" data-id="' + u.st.id + '">' + (u.kapitel ? 'Start kapitlet' : 'Start historien') + '</button></section>';
-    }
-    h += '<h2>Alle historier</h2><section class="card liste">' + (STORIES.length ? historieGrupper().map(function (g) {
-      return '<h3>' + esc(g.titel) + '</h3><ul class="hl">' + g.st.map(function (st) {
-        var done = !!lib.world['done_' + st.id];
-        return '<li><button type="button" class="hist" data-story="' + st.id + '"><i class="lyg' + (done ? ' on' : '') + '" aria-hidden="true"></i>' +
-          '<span class="ht"><span class="htt">' + st.title + '</span><span class="hs">' + placering(st)[1] + '</span></span>' +
-          (done ? '<span class="gf">Gennemført</span>' : '') + '</button></li>';
-      }).join('') + '</ul>';
-    }).join('') : '<p>Der er ingen historier at vise lige nu. Prøv igen senere, når der er internet.</p>') + '</section>';
-    h += '<h2>Jeres helte</h2><section class="card helte-kort">' +
-      (lib.heroes.length
-        ? '<div class="heroes">' + lib.heroes.map(function (p) { return '<figure>' + avatar(p, 56) + '<figcaption>' + esc(p.name) + '</figcaption></figure>'; }).join('') + '</div>'
-        : '<p>I har ingen helte endnu. Lav den første, før I går ind i skoven.</p>') +
-      '<button class="btn" id="helte" type="button">Jeres helte<span class="tag">' + (lib.heroes.length ? 'Vælg, ret og lav nye' : 'Lav en helt') + '</span></button></section>';
+    var h = '';
+    if (lib.heroes.length) h += '<p class="helte-tekst">Med i aften. Tryk for at slå til og fra.</p>';
+    h += '<div class="helte2">' + lib.heroes.map(heltKnap).join('') +
+      '<button type="button" class="helt ny" id="helte"><span class="ring" aria-hidden="true">+</span> <span class="hn">' + (lib.heroes.length ? 'Helte' : 'Lav jeres første helt') + '</span></button></div>' +
+      '<p class="note" id="helt-besked" role="status"></p>';
+    h += '<div id="stien">' + (STORIES.length ? stiGrupper().map(function (g) {
+      return '<section class="gruppe"><h2>' + esc(g.titel) + ' <span>' + esc(g.linje) + '</span></h2><div class="sti2">' +
+        '<svg class="vej" aria-hidden="true" preserveAspectRatio="none"><path d="M0 0" fill="none" stroke="var(--line)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/></svg>' +
+        g.stop.map(stopHtml).join('') + '</div></section>';
+    }).join('') : '<p class="tom">Der er ingen historier at vise lige nu. Prøv igen senere, når der er internet.</p>') + '</div>';
     stage.innerHTML = h;
-    if ($('ugens')) $('ugens').onclick = function () { vaelgHistorie(this.getAttribute('data-id')); };
-    stage.querySelectorAll('.hist').forEach(function (b) { b.onclick = function () { vaelgHistorie(b.getAttribute('data-story')); }; });
+    stage.querySelectorAll('.helt[data-helt]').forEach(function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute('data-helt'), besked = $('helt-besked');
+        var antal = lib.heroes.filter(function (x) { return lib.play[x.id]; }).length;
+        if (!lib.play[id] && antal >= 4) { besked.textContent = 'Der kan højst være fire helte med ad gangen.'; return; }
+        lib.play[id] = !lib.play[id]; saveLib(); besked.textContent = '';
+        b.setAttribute('aria-pressed', String(lib.play[id])); b.classList.toggle('fra', !lib.play[id]);
+      };
+    });
     $('helte').onclick = function () { renderSetup(); tilToppen(); };
+    stage.querySelectorAll('button.st').forEach(function (b) { b.onclick = function () { aabnArk(b.getAttribute('data-story'), b); }; });
+    tegnStier();
+    if (stiObs) stiObs.disconnect();
+    if (window.ResizeObserver) { stiObs = new ResizeObserver(function () { if (view === 'home') tegnStier(); }); stage.querySelectorAll('.sti2').forEach(function (el) { stiObs.observe(el); }); }
+  }
+
+  /* Arket: historiens billede, hvor den hører til, titel, kort beskrivelse, "Start eventyret" og "Luk".
+     Fokus flyttes ind i arket og tilbage til lanternen, når det lukkes; resten af siden er inaktiv imens. */
+  var arkFra = null, stiForaeldet = false;
+  function aabnArk(id, knap) {
+    var st = storyById(id);
+    if (!st) return;
+    arkFra = knap || null;
+    $('ark').innerHTML = '<div class="greb" aria-hidden="true"></div>' + artHtml(st.start) +
+      '<div class="ak"><p class="ark-sted">' + esc(stedTekst(id)) + '</p><h2 id="ark-titel">' + esc(st.title) + '</h2><p class="blurb">' + esc(st.blurb) + '</p>' +
+      '<button type="button" class="btn lys" id="ark-start">Start eventyret</button><button type="button" class="luk" id="ark-luk">Luk</button></div>';
+    $('ark-bag').hidden = false;
+    document.querySelector('.wrap').inert = true;
+    document.documentElement.style.overflow = 'hidden';
+    $('ark-start').onclick = function () { setup.story = id; arkFra = null; renderLedsager(); tilToppen(); };
+    $('ark-luk').onclick = function () { lukArk(); };
+    $('ark-start').focus();
+  }
+  function lukArk(stille) {
+    if ($('ark-bag').hidden) return;
+    $('ark-bag').hidden = true;
+    $('ark').innerHTML = '';
+    document.querySelector('.wrap').inert = false;
+    document.documentElement.style.overflow = '';
+    if (!stille && stiForaeldet && view === 'home') {
+      var fra = arkFra && arkFra.getAttribute('data-story');
+      stiForaeldet = false; arkFra = null;
+      renderHome();
+      var b = fra && stage.querySelector('button.st[data-story="' + fra + '"]');
+      if (b) b.focus();
+      return;
+    }
+    if (!stille && arkFra && document.contains(arkFra)) arkFra.focus();
+    arkFra = null;
+  }
+  $('ark-dim').onclick = function () { lukArk(); };
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !$('stopbox').hidden) { e.preventDefault(); $('stop-nej').click(); return; }
+    if ($('ark-bag').hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); lukArk(); return; }
+    if (e.key !== 'Tab') return;
+    var f = $('ark').querySelectorAll('button'), forst = f[0], sidst = f[f.length - 1];
+    if (!$('ark').contains(document.activeElement)) { e.preventDefault(); forst.focus(); }
+    else if (e.shiftKey && document.activeElement === forst) { e.preventDefault(); sidst.focus(); }
+    else if (!e.shiftKey && document.activeElement === sidst) { e.preventDefault(); forst.focus(); }
+  });
+
+  /* Følgesvendene står alene i lysningen om dagen og ser glade ud. */
+  function foelgesvendBillede(c) {
+    try { return LK.art ? LK.art.scene({ sted: 'lysning', himmel: 'dag', alt: c.name, figurer: [{ navn: c.id, x: 200, y: 168, skala: 1.7, humoer: 'glad' }] }) : ''; }
+    catch (e) { console.error('Billedet af ' + c.name + ' kunne ikke tegnes:', e); return ''; }
+  }
+  /* Vælg følgesvend: den valgte historie øverst, de seks følgesvende i to kolonner, og "Afsted med <navn>",
+     der starter historien med aftenens helte. Sidst valgte følgesvend er valgt på forhånd. */
+  function renderLedsager() {
+    var st = storyById(setup.story);
+    if (!st) return renderHome();
+    stopSpeak();
+    setView('ledsager');
+    var spillere = lib.heroes.filter(function (h) { return lib.play[h.id]; });
+    stage.innerHTML = '<div class="valgt-hist"><div class="mini">' + (ART[st.start] && LK.art ? (function () { try { return LK.art.scene(ART[st.start]); } catch (e) { return ''; } })() : '') + '</div>' +
+      '<div><small>' + esc(stedTekst(st.id)) + '</small><b>' + esc(st.title) + '</b></div></div>' +
+      '<h2 id="ledsager-titel" tabindex="-1">Hvem tager I med?</h2>' +
+      '<div class="sv">' + COMPS.map(function (c) {
+        return '<button type="button" data-comp="' + c.id + '" aria-pressed="' + (setup.comp === c.id) + '"><span class="bill" aria-hidden="true">' + foelgesvendBillede(c) + '</span>' +
+          '<span class="t"><b>' + c.name + '</b><small>' + c.desc + '</small><span class="plus">+1 i ' + c.stat + '</span></span></button>';
+      }).join('') + '</div>' +
+      (spillere.length ? '' : '<p class="note" id="ingen-helte">' + (lib.heroes.length ? 'Vælg mindst én helt på forsiden' : 'Lav jeres første helt på forsiden') + '</p>') +
+      '<button type="button" class="btn lys" id="afsted"></button>';
+    function opdater() {
+      var c = COMPS.filter(function (x) { return x.id === setup.comp; })[0];
+      $('afsted').textContent = c ? 'Afsted med ' + c.name : 'Vælg en følgesvend';
+      $('afsted').disabled = !c || !spillere.length;
+    }
+    stage.querySelectorAll('.sv [data-comp]').forEach(function (b) {
+      b.onclick = function () {
+        setup.comp = b.getAttribute('data-comp');
+        stage.querySelectorAll('.sv [data-comp]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        opdater();
+      };
+    });
+    opdater();
+    $('afsted').onclick = function () {
+      if (!setup.comp || !spillere.length) return;
+      prefs.comp = setup.comp; savePrefs();
+      fresh({ players: spillere, comp: setup.comp, story: st.id });
+      enter(st.start);
+    };
+    $('ledsager-titel').focus({ preventScroll: true });
   }
 
   function renderSettings() {
@@ -888,7 +1120,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   function naarInstallerbar() { var r = $('install-row'); if (r) r.hidden = !(LK.kanInstallere && LK.kanInstallere()); }
   LK.naarInstallerbar = naarInstallerbar;
 
-  var setup = { view: 'lib', edit: null, isNew: false, snap: null, cat: 'kraefter', comp: null, confirmDel: false };
+  var setup = { view: 'lib', edit: null, isNew: false, snap: null, cat: 'kraefter', comp: prefs.comp, story: null, confirmDel: false };
   if (!lib.heroes.length) { setup.view = 'builder'; setup.edit = makeHero(0); setup.isNew = true; setup.snap = zeroStats(); }
   function chipsHtml(k, opts, cur) {
     return '<div class="chips">' + opts.map(function (o) { return '<button type="button" class="chip" data-k="' + k + '" data-v="' + o[0] + '" aria-pressed="' + (cur === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div>';
@@ -904,7 +1136,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   welcomed = store.get('lk-welcomed') === '1';
   function renderWelcome(fromLink) {
     stopSpeak(); setSpark(); setView('welcome');
-    $('epi').textContent = 'Velkommen';
+    saetEpi('Velkommen');
     stage.innerHTML =
       '<h2>Velkommen til Lanterneskoven!</h2>' +
       '<p>Det her er en historie, I <b>læser sammen</b>. Én læser højt, alle vælger vej, og terningen går rundt.</p>' +
@@ -923,9 +1155,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 
   function renderLib() {
     setSpark(); setView('setup');
-    if (!setup.story) { var nx = STORIES.filter(function (x) { return !lib.world['done_' + x.id]; })[0]; setup.story = nx ? nx.id : STORIES[0] ? STORIES[0].id : null; }
-    $('epi').textContent = 'Vælg eventyr';
-    var sel = lib.heroes.filter(function (h) { return lib.play[h.id]; }).length;
+    saetEpi('Heltene');
     stage.innerHTML =
       '<h2>Jeres helte</h2>' +
       '<p>Sæt kryds ved dem, der er med i aften (op til fire). Helte bliver gemt på denne enhed.</p>' +
@@ -936,17 +1166,8 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
           '<button type="button" class="chip" data-edit="' + h.id + '">' + (h.pts > 0 ? 'Forbedre' : 'Rediger') + '</button></div>';
       }).join('') +
       (lib.heroes.length < 8 ? '<button class="btn" id="newh" type="button">+ Ny helt</button>' : '') +
-      '<label class="lab">Vælg historie</label>' +
-      '<div class="comps" role="radiogroup">' + STORIES.map(function (st) {
-        return '<label class="comp"><input type="radio" name="story" value="' + st.id + '"' + (setup.story === st.id ? ' checked' : '') + '><span><span class="nm">' + st.title + '</span><br><span class="ds">' + st.blurb + (lib.world['done_' + st.id] ? ' Gennemført.' : '') + '</span></span><span class="pl">' + st.tag + (ENTRY[st.id] && ENTRY[st.id].serie ? '<br>Kapitel ' + ENTRY[st.id].kapitel + ' af ' + ENTRY[st.id].kapitler : '') + '</span></label>';
-      }).join('') + '</div>' +
-      '<label class="lab">Vælg jeres følgesvend</label>' +
-      '<div class="comps" role="radiogroup">' + COMPS.map(function (c) {
-        return '<label class="comp"><input type="radio" name="comp" value="' + c.id + '"' + (setup.comp === c.id ? ' checked' : '') + '><span><span class="nm">' + c.name + '</span><br><span class="ds">' + c.desc + '</span></span><span class="pl">+1 ' + c.stat + '</span></label>';
-      }).join('') + '</div>' +
       (friendNames(lib.world).length ? '<p class="vnote">Skovens venner husker jer: ' + joinNames(friendNames(lib.world)) + '.' + (lib.world.gnistNavne && lib.world.gnistNavne.length ? ' Gnisterne ' + joinNames(lib.world.gnistNavne.map(esc)) + ' venter også.' : '') + '</p>' : '') +
-      '<p class="note" id="err" hidden></p>' +
-      '<button class="btn main" id="go" type="button">Start eventyret</button>';
+      '<p class="note" id="err" hidden></p>';
     stage.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
       cb.onchange = function () {
         var n = lib.heroes.filter(function (h) { return lib.play[h.id]; }).length;
@@ -966,22 +1187,11 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       setup.view = 'builder'; setup.edit = makeHero(lib.heroes.length); setup.isNew = true; setup.confirmDel = false;
       setup.snap = zeroStats(); setup.cat = 'kraefter'; renderSetup();
     };
-    stage.querySelectorAll('input[name=story]').forEach(function (r) { r.onchange = function () { setup.story = r.value; }; });
-    stage.querySelectorAll('input[name=comp]').forEach(function (r) { r.onchange = function () { setup.comp = r.value; }; });
-    $('go').onclick = function () {
-      var players = lib.heroes.filter(function (h) { return lib.play[h.id]; });
-      var err = $('err');
-      if (!storyById(setup.story)) { err.textContent = 'Der er ingen historier at vælge lige nu. Prøv igen senere, når der er internet.'; err.hidden = false; return; }
-      if (!players.length) { err.textContent = 'Vælg mindst én helt.'; err.hidden = false; return; }
-      if (!setup.comp) { err.textContent = 'Vælg en følgesvend først.'; err.hidden = false; return; }
-      fresh({ players: players, comp: setup.comp, story: setup.story });
-      enter(storyStart(setup.story));
-    };
   }
 
   function renderEdit() {
     setSpark(); setView('builder');
-    $('epi').textContent = 'Vælg eventyr';
+    saetEpi('Heltene');
     var h = setup.edit;
     stage.innerHTML =
       '<h2>' + (setup.isNew ? 'Ny helt' : 'Rediger ' + esc(h.name || 'helt')) + '</h2>' +
@@ -1012,8 +1222,15 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     $('save').onclick = function () {
       h.name = h.name.trim();
       if (!h.name) { $('err').hidden = false; return; }
-      if (setup.isNew) { lib.heroes.push(h); lib.play[h.id] = true; }
-      saveLib(); setup.view = 'lib'; renderSetup();
+      var ny = setup.isNew;
+      if (ny) {
+        var med = lib.heroes.filter(function (x) { return lib.play[x.id]; }).length;
+        lib.heroes.push(h);
+        if (med < 4) lib.play[h.id] = true;
+      }
+      saveLib(); setup.view = 'lib';
+      /* En ny helt fører til forsiden, hvor eventyret begynder; en rettet helt tilbage til heltelisten. */
+      if (ny) { renderHome(); tilToppen(); } else renderSetup();
     };
     if ($('cancel')) $('cancel').onclick = function () {
       if (!setup.isNew && setup.orig) { var o = JSON.parse(setup.orig); for (var k in o) h[k] = o[k]; }
@@ -1144,15 +1361,15 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     stage.innerHTML = h;
     bindTools(choices, !!sc.end);
     if (gi) $('gn').oninput = function () { gi.name = this.value; };
-    $('epi').textContent = overskrift(state.story);
-    /* Til topbjælken, så "‹ Forside" står øverst over scenen. */
-    $('bar').scrollIntoView({ block: 'start', behavior: 'auto' });
+    saetEpi(overskrift(state.story), kortOverskrift(state.story));
+    /* Til scenens top, med topbjælken ("‹ Forside") lige over den. */
+    try { window.scrollTo(0, Math.max(0, stage.getBoundingClientRect().top + window.scrollY - $('topp').offsetHeight - 16)); } catch (e) {}
     if (sc.end) {
       $('again').onclick = function () { var st = state.story; fresh({ players: state.players, comp: state.comp, story: st }); enter(storyStart(st)); };
       if ($('nextchapter')) $('nextchapter').onclick = function () { var nk = kapitelSlut(state.story).knap; fresh({ players: state.players, comp: state.comp, story: nk.id }); enter(nk.start); };
       if ($('nextstory')) $('nextstory').onclick = function () { var ns = nextStory(state.story); fresh({ players: state.players, comp: state.comp, story: ns.id }); enter(ns.start); };
       $('team').onclick = function () { var c = state.comp; fresh({ players: state.players, comp: c }); setup.comp = c; setup.view = 'lib'; renderSetup(); };
-      if ($('back')) $('back').onclick = $('team').onclick;
+      if ($('back')) $('back').onclick = function () { tilForside(); };
       return;
     }
     var box = $('choices');
@@ -1165,6 +1382,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       if (wr || lk) b.disabled = true;
       if (lk) b.classList.add('locked');
       b.onclick = function () {
+        state.valgt = true; /* et valg er truffet: "‹ Forside" spørger nu først */
         if (c.mag) {
           useMagic(c.mag, c.mobj); if (c.opt.eff) c.opt.eff(c.mag);
           state.magicNote = MAGIC_NOTE[c.mobj.id](c.mag.name);
@@ -1213,15 +1431,19 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       '<div class="sum" id="res"></div>' +
       '<button class="btn main" id="roll" type="button" style="width:100%">Slå terningen</button></div>';
     var rollOnce = function () {
-      var die = $('die'), btn = $('roll');
+      var die = $('die'), btn = $('roll'), mit = state;
       var old = $('shield'); if (old) old.remove();
       btn.disabled = true;
       var fe = canFeather && !state.featherUsed && $('fe').checked;
       if (canFeather) $('fe').disabled = true;
       die.classList.add('rolling');
       var t = setInterval(function () { die.textContent = 1 + Math.floor(Math.random() * 6); }, 70);
-      setTimeout(function () {
+      state.rollIv = t;
+      /* Stoppes historien, mens terningen ruller, ryddes timerne i fresh; tjekket her er en ekstra sikring. */
+      state.rollTimer = setTimeout(function () {
         clearInterval(t);
+        mit.rollTimer = mit.rollIv = null;
+        if (state !== mit || !document.contains(die)) return;
         die.classList.remove('rolling');
         var d = 1 + Math.floor(Math.random() * 6);
         die.textContent = d;
@@ -1283,9 +1505,9 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     setup.view = 'lib'; setup.edit = null; setup.isNew = false; setup.comp = 'bjorn';
     if (!st) {
       setView('setup');
-      $('epi').textContent = 'Forhåndsvisning';
+      saetEpi('Forhåndsvisning');
       stage.innerHTML = '<h2>Historien findes ikke</h2><p>Forhåndsvisningen kunne ikke finde historien &laquo;' + esc(PREVIEW_ID) + '&raquo;.</p><button class="btn main" id="tilliste" type="button">Til historierne</button>';
-      $('tilliste').onclick = function () { renderSetup(); };
+      $('tilliste').onclick = function () { renderHome(); };
       return;
     }
     setup.story = st.id;
@@ -1317,8 +1539,14 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     var nu = new Date(), alle = LK.katalogPoster || [];
     var poster = LK.synlige(alle, nu, PREVIEW_ID);
     var nye = poster.filter(function (p) { return !ENTRY[p.id]; });
-    var mangler = nye.length;
     nye.forEach(function (p) { ENTRY[p.id] = p; });
+    /* De kommende kapitler i de synlige serier hentes med, så deres titler kan stå ved de slukkede lanterner. */
+    var synligeSerier = poster.filter(function (p) { return p.serie; }).map(function (p) { return p.serie.id; });
+    var kommende = PREVIEW_ID ? [] : alle.filter(function (p) {
+      return p.serie && !ENTRY[p.id] && !VENTER[p.id] && synligeSerier.indexOf(p.serie.id) >= 0;
+    });
+    kommende.forEach(function (p) { VENTER[p.id] = true; });
+    var hent = nye.concat(kommende), mangler = hent.length;
     /* Alle katalogets filer, også de kommende historier, gemmes af service workeren (se nederst og sw.js),
        så en kommende historie også åbner på sin udgivelsesdag uden net. De registreres og vises ikke før. */
     if (!PREVIEW_ID) {
@@ -1333,7 +1561,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       videre();
     }
     if (!mangler) return klar();
-    nye.forEach(function (p) {
+    hent.forEach(function (p) {
       var el = document.createElement('script');
       el.src = p.fil;
       el.async = false;
@@ -1349,8 +1577,9 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState !== 'visible' || PREVIEW_ID || henter || !hentetDato || LK.datoStreng(new Date()) === hentetDato) return;
     hentHistorier(function () {
-      if (view === 'home') renderHome();
-      else if (view === 'setup' && !state.scene && setup.view === 'lib' && $('go')) renderLib();
+      /* Står arket åbent, tegnes forsiden først igen, når det lukkes (se lukArk). */
+      if (view === 'home' && !$('ark-bag').hidden) stiForaeldet = true;
+      else if (view === 'home') renderHome();
     });
   });
 })();

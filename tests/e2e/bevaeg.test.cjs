@@ -5,7 +5,7 @@ const { test, before, after } = require('node:test');
 const assert = require('node:assert');
 const { chromium } = require('playwright');
 const { startServer } = require('../helpers/server.cjs');
-const { tilOpsaetning } = require('../helpers/forside.cjs');
+const { startHistorie, tilFoelgesvend, stopHistorien } = require('../helpers/forside.cjs');
 
 const KATALOG = 'katalog=tests/fixtures/stories-maaned/katalog.js';
 const HOP = '#choices .crow > .btn:has-text("Hop i bladene")';
@@ -55,11 +55,7 @@ async function nySide(gem) {
 async function startEfteraar(gem) {
   const s = await nySide(gem);
   await s.page.goto(server.base + 'index.html?' + KATALOG);
-  await tilOpsaetning(s.page);
-  await s.page.waitForSelector('input[name=story][value="efteraar"]');
-  await s.page.check('input[name=story][value="efteraar"]');
-  await s.page.check('input[name=comp][value="raev"]');
-  await s.page.click('#go');
+  await startHistorie(s.page, 'efteraar', 'raev');
   await s.page.waitForSelector(HOP);
   return s;
 }
@@ -130,15 +126,11 @@ test('et tryk på Bevægelse i indstillingerne gemmer bevaeg:false i lk-prefs, b
   assert.strictEqual(await page.evaluate(() => document.body.classList.contains('big')), true);
   // Historien, der startes bagefter, har et terningkast i stedet for bevægelsen.
   await page.click('#forside');
-  await tilOpsaetning(page);
-  await page.check('input[name=story][value="efteraar"]');
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  await startHistorie(page, 'efteraar', 'raev');
   assert.strictEqual((await page.textContent(HOP + ' .tag')).trim(), '🎲 Mod');
   await page.click('#choices .crow > .btn:has-text("Saml blade")');
   assert.strictEqual(await titel(page), 'En stor bunke');
-  await page.click('#forside');
-  await page.click('#stop-ja');
+  await stopHistorien(page);
   await page.click('#indst');
   await page.click('#bevaeg');
   assert.strictEqual((await prefs(page)).bevaeg, true);
@@ -151,8 +143,7 @@ test('gamle indstillinger uden bevaeg: bevægelse er slået til, og stor skrift 
   assert.strictEqual((await page.textContent(HOP + ' .tag')).trim(), '🤸');
   assert.strictEqual(await page.evaluate(() => document.body.classList.contains('big')), true);
   // Indstillingerne viser det samme.
-  await page.click('#forside');
-  await page.click('#stop-ja');
+  await stopHistorien(page);
   await page.click('#indst');
   assert.strictEqual(await page.getAttribute('#bevaeg', 'aria-pressed'), 'true');
   assert.strictEqual(await page.getAttribute('#big', 'aria-pressed'), 'true');
@@ -166,14 +157,13 @@ test('i forhåndsvisningen skifter Bevægelse uden at gemme noget', async () => 
   await page.waitForSelector(HOP);
   assert.strictEqual((await page.textContent(HOP + ' .tag')).trim(), '🤸');
   // Via forsiden til indstillingerne og tilbage til historien med eksempelholdet.
-  await page.click('#forside');
-  await page.click('#stop-ja');
+  await stopHistorien(page);
   await page.click('#indst');
   await page.click('#bevaeg');
   assert.strictEqual(await page.getAttribute('#bevaeg', 'aria-pressed'), 'false');
   await page.click('#forside');
-  await page.click('#stage .hist[data-story="efteraar"]');
-  await page.click('#go');
+  await tilFoelgesvend(page, 'efteraar');
+  await page.click('#afsted'); // eksempelholdets Bastian Bjørn er valgt på forhånd
   assert.strictEqual((await page.textContent(HOP + ' .tag')).trim(), '🎲 Mod');
   await page.click(HOP);
   assert.strictEqual(await page.isVisible('#roll'), true);
