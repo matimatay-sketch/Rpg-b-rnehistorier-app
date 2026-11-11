@@ -35,14 +35,21 @@ test('månedshistorierne genbruger ikke sagaens venne-linjer (k.friendLines)', (
   }
 });
 
-test('Julestjernen: i venne-slutningen kommer Nusse ikke frem, som var han ny', () => {
-  for (const flags of [{ nusseVen: true }, { nusseHonning: true }, { nusseVen: true, mollLoefte: true, tutVen: true, maaneVen: true, vindVen: true }]) {
-    const { story } = hent('stories/2026-12-julestjernen/historie.js', flags);
-    const t = tekst(story.scenes.snEndVenner);
-    assert.doesNotMatch(t, /Må jeg være med|Nusse kommer først|Bag et træ tøver Nusse/);
-    assert.match(t, /hvisker Nusse/);
+test('Julestjernen: i kapitlernes venne-slutning kommer Nusse ikke frem, som var han ny', () => {
+  const kapitler = maaneder.filter(e => e.serie && e.serie.id === '2026-12-julestjernen');
+  assert.ok(kapitler.length > 0);
+  for (const e of kapitler) {
+    for (const flags of [{ nusseVen: true }, { nusseHonning: true }, { nusseVen: true, mollLoefte: true, tutVen: true, maaneVen: true, vindVen: true }]) {
+      const { story } = hent(e.fil, flags);
+      const id = Object.keys(story.scenes).find(s => s.endsWith('EndVenner'));
+      assert.ok(id, e.id + ' har en venne-slutning');
+      const t = tekst(story.scenes[id]);
+      assert.doesNotMatch(t, /Må jeg være med|Nusse kommer først|Bag et træ tøver Nusse/, e.id);
+      assert.match(t, /Nusse/, e.id);
+    }
+    // Vennerne fra sagaen nævnes, når familien har dem.
+    const { story } = hent(e.fil, { mollLoefte: true, tutVen: true });
+    const id = Object.keys(story.scenes).find(s => s.endsWith('EndVenner'));
+    assert.match(tekst(story.scenes[id]), /Moll|Tut/, e.id);
   }
-  const { story } = hent('stories/2026-12-julestjernen/historie.js', { mollLoefte: true, tutVen: true });
-  const t = tekst(story.scenes.snEndVenner);
-  assert.match(t, /Moll/); assert.match(t, /Tut/);
 });

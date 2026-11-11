@@ -242,10 +242,26 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   function sagaIndex(id) { return sagaDele().map(function (x) { return x.id; }).indexOf(id); }
   function nextStory(id) { var i = sagaIndex(id); return i < 0 ? null : sagaDele()[i + 1] || null; }
   function storyStart(id) { return storyById(id).start; }
+  /* Et kapitel i en serie (ENTRY med serie): næste kapitel fra hele kataloget, også et, der ikke er udgivet endnu. */
+  function naesteKapitel(id) { return ENTRY[id] && ENTRY[id].serie ? LK.naesteKapitel(LK.katalogPoster || [], ENTRY[id]) : null; }
+  /* Slutskærmen for et kapitel: er næste kapitel udgivet (og hentet), kan man spille det; ellers siges, hvornår det kommer.
+     Efter sidste kapitel kommer en ny serie næste måned. */
+  function kapitelSlut(id) {
+    if (!ENTRY[id] || !ENTRY[id].serie) return { knap: null, tekst: '' };
+    var n = naesteKapitel(id);
+    if (!n) return { knap: null, tekst: 'Næste måned kommer en ny serie.' };
+    if (storyById(n.id)) return { knap: storyById(n.id), tekst: '' };
+    if (!LK.erUdgivet(n, new Date())) return { knap: null, tekst: 'Næste kapitel kommer fredag den ' + dagTekst(n.udgives) + '.' };
+    return { knap: null, tekst: '' }; /* udgivet, mens appen stod åben; det kommer på listen */
+  }
   /* 'ÅÅÅÅ-MM-DD' -> 'december 2026' */
   function maanedTekst(dato) { var d = String(dato || '').split('-'); return (MAANEDER[+d[1] - 1] || '') + ' ' + d[0]; }
+  /* 'ÅÅÅÅ-MM-DD' -> '11. december' */
+  function dagTekst(dato) { var d = String(dato || '').split('-'); return (+d[2]) + '. ' + (MAANEDER[+d[1] - 1] || ''); }
   function overskrift(id) {
-    if (erMaaned(id)) return 'Månedens eventyr · ' + maanedTekst(ENTRY[id].udgives);
+    var e = ENTRY[id];
+    if (erMaaned(id) && e.serie) return 'Ugens eventyr · ' + e.serie.titel + ' · kapitel ' + e.kapitel + ' af ' + e.kapitler;
+    if (erMaaned(id)) return 'Månedens eventyr · ' + maanedTekst(e.udgives);
     return 'Del ' + (sagaIndex(id) + 1) + ' af ' + sagaDele().length;
   }
 
@@ -711,7 +727,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       (lib.heroes.length < 8 ? '<button class="btn" id="newh" type="button">+ Ny helt</button>' : '') +
       '<label class="lab">Vælg historie</label>' +
       '<div class="comps" role="radiogroup">' + STORIES.map(function (st) {
-        return '<label class="comp"><input type="radio" name="story" value="' + st.id + '"' + (setup.story === st.id ? ' checked' : '') + '><span><span class="nm">' + st.title + '</span><br><span class="ds">' + st.blurb + (lib.world['done_' + st.id] ? ' Gennemført.' : '') + '</span></span><span class="pl">' + st.tag + '</span></label>';
+        return '<label class="comp"><input type="radio" name="story" value="' + st.id + '"' + (setup.story === st.id ? ' checked' : '') + '><span><span class="nm">' + st.title + '</span><br><span class="ds">' + st.blurb + (lib.world['done_' + st.id] ? ' Gennemført.' : '') + '</span></span><span class="pl">' + st.tag + (ENTRY[st.id] && ENTRY[st.id].serie ? '<br>Kapitel ' + ENTRY[st.id].kapitel + ' af ' + ENTRY[st.id].kapitler : '') + '</span></label>';
       }).join('') + '</div>' +
       '<label class="lab">Vælg jeres følgesvend</label>' +
       '<div class="comps" role="radiogroup">' + COMPS.map(function (c) {
@@ -909,10 +925,12 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       '<div class="story">' + storyHtml(paras) + '</div>' + nameBox +
       '<div class="ask"><b>Spørg børnene:</b> ' + askTxt + '</div>';
     if (sc.end) {
+      var ks = kapitelSlut(state.story);
       if (state.players.length) h += '<div class="heroes">' + state.players.map(function (p) { return '<figure>' + avatar(p, 72) + '<figcaption>' + esc(p.name) + '</figcaption></figure>'; }).join('') + '</div>';
       h += awardHtml();
       h += '<div class="stats">' + (state.story === 'lantern' ? '<span>Gnister: ' + (state.gnists ? joinNames(gnistNames()) : '0') + '</span>' : '') + (friendNames(state.flags).length ? '<span>Venner: ' + joinNames(friendNames(state.flags)) + '</span>' : '') + '<span>Terningkast: ' + state.rolls + '</span>' + (state.bevaegelser > 0 ? '<span>Bevægelser: ' + state.bevaegelser + '</span>' : '') + '<span>Følgesvend: ' + esc(state.compName) + '</span></div>' +
-        '<div class="choices"><button class="btn main" id="again" type="button">Læs eventyret igen</button>' + (erMaaned(state.story) ? '<button class="btn" id="back" type="button">Tilbage til historierne</button>' : nextStory(state.story) ? '<button class="btn" id="nextstory" type="button">Spil næste del: ' + nextStory(state.story).title + '</button>' : '') + '<button class="btn" id="team" type="button">Forbedre helte</button></div>';
+        (ks.tekst ? '<p class="note" id="naestekap">' + ks.tekst + '</p>' : '') +
+        '<div class="choices"><button class="btn main" id="again" type="button">Læs eventyret igen</button>' + (ks.knap ? '<button class="btn" id="nextchapter" type="button">Spil næste kapitel</button>' : '') + (erMaaned(state.story) ? '<button class="btn" id="back" type="button">Tilbage til historierne</button>' : nextStory(state.story) ? '<button class="btn" id="nextstory" type="button">Spil næste del: ' + nextStory(state.story).title + '</button>' : '') + '<button class="btn" id="team" type="button">Forbedre helte</button></div>';
     } else {
       h += magiBar() + '<p class="note" id="wrongnote" hidden></p><div class="choices" id="choices"></div>';
     }
@@ -923,6 +941,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     stage.scrollIntoView({ block: 'start', behavior: 'auto' });
     if (sc.end) {
       $('again').onclick = function () { var st = state.story; fresh({ players: state.players, comp: state.comp, story: st }); enter(storyStart(st)); };
+      if ($('nextchapter')) $('nextchapter').onclick = function () { var nk = kapitelSlut(state.story).knap; fresh({ players: state.players, comp: state.comp, story: nk.id }); enter(nk.start); };
       if ($('nextstory')) $('nextstory').onclick = function () { var ns = nextStory(state.story); fresh({ players: state.players, comp: state.comp, story: ns.id }); enter(ns.start); };
       $('team').onclick = function () { var c = state.comp; fresh({ players: state.players, comp: c }); setup.comp = c; setup.view = 'lib'; renderSetup(); };
       if ($('back')) $('back').onclick = $('team').onclick;

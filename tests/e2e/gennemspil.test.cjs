@@ -213,8 +213,8 @@ test('gamle gemte data virker stadig', async () => {
 
 test('en historie, der ikke kan hentes, springes over', async () => {
   const { context, page, fejl } = await nySide({ heroes: [helt()], play: { h1: true }, world: {} }, 0.99);
-  // Uret står før den første månedshistorie (december 2026), så listen kun har sagaens dele.
-  await context.clock.setFixedTime(new Date('2026-11-15T12:00:00'));
+  // Uret står før den første månedshistorie (november-seriens kapitel 1, 6. november 2026), så listen kun har sagaens dele.
+  await context.clock.setFixedTime(new Date('2026-11-01T12:00:00'));
   await page.route('**/stories/vind/historie.js', r => r.fulfill({ status: 404, body: 'findes ikke' }));
   await page.goto(server.base + 'index.html');
   await page.waitForSelector('input[name=story]');
@@ -233,8 +233,8 @@ test('en historie, der ikke kan hentes, springes over', async () => {
 
 test('en historie, hvis kode fejler, springes over og logges', async () => {
   const { context, page, fejl } = await nySide({ heroes: [helt()], play: { h1: true }, world: {} }, 0.99);
-  // Uret står før den første månedshistorie (december 2026), så listen kun har sagaens dele.
-  await context.clock.setFixedTime(new Date('2026-11-15T12:00:00'));
+  // Uret står før den første månedshistorie (november-seriens kapitel 1, 6. november 2026), så listen kun har sagaens dele.
+  await context.clock.setFixedTime(new Date('2026-11-01T12:00:00'));
   const logget = [];
   page.on('console', m => { if (m.type() === 'error') logget.push(m.text()); });
   await page.route('**/stories/vind/historie.js', r => r.fulfill({ status: 200, contentType: 'text/javascript', body: "LK.addStory(function (k) { throw new Error('ødelagt'); });" }));
@@ -251,8 +251,8 @@ test('historierne kan spilles uden internet, når appen har været åbnet én ga
   await context.addInitScript(libJson => {
     try { localStorage.setItem('lk-heroes', libJson); localStorage.setItem('lk-welcomed', '1'); } catch (e) {}
   }, JSON.stringify({ heroes: [helt()], play: { h1: true }, world: {} }));
-  // Uret står før den første månedshistorie (december 2026), så listen kun har sagaens dele.
-  await context.clock.setFixedTime(new Date('2026-11-15T12:00:00'));
+  // Uret står før den første månedshistorie (november-seriens kapitel 1, 6. november 2026), så listen kun har sagaens dele.
+  await context.clock.setFixedTime(new Date('2026-11-01T12:00:00'));
   const page = await context.newPage();
   await page.goto(server.base + 'index.html');
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));

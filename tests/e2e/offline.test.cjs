@@ -10,8 +10,17 @@ const { startServer } = require('../helpers/server.cjs');
 
 const rod = path.resolve(__dirname, '../..');
 const SAGA = ['lantern', 'maane', 'vind', 'fest'];
-const JUL = '2026-12-julestjernen';
-const JUL_FIL = 'stories/2026-12-julestjernen/historie.js';
+const JUL = '2026-12-julestjernen-1';
+const JUL_FIL = 'stories/2026-12-julestjernen-1/historie.js';
+// Historierne på listen på en given dato efter det rigtige katalog (sagaen og de udgivne månedshistorier, nyeste først),
+// så testene ikke skal rettes, hver gang der kommer nye kapitler.
+const vm = require('node:vm');
+function listen(dato) {
+  const ctx = {}; ctx.self = ctx; ctx.window = ctx;
+  vm.createContext(ctx);
+  for (const fil of ['js/katalog.js', 'stories/katalog.js']) vm.runInContext(fs.readFileSync(path.join(rod, fil), 'utf8'), ctx, { filename: fil });
+  return Array.from(ctx.LK.synlige(ctx.LK.katalogPoster, new Date(dato)), e => e.id); // en almindelig liste, ikke en fra vm-konteksten
+}
 
 let server, browser;
 before(async () => { server = await startServer(); browser = await chromium.launch(); });
@@ -85,21 +94,22 @@ async function spilJulestjernen(page) {
   await page.check('input[name=story][value="' + JUL + '"]');
   await page.check('input[name=comp][value="raev"]');
   await page.click('#go');
-  assert.strictEqual((await page.textContent('#epi')).trim(), 'Månedens eventyr · december 2026');
+  assert.strictEqual((await page.textContent('#epi')).trim(), 'Ugens eventyr · Julestjernen · kapitel 1 af 4');
   await spilTilSlut(page);
   assert.ok(await page.isVisible('#stage .end'));
 }
 
 test('en kommende månedshistorie, som appen har hentet, åbner på udgivelsesdagen uden net', async () => {
-  const { context, page, fejl } = await nySide('2026-11-25T12:00:00', true);
+  const { context, page, fejl } = await nySide('2026-11-01T12:00:00', true);
   await page.goto(server.base + 'index.html');
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
   await page.reload(); // nu styrer service workeren siden
   assert.deepStrictEqual(await historieIds(page), SAGA);
   await iCachen(page, JUL_FIL);
-  await context.clock.setFixedTime(new Date('2026-12-02T12:00:00'));
+  await context.clock.setFixedTime(new Date('2026-12-04T12:00:00'));
   await udenNet(context, page);
-  assert.deepStrictEqual(await historieIds(page), SAGA.concat(JUL));
+  assert.ok(listen('2026-12-04T12:00:00').includes(JUL));
+  assert.deepStrictEqual(await historieIds(page), listen('2026-12-04T12:00:00'));
   await spilJulestjernen(page);
   assert.deepStrictEqual(fejl, []);
   await context.close();
@@ -109,10 +119,11 @@ test('en familie, der først åbner appen efter udgivelsen, kan spille månedshi
   const { context, page, fejl } = await nySide('2026-12-05T12:00:00', true);
   await page.goto(server.base + 'index.html'); // første besøg: service workeren styrer ikke siden endnu
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
-  assert.deepStrictEqual(await historieIds(page), SAGA.concat(JUL));
+  assert.ok(listen('2026-12-05T12:00:00').includes(JUL));
+  assert.deepStrictEqual(await historieIds(page), listen('2026-12-05T12:00:00'));
   await iCachen(page, JUL_FIL);
   await udenNet(context, page);
-  assert.deepStrictEqual(await historieIds(page), SAGA.concat(JUL));
+  assert.deepStrictEqual(await historieIds(page), listen('2026-12-05T12:00:00'));
   await spilJulestjernen(page);
   assert.deepStrictEqual(fejl, []);
   await context.close();
@@ -158,7 +169,7 @@ test('forhåndsvisningen registrerer ingen service worker', async () => {
 });
 
 test('?katalog= virker kun på testmaskinen, ikke fra en rigtig adresse', async () => {
-  const { context, page, fejl } = await nySide('2026-11-15T12:00:00', false);
+  const { context, page, fejl } = await nySide('2026-11-01T12:00:00', false);
   await context.route('http://lanterne.test/**', r => {
     const sti = path.join(rod, decodeURIComponent(new URL(r.request().url()).pathname));
     if (!sti.startsWith(rod + path.sep) || !fs.existsSync(sti)) return r.fulfill({ status: 404, body: 'findes ikke' });
@@ -172,28 +183,29 @@ test('?katalog= virker kun på testmaskinen, ikke fra en rigtig adresse', async 
 });
 
 test('en app, der vågner på en ny dato, viser den nye månedshistorie', async () => {
-  const { context, page, fejl } = await nySide('2026-11-30T23:58:00', false);
+  const { context, page, fejl } = await nySide('2026-12-03T23:58:00', false);
   await page.goto(server.base + 'index.html');
-  assert.deepStrictEqual(await historieIds(page), SAGA);
-  await context.clock.setFixedTime(new Date('2026-12-01T07:30:00'));
+  assert.ok(!listen('2026-12-03T23:58:00').includes(JUL));
+  assert.deepStrictEqual(await historieIds(page), listen('2026-12-03T23:58:00'));
+  await context.clock.setFixedTime(new Date('2026-12-04T07:30:00'));
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
   await page.waitForSelector('input[name=story][value="' + JUL + '"]');
-  assert.deepStrictEqual(await historieIds(page), SAGA.concat(JUL));
+  assert.deepStrictEqual(await historieIds(page), listen('2026-12-04T07:30:00'));
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
 
 test('en ny dato midt i en historie afbryder ikke historien', async () => {
-  const { context, page, fejl } = await nySide('2026-11-30T23:58:00', false);
+  const { context, page, fejl } = await nySide('2026-12-03T23:58:00', false);
   await page.goto(server.base + 'index.html');
   await historieIds(page);
   await page.check('input[name=story][value="lantern"]');
   await page.check('input[name=comp][value="raev"]');
   await page.click('#go');
   const foer = await page.textContent('#stage h2');
-  await context.clock.setFixedTime(new Date('2026-12-01T07:30:00'));
+  await context.clock.setFixedTime(new Date('2026-12-04T07:30:00'));
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-  await page.waitForFunction(() => window.LK && LK.katalogPoster && document.querySelectorAll('script[src$="julestjernen/historie.js"]').length > 0);
+  await page.waitForFunction(() => window.LK && LK.katalogPoster && document.querySelectorAll('script[src$="julestjernen-1/historie.js"]').length > 0);
   await new Promise(r => setTimeout(r, 300));
   assert.strictEqual(await page.textContent('#stage h2'), foer);
   assert.strictEqual(await page.$('input[name=story]'), null);

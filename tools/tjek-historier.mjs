@@ -221,6 +221,48 @@ function tjekPost(post, historier, fejl) {
   if (type(st) !== type(post)) meld('Historien i filen har type "' + type(st) + '", men kataloget siger "' + type(post) + '"');
   if ((st.udgives || '') !== (post.udgives || ''))
     meld('Historien i filen har udgives "' + (st.udgives || '') + '", men kataloget siger "' + (post.udgives || '') + '"');
+  const serieTekst = (x) => (x.serie ? x.serie.id + ' / ' + x.serie.titel : 'ingen');
+  if (serieTekst(st) !== serieTekst(post))
+    meld('Historien i filen har serie "' + serieTekst(st) + '", men kataloget siger "' + serieTekst(post) + '"');
+  if (st.kapitel !== post.kapitel)
+    meld('Historien i filen har kapitel ' + st.kapitel + ', men kataloget siger ' + post.kapitel);
+  if (st.kapitler !== post.kapitler)
+    meld('Historien i filen har kapitler ' + st.kapitler + ', men kataloget siger ' + post.kapitler);
+}
+
+// Seriereglerne over hele kataloget: poster grupperes efter serie.id. Kapitlerne ligger på fredage i træk
+// i samme måned, det sidste på månedens sidste fredag, og er nummereret 1 til N.
+export function tjekSerier(poster) {
+  const fejl = [];
+  const LK = lavLK();
+  const grupper = {};
+  poster.filter(p => p.serie).forEach(p => { (grupper[p.serie.id] = grupper[p.serie.id] || []).push(p); });
+  Object.keys(grupper).forEach(sid => {
+    const g = grupper[sid].slice().sort((a, b) => a.kapitel - b.kapitel);
+    const N = g.length;
+    const meldSerie = (besked) => { if (!fejl.some(f => f.historie === sid && f.besked === besked)) fejl.push({ historie: sid, scene: '', besked }); };
+    const meldPost = (p, besked) => fejl.push({ historie: p.id, scene: '', besked });
+    g.forEach(p => { if (!LK.erFredag(p.udgives)) meldPost(p, 'Et kapitel skal udgives på en fredag'); });
+    if (g.some((p, i) => p.kapitel !== i + 1)) meldSerie('Kapitlerne skal være nummereret 1 til ' + N);
+    g.forEach(p => { if (p.kapitler !== N) meldPost(p, 'Kapitlet har kapitler: ' + p.kapitler + ', men serien har ' + N); });
+    if (new Set(g.map(p => (p.udgives || '').slice(0, 7))).size > 1) meldSerie('Seriens kapitler skal ligge i samme måned');
+    if (g.every(p => LK.erFredag(p.udgives))) {
+      const dage = (p) => { const [a, m, d] = p.udgives.split('-').map(Number); return Date.UTC(a, m - 1, d) / 86400000; };
+      if (g.some((p, i) => i > 0 && dage(p) - dage(g[i - 1]) !== 7)) meldSerie('Serien har huller: kapitlerne skal ligge på fredage i træk');
+      const sidste = g[g.length - 1].udgives;
+      const [a, m] = sidste.split('-').map(Number);
+      if (sidste !== LK.sidsteFredag(a, m)) meldSerie('Seriens sidste kapitel skal ligge på månedens sidste fredag');
+    }
+  });
+  return fejl;
+}
+
+function lavLK() {
+  const ctx = {};
+  ctx.self = ctx; ctx.window = ctx;
+  createContext(ctx);
+  koer(ctx, 'js/katalog.js');
+  return ctx.LK;
 }
 
 // `valg.poster[i]` er katalogets post for `filer[i]` (se tjekKatalog). `valg.kraevBilleder` kræver billeder.
@@ -252,7 +294,7 @@ export function tjek(filer, valg = {}) {
 
 // Kataloget (fx stories/katalog.js) kalder LK.katalog([...]) fra js/katalog.js.
 // Hver post peger på sin fil med `fil`, ellers stories/<id>/historie.js.
-function posterFraKatalog(katalog) {
+export function posterFraKatalog(katalog) {
   const ctx = {};
   ctx.self = ctx; ctx.window = ctx;
   createContext(ctx);
@@ -264,7 +306,7 @@ function posterFraKatalog(katalog) {
 // Tjek alle historierne i et katalog, og at hver post passer med historien i sin fil.
 export function tjekKatalog(katalog, valg = {}) {
   const poster = posterFraKatalog(katalog);
-  return tjek(poster.map(p => p.fil), Object.assign({}, valg, { poster }));
+  return tjek(poster.map(p => p.fil), Object.assign({}, valg, { poster })).concat(tjekSerier(poster));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

@@ -6,6 +6,7 @@
 // Figurer kaldes som (c, humoer, spec), så en figur kan læse sine egne valg (fx snemandens næse).
 // Vinter: tingene snefald (placér i x 200, y 125 for sne over hele billedet), snedrive (en bunke sne på jorden)
 // og stjerne (en julestjerne), og figuren snemand med naese: 'gulerod' (standard), 'stjerne' eller 'kogle'.
+// Sent efterår: tingene bladbunke (en bunke blade på jorden, (0,0) midt på bunden) og fugleflok (trækfugle i et V, d.antal 3-11, ulige).
 // Figurer tegnes om (0,0) = midt på kroppen; fødderne står ca. 40-46 længere nede (som Uffe på grenen i skitsen).
 // spec.maane: false giver en nattehimmel uden måne (fx når Månen er forsvundet).
 // Bevægelse sker via CSS-klasserne lk-blafr (lanterneglød), lk-blink (øjne) og lk-glimt (stjerner, gnister); se LK.art.css.
@@ -357,6 +358,26 @@ self.LK = self.LK || {};
     return (t ? glod(c, 0, 0, 40, 'guld', 'lk-glimt') : '') +
       `<path d="M${takker.join(' L')}Z" fill="${t ? '#FFD45A' : '#B8B29A'}" stroke="${t ? '#E3A21A' : '#8A8F9A'}" stroke-width="2" stroke-linejoin="round"/>` +
       `<path d="M0 -14 L3 -4 L0 6 L-3 -4Z" fill="#FFFFFF" opacity="${t ? 0.7 : 0.3}"/>`;
+  };
+
+  // ---------- Sent efterår ----------
+
+  // En blød bunke efterårsblade på jorden (et pindsvins seng), ca. 130 bred; (0,0) er midt på bunden.
+  ting.bladbunke = () =>
+    `<path d="M-66 4 Q-58 -22 -30 -28 Q-6 -40 18 -32 Q48 -28 60 -10 Q68 -4 66 4Z" fill="#B8642E"/>` +
+    [[-48, -6, 20, '#E3A21A'], [-30, -20, -30, '#D9772E'], [-8, -30, 15, '#C8352E'], [16, -24, -50, '#F2C14E'], [38, -14, 35, '#D9772E'],
+      [-20, -6, 70, '#C8352E'], [6, -12, -10, '#E3A21A'], [30, -2, 60, '#B8642E'], [52, -2, -20, '#F2C14E'], [-56, 0, -40, '#D9772E']]
+      .map(([x, y, v, f]) => `<g transform="translate(${x} ${y}) rotate(${v})"><path d="M-11 0 Q0 -8 11 0 Q0 8 -11 0Z" fill="${f}"/><line x1="-11" y1="0" x2="9" y2="0" stroke="#5A3420" stroke-width=".8" opacity=".5"/></g>`).join('');
+
+  // Trækfugle, der flyver sydpå i en plov (et V). d.antal: et ulige tal fra 3 til 11 (standard 7). (0,0) er den forreste fugl.
+  ting.fugleflok = (c, t, d = {}) => {
+    const antal = d.antal == null ? 7 : Number(d.antal);
+    if (!Number.isInteger(antal) || antal < 3 || antal > 11 || antal % 2 === 0) throw new Error(`Ugyldigt antal fugle: ${d.antal}`);
+    const fugl = (x, y) => `<g transform="translate(${x} ${y})"><path d="M-10 0 Q-5 -7 0 0 Q5 -7 10 0" fill="none" stroke="#2A2A38" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<ellipse cx="0" cy="0.5" rx="2.4" ry="1.8" fill="#2A2A38"/></g>`;
+    let s = fugl(0, 0);
+    for (let i = 1; i <= (antal - 1) / 2; i++) s += fugl(-i * 18, i * 11) + fugl(i * 18, i * 13);
+    return `<g>${s}</g>`;
   };
 
   // ---------- Samling ----------

@@ -46,7 +46,7 @@ test('alle url(#...) peger på et id i samme billede', () => {
 test('startsættet findes', () => {
   assert.deepEqual(Object.keys(LK.art.steder).sort(), ['baek', 'bjerg', 'festplads', 'hule', 'lanternetrae', 'lysning', 'maanesoe', 'skovsti', 'slukkettrae', 'sump', 'taage', 'tornekrat', 'vindue'].sort());
   assert.deepEqual(Object.keys(LK.art.figurer).sort(), ['bjorn', 'krage', 'lysorm', 'maanen', 'moll', 'mus', 'nusse', 'pind', 'raev', 'snemand', 'tut', 'uffe', 'vinden'].sort());
-  assert.deepEqual(Object.keys(LK.art.ting).sort(), ['blade', 'bog', 'brev', 'gnist', 'gren', 'lanterne', 'snedrive', 'snefald', 'stjerne', 'svamp'].sort());
+  assert.deepEqual(Object.keys(LK.art.ting).sort(), ['blade', 'bog', 'brev', 'gnist', 'gren', 'lanterne', 'snedrive', 'snefald', 'stjerne', 'svamp', 'bladbunke', 'fugleflok'].sort());
 });
 
 test('alle steder, figurer og ting kan tegnes', () => {
@@ -172,4 +172,15 @@ test('snemandens næse kan være en gulerod, en stjerne eller en kogle', () => {
   assert.match(tegn('stjerne'), /#FFE08A/); assert.doesNotMatch(tegn('stjerne'), /#E8822E/);
   assert.match(tegn('kogle'), /#7A4E2C/); assert.doesNotMatch(tegn('kogle'), /#E8822E/);
   assert.throws(() => tegn('agurk'), /Ukendt næse på snemand: agurk/);
+});
+
+test('sent efterår: en bladbunke og en fugleflok med et ulige antal fugle', () => {
+  const tegn = (ting) => LK.art.scene({ sted: 'lysning', himmel: 'skumring', alt: 'x', ting });
+  const bunke = tegn([{ navn: 'bladbunke', x: 200, y: 230 }]);
+  assert.match(bunke, /translate\(200 230\)/); assert.match(bunke, /#B8642E/);
+  const fugle = s => (s.match(/<ellipse cx="0" cy="0.5"/g) || []).length;
+  assert.equal(fugle(tegn([{ navn: 'fugleflok', x: 200, y: 60 }])), 7);
+  assert.equal(fugle(tegn([{ navn: 'fugleflok', x: 200, y: 60, antal: 3 }])), 3);
+  assert.equal(fugle(tegn([{ navn: 'fugleflok', x: 200, y: 60, antal: 11 }])), 11);
+  for (const antal of [4, 1, 13, 'mange']) assert.throws(() => tegn([{ navn: 'fugleflok', x: 200, y: 60, antal }]), /Ugyldigt antal fugle/);
 });
