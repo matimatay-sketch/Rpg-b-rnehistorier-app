@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Billeddele</title>
+<style>
+  body { margin: 0; padding: 16px; background: #10182A; color: #F4EBD8; font: 14px system-ui, sans-serif; }
+  h2 { margin: 20px 0 8px; font-size: 16px; }
+  .gitter { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .gitter.stor { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); }
+  figure { margin: 0; } figcaption { font-size: 12px; opacity: .8; }
+  svg { display: block; width: 100%; height: auto; border-radius: 8px; }
+</style>
+</head>
+<body>
+<h1>Billeddele i billedbogsstil</h1>
+<h2>Sammensatte scener</h2><div class="gitter stor" id="scener"></div>
+<h2>Steder (nat / skumring / aften / dag)</h2><div class="gitter" id="steder"></div>
+<h2>Figurer (glad / bekymret / overrasket / rolig)</h2><div class="gitter" id="figurer"></div>
+<h2>Ting (tændt / slukket)</h2><div class="gitter" id="ting"></div>
+<script src="../art/dele.js"></script>
+<script>
+  const art = LK.art;
+  document.head.insertAdjacentHTML('beforeend', '<style>' + art.css + '</style>');
+  const vis = (id, tekst, svg) => document.getElementById(id).insertAdjacentHTML('beforeend', `<figure>${svg}<figcaption>${tekst}</figcaption></figure>`);
+  [
+    { sted: 'skovsti', himmel: 'nat', alt: 'Uffe sidder på en gren ved en tændt lanterne',
+      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'lanterne', x: 95, y: 140, taendt: true }, { navn: 'lanterne', x: 350, y: 150 }],
+      figurer: [{ navn: 'uffe', x: 205, y: 128 }] },
+    { sted: 'tornekrat', himmel: 'skumring', alt: 'Nusse sidder fast i tornekrattet med sin røde gnist',
+      figurer: [{ navn: 'nusse', x: 160, y: 175, humoer: 'bekymret' }, { navn: 'uffe', x: 290, y: 160, skala: 0.8 }],
+      ting: [{ navn: 'gnist', x: 240, y: 185, taendt: true }] },
+    { sted: 'lanternetrae', himmel: 'nat', alt: 'Alle venner samles ved Lanternetræet',
+      figurer: [{ navn: 'raev', x: 60, y: 190, skala: 0.8 }, { navn: 'bjorn', x: 110, y: 180, skala: 0.8 }, { navn: 'pind', x: 290, y: 200, skala: 0.7 },
+        { navn: 'mus', x: 330, y: 205, skala: 0.7, humoer: 'overrasket' }, { navn: 'krage', x: 370, y: 190, skala: 0.7 }, { navn: 'lysorm', x: 250, y: 210, skala: 0.7 }] },
+    { sted: 'maanesoe', himmel: 'skumring', alt: 'Månen smiler over søen, og Vinden svæver forbi',
+      figurer: [{ navn: 'maanen', x: 300, y: 60, skala: 0.9, humoer: 'rolig' }, { navn: 'vinden', x: 110, y: 90, humoer: 'bekymret' }] },
+    { sted: 'hule', himmel: 'aften', alt: 'Moll læser foran hulen, og Tut kommer med en lysende svamp',
+      figurer: [{ navn: 'moll', x: 160, y: 195 }, { navn: 'tut', x: 270, y: 195, humoer: 'overrasket' }],
+      ting: [{ navn: 'svamp', x: 90, y: 225, taendt: true }, { navn: 'brev', x: 330, y: 232 }] },
+    { sted: 'festplads', himmel: 'dag', alt: 'Fest på pladsen', figurer: [{ navn: 'nusse', x: 170, y: 185 }, { navn: 'tut', x: 240, y: 185 }],
+      ting: [{ navn: 'bog', x: 200, y: 205, taendt: true }] },
+  ].forEach(s => vis('scener', s.alt, art.scene(s)));
+  const himle = ['nat', 'skumring', 'aften', 'dag'];
+  Object.keys(art.steder).forEach((sted, i) => {
+    const himmel = himle[i % 4];
+    vis('steder', `${sted} (${himmel})`, art.scene({ sted, himmel, alt: sted }));
+  });
+  Object.keys(art.figurer).forEach(navn => vis('figurer', navn, art.scene({ sted: 'lysning', himmel: 'dag', alt: navn,
+    figurer: ['glad', 'bekymret', 'overrasket', 'rolig'].map((humoer, i) => ({ navn, x: 55 + i * 97, y: 140, skala: navn === 'maanen' ? 0.9 : 1.1, humoer })) })));
+  Object.keys(art.ting).forEach(navn => vis('ting', navn, art.scene({ sted: 'hule', himmel: 'nat', alt: navn,
+    ting: navn === 'gren' ? [{ navn, x: 200, y: 160, skala: 0.9 }] : [{ navn, x: 140, y: 120, skala: 2, taendt: true }, { navn, x: 260, y: 120, skala: 2 }] })));
+</script>
+</body>
+</html>
