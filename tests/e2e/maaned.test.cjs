@@ -4,6 +4,7 @@ const { test, before, after } = require('node:test');
 const assert = require('node:assert');
 const { chromium } = require('playwright');
 const { startServer } = require('../helpers/server.cjs');
+const { tilOpsaetning } = require('../helpers/forside.cjs');
 
 const KATALOG = 'katalog=tests/fixtures/stories-maaned/katalog.js';
 const SAGA = ['lantern', 'maane', 'vind', 'fest'];
@@ -86,6 +87,7 @@ const knapper = (page) => page.$$eval('#stage .choices button', l => l.map(b => 
 test('en månedshistorie fra fremtiden vises ikke; den udgivne står efter sagaen', async () => {
   const { context, page, fejl } = await nySide(standard(), null);
   await page.goto(server.base + 'index.html?' + KATALOG);
+  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), SAGA.concat('efteraar'));
   assert.strictEqual(await page.isVisible('#pvtag'), false);
   assert.deepStrictEqual(fejl, []);
@@ -102,8 +104,6 @@ test('med ?preview=<id> åbner en kommende månedshistorie direkte og gemmer int
   assert.strictEqual(await page.isVisible('#pvtag'), true);
   assert.strictEqual((await page.textContent('#pvtag')).trim(), 'Forhåndsvisning');
   assert.match(await page.textContent('#stage .turn'), /Asta/);
-  // Større tekst gemmes normalt i lk-prefs; i forhåndsvisningen må det ikke ske.
-  await page.click('#big');
   await spilTilSlut(page);
   assert.strictEqual((await page.textContent('#stage h2')).trim(), 'Glædelig jul');
   const navne = await page.$$eval('#stage .heroes figcaption', l => l.map(f => f.textContent));
@@ -114,6 +114,11 @@ test('med ?preview=<id> åbner en kommende månedshistorie direkte og gemmer int
   // Tilbage til listen: eksempelholdet er valgt, og den kommende historie står på listen.
   await page.click('#back');
   assert.deepStrictEqual(await historieIds(page), SAGA.concat('juletraeet', 'efteraar'));
+  // Større tekst gemmes normalt i lk-prefs; i forhåndsvisningen må det ikke ske.
+  await page.click('#forside');
+  await page.click('#indst');
+  await page.click('#big');
+  assert.strictEqual(await page.evaluate(() => document.body.classList.contains('big')), true);
   assert.deepStrictEqual(await alleGemte(page), gem);
   assert.deepStrictEqual(await page.evaluate(() => window.__skrevet), []);
   assert.deepStrictEqual(fejl, []);
@@ -142,6 +147,7 @@ test('en gennemspillet månedshistorie gemmer kun done_<id> i skoven og tæller 
   const world = { done_lantern: true, done_maane: true };
   const { context, page, fejl } = await nySide(standard(world), 0.99);
   await page.goto(server.base + 'index.html?' + KATALOG);
+  await tilOpsaetning(page);
   await historieIds(page);
   await vaelgOgStart(page, 'efteraar');
   assert.strictEqual((await page.textContent('#epi')).trim(), 'Månedens eventyr · oktober 2026');
@@ -162,6 +168,7 @@ test('en gennemspillet månedshistorie gemmer kun done_<id> i skoven og tæller 
 test('sagaens sidste del peger ikke videre til en månedshistorie, og tæller kun sagaens dele', async () => {
   const { context, page, fejl } = await nySide(standard(), 0.99);
   await page.goto(server.base + 'index.html?' + KATALOG);
+  await tilOpsaetning(page);
   await historieIds(page);
   await vaelgOgStart(page, 'fest');
   assert.strictEqual((await page.textContent('#epi')).trim(), 'Del 4 af 4');
@@ -184,6 +191,7 @@ for (const felt of ['magi', 'mester']) {
       body: "LK.addStory(function (k) { return { id: 'efteraar', title: 'Snyd', tag: 'x', blurb: 'x', start: 'ef_a', scenes: { ef_a: { title: 'A', text: ['a'], ask: 'a?', end: true } }, " + felt + ': ' + vaerdi + ' }; });'
     }));
     await page.goto(server.base + 'index.html?' + KATALOG);
+    await tilOpsaetning(page);
     assert.deepStrictEqual(await historieIds(page), SAGA);
     assert.ok(logget.some(t => /bro/.test(t)), logget.join('\n'));
     assert.deepStrictEqual(fejl, []);
@@ -195,6 +203,7 @@ test('uden nogen historier giver Start en venlig besked i stedet for en fejl', a
   const { context, page, fejl } = await nySide(standard(), null);
   await page.route('**/historie.js', r => r.fulfill({ status: 404, body: 'findes ikke' }));
   await page.goto(server.base + 'index.html');
+  await tilOpsaetning(page);
   await page.waitForSelector('#go');
   assert.strictEqual(await page.$$eval('input[name=story]', l => l.length), 0);
   await page.check('input[name=comp][value="raev"]');
@@ -212,6 +221,7 @@ test('er alle dele spillet, og mangler første del, er den første historie på 
   await context.clock.setFixedTime(new Date('2026-11-01T12:00:00'));
   await page.route('**/stories/lantern/historie.js', r => r.fulfill({ status: 404, body: 'findes ikke' }));
   await page.goto(server.base + 'index.html');
+  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), ['maane', 'vind', 'fest']);
   assert.strictEqual(await page.isChecked('input[name=story][value="maane"]'), true);
   await page.check('input[name=comp][value="raev"]');
