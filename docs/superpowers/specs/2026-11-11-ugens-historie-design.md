@@ -79,11 +79,11 @@ Lanterneskoven skal blive en abonnementsforretning, og ejeren vil have, at famil
 
 ## Ejerens tilføjelser (godkendt 2026-11-11)
 
-- **November 2026 får en serie** til de fredage, der er tilbage: 13., 20. og 27. november (3 kapitler). 6. november er gået. Emnet vælges efter årstiden (sent efterår), da der ikke er nogen idé-issue.
+- **November 2026 får en serie på 4 kapitler** til fredagene 6., 13., 20. og 27. november (ejerens valg). 6. november er gået, så kapitel 1 bliver synligt, så snart pull requesten er merget. Emnet vælges efter årstiden (sent efterår), da der ikke er nogen idé-issue.
 - **Julestjernen deles op i 4 kapitler** til december-fredagene 4., 11., 18. og 25. december. Historien om de fire stykker af Nusses julestjerne passer naturligt: hvert kapitel finder ét stykke (kælkebakken, Månesøen, Molls julegåde, snemanden), og kapitel 4 sætter stjernen på Lanternetræet. Hvert kapitel får samme længde som en hel historie i dag (15-30 scener) og 1-2 bevægelser. Den nuværende `udgives: '2026-12-01'` udgår.
 - **Tjekkets regel for en serie** bliver: kapitlerne ligger på fredage i rækkefølge uden huller, i samme måned, og det sidste kapitel ligger på månedens sidste fredag. Så kan en serie starte midt i en måned, som november. For en serie, der laves den 15. til den kommende måned, betyder det i praksis én historie pr. fredag.
 - **Pull requesten** til de to serier hedder "Månedens historier: november og december 2026", så den planlagte opgave den 15. november ser den og kun skriver en påmindelse, hvis den ikke er godkendt endnu.
-- **Tidsfrist:** første novemberkapitel udkommer fredag den 13. november, så ejeren skal godkende inden da. Ellers kommer det ud, når det godkendes.
+- **Tidsfrist:** kapitel 1 kommer ud ved merge, og kapitel 2 fredag den 13. november. Godkendes pull requesten senere, kommer alle kapitler, hvis fredag er passeret, ud på én gang.
 
 ## Det, bygherren selv afgør
 

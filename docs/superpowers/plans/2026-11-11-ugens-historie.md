@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ugentlige historier i serier: én hver fredag. Novembers resterende fredage får en serie på 3 kapitler, og Julestjernen deles op i 4 kapitler til december-fredagene. Den månedlige opgave laver fremover hele næste måneds serie i én pull request.
+**Goal:** Ugentlige historier i serier: én hver fredag. November får en serie på 4 kapitler (6., 13., 20. og 27.), og Julestjernen deles op i 4 kapitler til december-fredagene. Den månedlige opgave laver fremover hele næste måneds serie i én pull request.
 
 **Architecture:** Katalogposter og historiefiler får `serie`, `kapitel` og `kapitler`. Rene datohjælpere i `js/katalog.js` bruges af både motoren og tjekket. Motoren viser kapitel-overskrift og "næste kapitel" på slutskærmen. Tjekket validerer serier. Skill'en `ny-historie` laver en hel serie. Indholdet skrives ved at følge skill'en.
 
@@ -22,7 +22,7 @@
   - er det ikke udgivet endnu: `Næste kapitel kommer fredag den <d>. <måned>.`
   - er det sidste kapitel: `Næste måned kommer en ny serie.`
 - Pull requestens titel indeholder `Månedens historie`, fx `Månedens historier: <serietitel> (<måned år>)`.
-- November 2026: kapitlerne udgives 2026-11-13, 2026-11-20 og 2026-11-27. December 2026 (Julestjernen): 2026-12-04, 2026-12-11, 2026-12-18 og 2026-12-25.
+- November 2026: kapitlerne udgives 2026-11-06, 2026-11-13, 2026-11-20 og 2026-11-27. December 2026 (Julestjernen): 2026-12-04, 2026-12-11, 2026-12-18 og 2026-12-25.
 - Hæv `VERSION` i `sw.js` (nu `lk-v11`) én gang pr. opgave, der ændrer filer, appen bruger.
 - Testkommandoer: `node --test 'tests/*.test.mjs'`, `node --test 'tests/e2e/*.test.cjs'`, `node tools/tjek-historier.mjs`. `tests/e2e/gennemspil.forloeb.json` må ikke ændres.
 
@@ -120,16 +120,16 @@ Skill'en:
 - [ ] **Step 2:** Tjek, at skill'ens eksempler og fejlbeskeder passer ord for ord med `tools/tjek-historier.mjs` (Task 1).
 - [ ] **Step 3:** Commit: `Skill og regler: en serie om måneden, en historie om ugen`
 
-### Task 4: November-serien (3 kapitler)
+### Task 4: November-serien (4 kapitler)
 
 **Files:**
-- Create: `stories/2026-11-<serie>-1/historie.js`, `-2`, `-3`
+- Create: `stories/2026-11-<serie>-1/historie.js` … `-4`
 - Modify: `stories/katalog.js`, `sw.js` (`VERSION = 'lk-v13'`), eventuelt `art/dele.js` for nye dele i stil A med registry-test
 
-Lav serien ved at følge skill'en (Task 3) trin for trin. Emnet er sent efterår i Lanterneskoven (fx første frost, trækfugle, lange mørke aftener). Kapitlerne udgives 2026-11-13, 2026-11-20 og 2026-11-27.
+Lav serien ved at følge skill'en (Task 3) trin for trin. Emnet er sent efterår i Lanterneskoven (fx første frost, trækfugle, lange mørke aftener). Kapitlerne udgives 2026-11-06, 2026-11-13, 2026-11-20 og 2026-11-27.
 
-- [ ] **Step 1:** Skriv kapitel 1 og kør `node tools/tjek-historier.mjs`. Gentag for kapitel 2 og 3.
-- [ ] **Step 2:** Kør alle tests. `maanedens.test.cjs` spiller hvert kapitel i forhåndsvisning med "klarede" og "vaklede". Forventet: alle PASS, `Ingen fejl i 8 historier`.
+- [ ] **Step 1:** Skriv kapitel 1 og kør `node tools/tjek-historier.mjs`. Gentag for kapitel 2-4.
+- [ ] **Step 2:** Kør alle tests. `maanedens.test.cjs` spiller hvert kapitel i forhåndsvisning med "klarede" og "vaklede". Forventet: alle PASS, `Ingen fejl i 9 historier`.
 - [ ] **Step 3:** Tag ét skærmbillede pr. kapitel af en scene med bevægelse, og se dem selv.
 - [ ] **Step 4:** Commit: `November-serien: <serietitel>`
 
@@ -149,5 +149,5 @@ Serie `{ id: '2026-12-julestjernen', titel: 'Julestjernen' }`. Den nuværende hi
 Hvert kapitel udbygges til 15-30 scener med sin egen gode slutning, hvor ét stykke er fundet. Genbrug de eksisterende scener, billeder, bevægelser og venne-linjer, hvor de passer, og følg alle regler. Kapitel 4's slutning er den store julestjerne-slutning.
 
 - [ ] **Step 1:** Skriv kapitlerne ét ad gangen med tjekket efter hvert. Slet den gamle fil, og ret alle referencer. `grep -rn "2026-12-julestjernen'" .` må kun finde serie-id'et.
-- [ ] **Step 2:** Kør alle tests. Forventet: alle PASS, `Ingen fejl i 11 historier`, og `gennemspil.forloeb.json` uændret.
+- [ ] **Step 2:** Kør alle tests. Forventet: alle PASS, `Ingen fejl i 12 historier`, og `gennemspil.forloeb.json` uændret.
 - [ ] **Step 3:** Commit: `Julestjernen i fire kapitler`
