@@ -156,8 +156,8 @@ LK.addStory(function (k) {
       next: 'pj2Hub'
     },
     pj2VindFejl: {
-      title: 'Fjeren flyver',
-      text: ['I blæser og blæser, men fjeren flyver skævt, snurrer rundt og lander lige på Uffes næb. &laquo;Hu-hu!&raquo; siger Uffe forbløffet og skeler til den.',
+      title: 'Bladet flyver',
+      text: ['Vinden prøver at blæse lige, men et blad flyver skævt, snurrer rundt og lander lige på Uffes næb. &laquo;Hu-hu!&raquo; siger Uffe forbløffet og skeler til den.',
         'Vinden griner, så alle bladene danser. &laquo;Det var det sjoveste, jeg har set i hele efteråret!&raquo; suser den. &laquo;Nu er jeg ikke ked af det mere. Jeg øver mig på at blæse lige til i aften.&raquo;'],
       ask: 'Hvad hjælper jer, når I er kede af det?',
       next: 'pj2Hub'
@@ -182,7 +182,7 @@ LK.addStory(function (k) {
     },
     pj2KrageFejl: {
       title: 'Alle skattene',
-      text: ['Kra bliver så glad, at han vil vise jer alle sine skatte. En kapsel. En glasperle. En sølvskje. En til kapsel. Det bliver ved og ved.',
+      text: ['Kra bliver så glad, at han vil vise jer alle sine skatte. En kapsel. En glasperle. En sølvske. En til kapsel. Det bliver ved og ved.',
         '&laquo;Jeg kan slet ikke vælge,&raquo; siger Kra glad. &laquo;Jeg kigger dem lige igennem én gang til. Gå I bare videre, så kommer jeg ned til søen bagefter.&raquo; Han sidder ikke og surmuler mere.'],
       ask: 'Hvad er jeres allerfineste skat?',
       next: 'pj2Hub'
