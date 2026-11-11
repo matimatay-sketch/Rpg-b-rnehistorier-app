@@ -98,6 +98,8 @@ test('kapitel 1 viser serie og kapitel, og slutskærmen siger, hvornår næste k
   const { context, page, fejl } = await nySide(standard(), '2099-12-12T10:00:00');
   await page.goto(server.base + 'index.html?' + KATALOG);
   await historieIds(page);
+  const pl = await page.textContent('input[name=story][value="sti1"] ~ .pl');
+  assert.match(pl.replace(/\s+/g, ' '), /Kapitel 1 af 3/);
   await vaelgOgStart(page, 'sti1');
   assert.strictEqual(await epi(page), 'Ugens eventyr · Stjernestien · kapitel 1 af 3');
   await spilTilSlut(page);

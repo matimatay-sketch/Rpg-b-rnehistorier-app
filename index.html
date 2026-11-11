@@ -727,7 +727,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       (lib.heroes.length < 8 ? '<button class="btn" id="newh" type="button">+ Ny helt</button>' : '') +
       '<label class="lab">Vælg historie</label>' +
       '<div class="comps" role="radiogroup">' + STORIES.map(function (st) {
-        return '<label class="comp"><input type="radio" name="story" value="' + st.id + '"' + (setup.story === st.id ? ' checked' : '') + '><span><span class="nm">' + st.title + '</span><br><span class="ds">' + st.blurb + (lib.world['done_' + st.id] ? ' Gennemført.' : '') + '</span></span><span class="pl">' + st.tag + '</span></label>';
+        return '<label class="comp"><input type="radio" name="story" value="' + st.id + '"' + (setup.story === st.id ? ' checked' : '') + '><span><span class="nm">' + st.title + '</span><br><span class="ds">' + st.blurb + (lib.world['done_' + st.id] ? ' Gennemført.' : '') + '</span></span><span class="pl">' + st.tag + (ENTRY[st.id] && ENTRY[st.id].serie ? '<br>Kapitel ' + ENTRY[st.id].kapitel + ' af ' + ENTRY[st.id].kapitler : '') + '</span></label>';
       }).join('') + '</div>' +
       '<label class="lab">Vælg jeres følgesvend</label>' +
       '<div class="comps" role="radiogroup">' + COMPS.map(function (c) {
