@@ -83,16 +83,28 @@ Gode bevægelser at vælge fra eller lave variationer af:
 - spejle hinanden, hvor den ene gør, og den anden gør det samme
 - blæse en fjer eller et stykke papir hen over bordet
 
+## Serier og kapitler
+
+Månedens historier er en **serie** med ét kapitel til hver fredag i den kommende måned: 4 eller 5 kapitler. Et nyt kapitel bliver synligt for familierne hver fredag.
+
+- **Hvert kapitel er en fuld historie:** 15-30 scener, 1-2 bevægelser, et billede og et **Spørg børnene**-spørgsmål i hver scene, og ingen venne-flag. Alle regler ovenfor gælder for hvert kapitel for sig.
+- **Samme figurer og samme mål i hele serien.** Kapitlerne handler om de samme figurer og et fælles mål, så de hænger sammen, men hvert kapitel har sin egen lille opgave.
+- **Hvert kapitel kan spilles alene.** Et kapitel må starte med et kort tilbageblik (1-2 sætninger), men må ikke forudsætte, at man har spillet de andre, og må ikke afhænge af, hvad børnene valgte i et andet kapitel. Et kapitel sætter ikke et flag, som et andet kapitel kræver.
+- **Hvert kapitel har sin egen gode slutning,** hvor børnene er lykkedes med noget. Ingen cliffhangers, der efterlader børnene i knibe. Slutningen må gerne pege roligt fremad.
+- **Kataloget og historiefilen:** hvert kapitel har `serie: { id, titel }`, `kapitel` (1, 2, 3 …) og `kapitler` (hvor mange der er i alt), ens i filen og i `stories/katalog.js`. Id er `<ÅÅÅÅ-MM>-<serie-navn>-<n>`, mappen `stories/<id>/`.
+- **Datoer:** `udgives` er en fredag. Kapitlerne ligger på fredage i træk i samme måned, ét pr. fredag (`LK.fredageIMaaned`), og det sidste ligger på månedens sidste fredag (`LK.sidsteFredag`).
+- **Godkendelsen:** hele serien godkendes samlet, ved at ejeren merger én pull request med titlen `Månedens historier: <serietitel> (<måned år>)`. Kapitel 1 bliver først synligt på den første fredag, så pull requesten skal godkendes senest den 1. i måneden.
+
 ## Regler for månedshistorier
 
-- `type: 'maaned'` i kataloget og `udgives: 'ÅÅÅÅ-MM-01'`, den 1. i den måned, historien er til.
-- Der laves højst én historie pr. måned. Har `stories/katalog.js` på `main` allerede en historie til den kommende måned (måneden efter dagens dato), laves der ingen ny.
-- Historiens id er mappens navn, fx `2026-12-julestjernen`, så det aldrig støder sammen med en anden historie.
-- **Scene-id'er skal være unikke på tværs af alle historier.** Giv alle scener et kort præfiks for historien, fx `snStart`, `snHub`, `snBakkeOk`.
+- `type: 'maaned'` i kataloget og `udgives: 'ÅÅÅÅ-MM-DD'`, en fredag i den måned, historien er til (se "Serier og kapitler").
+- Der laves én serie pr. måned. Har `stories/katalog.js` på `main` allerede en historie med `udgives` i den kommende måned (måneden efter dagens dato), laves der ingen ny.
+- Historiens id er mappens navn, fx `2026-12-julestjernen-1`, så det aldrig støder sammen med en anden historie.
+- **Scene-id'er skal være unikke på tværs af alle historier.** Giv alle scener et kort præfiks for historien, og et nyt præfiks for hvert kapitel, fx `js1Start`, `js1Hub`, `js1BakkeOk`.
 - En gennemført månedshistorie tæller som et eventyr, så heltene stiger i level.
 - Den må læse vennerne (`k.state.flags.nusseVen`, `k.crew()`), men må **aldrig sætte** et af venne-flagene `nusseVen`, `nusseHonning`, `mollLoefte`, `tutVen`, `maaneVen` eller `vindVen`. Brug egne flag-navne til det, der kun gælder i eventyret.
 - Skriv historiens egne linjer om vennerne ud fra `k.state.flags`. Brug ikke `k.friendLines()`: de linjer er skrevet til sagaen, hvor vennerne dukker op for første gang efter Del 1, og de bliver forkerte, hvis en ven allerede er med i historien. Tjek altid, hvem der allerede er til stede, før en ven "kommer".
-- Ingen "næste del". Slutskærmen viser selv et link tilbage til listen.
+- Slutskærmen viser selv, hvornår næste kapitel kommer, og et link tilbage til listen. Skriv ikke selv om "næste del" i teksten ud over en kort, rolig sætning.
 - 1-2 bevægelser, aldrig flere (se "Bevægelser").
 
 ## Billeder
@@ -107,5 +119,5 @@ Gode bevægelser at vælge fra eller lave variationer af:
 
 ## Tjek
 
-- `node tools/tjek-historier.mjs` skal give `Ingen fejl`. Det tjekker, at alle valg fører til en scene, der findes, at hver scene har titel, tekst, spørgsmål og billede, at alle veje kan nå en slutning, at der ikke er blindgyder, at ingen scene-id findes i to historier, at en månedshistorie ikke sætter et venne-flag, og at bevægelserne er i orden: hver har en instruktion, et træk og en sværhed og to mål, der findes, der er højst 2 i historien og højst 1 i hver scene, og en månedshistorie har mindst 1.
-- `node --test 'tests/*.test.mjs'` og `node --test 'tests/e2e/*.test.cjs'` skal være grønne. E2e-testen `tests/e2e/maanedens.test.cjs` spiller alle månedshistorier i kataloget igennem i forhåndsvisningen med bevægelse slået til, én gang med "Vi klarede det!" og én gang med "Vi vaklede".
+- `node tools/tjek-historier.mjs` skal give `Ingen fejl`. Det tjekker, at alle valg fører til en scene, der findes, at hver scene har titel, tekst, spørgsmål og billede, at alle veje kan nå en slutning, at der ikke er blindgyder, at ingen scene-id findes i to historier, at en månedshistorie ikke sætter et venne-flag, og at bevægelserne er i orden: hver har en instruktion, et træk og en sværhed og to mål, der findes, der er højst 2 i historien og højst 1 i hver scene, og en månedshistorie har mindst 1. Seriereglerne tjekkes også: kapitlerne ligger på fredage i træk i samme måned, det sidste på månedens sidste fredag, de er nummereret 1 til N, og `serie`, `kapitel` og `kapitler` er ens i filen og kataloget.
+- `node --test 'tests/*.test.mjs'` og `node --test 'tests/e2e/*.test.cjs'` skal være grønne. E2e-testen `tests/e2e/maanedens.test.cjs` spiller alle månedshistorier (alle kapitler) i kataloget igennem i forhåndsvisningen med bevægelse slået til, én gang med "Vi klarede det!" og én gang med "Vi vaklede".

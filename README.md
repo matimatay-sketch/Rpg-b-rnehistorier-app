@@ -24,7 +24,7 @@ Lanterneskoven er et lille, børnevenligt rollespil i en historiebog: lidt som D
 - ⭐ **Mester-valg:** når et træk når 5, åbner der sig særlige valg i historien
 - 📈 **Levels** (hvert andet eventyr), og på level 3 kan helten vælge en ekstra magi
 - 🖼️ **Et billede til hver scene** i billedbogsstil, og lanternerne står lige under billedet
-- 🎄 **Ny historie hver måned:** den 1. i måneden dukker månedens historie op på forsiden
+- 🎄 **Ny historie hver fredag:** hver måned er en serie med et kapitel til hver fredag, og kapitlet dukker op på forsiden den dag
 - 🧙 Heltebygger med mange hatte, frisurer, ansigter og tilbehør
 - 🔊 Oplæsning med fremhævning af ordene, og en indstilling til stor skrift
 - 💾 Heltene og skovens venner gemmes i browseren, ingen konto nødvendig
@@ -44,15 +44,15 @@ Lanterneskoven er et lille, børnevenligt rollespil i en historiebog: lidt som D
 
 ### Månedens historie
 
-Ud over de fire dele kommer der en ny, selvstændig historie den 1. i hver måned. Den kan spilles uden at kende resten. Den første er **Julestjernen** (december 2026).
+Ud over de fire dele kommer der en ny historie hver fredag. En måneds historier er en serie med et kapitel pr. fredag (4 eller 5), og hvert kapitel er en hel historie, der kan spilles uden at kende resten. Den første er **Julestjernen** (december 2026).
 
-Månedens historie laves af en planlagt Claude-session den 15. i måneden. Den åbner en pull request med titlen "Månedens historie: …", og så er det ejeren, der godkender den ved at lægge den ind (merge). Først da kommer den med i spillet.
+Månedens historier laves af en planlagt Claude-session den 15. i måneden. Den åbner én pull request for hele serien med titlen "Månedens historier: …", og så er det ejeren, der godkender den ved at lægge den ind (merge), senest den 1. Først da kommer kapitlerne med i spillet, ét hver fredag.
 
 Har den kommende måned allerede en historie på `main`, gør den månedlige kørsel ingenting: ingen gren, ingen pull request og ingen kommentar.
 
 Har du en idé til en historie, så opret et issue med mærket `historie-idé`.
 
-For at se en historie, før den er udkommet, åbn `index.html?preview=<id>` (fx `?preview=2026-12-julestjernen`). Så bruges et fast prøvehold, og der gemmes ikke noget.
+For at se en historie, før den er udkommet, åbn `index.html?preview=<id>` (fx `?preview=2026-12-julestjernen`, eller `?preview=<id>` for et enkelt kapitel i en serie). Så bruges et fast prøvehold, og der gemmes ikke noget.
 
 ---
 
@@ -99,7 +99,7 @@ Hver historie ligger i sin egen mappe, `stories/<id>/historie.js`, og står i li
 - `index.html`: selve spillet.
 - `js/data.js`: motorens data (træk, magi, følgesvende m.m.).
 - `js/kit.js`: hjælpere, som historierne bruger.
-- `js/katalog.js`: kataloget og datoerne, så en månedshistorie først vises den 1. i måneden (`type: 'maaned'` og `udgives`).
+- `js/katalog.js`: kataloget og datoerne, så et kapitel først vises på sin udgivelsesfredag (`type: 'maaned'`, `udgives`, `serie`, `kapitel` og `kapitler`).
 - `art/dele.js`: delene, billederne bygges af.
 - `docs/historie-regler.md`: reglerne for en god historie.
 
