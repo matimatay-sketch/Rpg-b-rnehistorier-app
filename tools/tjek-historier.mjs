@@ -118,9 +118,10 @@ function tjekHistorie(story, kit, saet, ctx, valg, fejl) {
           if (b) {
             laeg(b.win); laeg(b.lose);
             iScenen++;
+            if (c.roll) meld(id, 'Valget har både terning og bevægelse');
             bevaegelser.add(id + '\u0000' + c.label);
             if (!tekst(b.goer)) meld(id, 'Bevægelse uden instruktion');
-            if (traek.indexOf(b.stat) < 0 || typeof b.target !== 'number' || !(b.target >= 2 && b.target <= 12))
+            if (traek.indexOf(b.stat) < 0 || !Number.isInteger(b.target) || !(b.target >= 2 && b.target <= 12))
               meld(id, 'Bevægelse uden træk og sværhed til terningen');
           }
         });

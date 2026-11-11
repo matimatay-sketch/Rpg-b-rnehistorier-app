@@ -82,3 +82,6 @@ test('bevægelsens mål tjekkes', () => {
   const f = tjek(['tests/fixtures/bevaeg-lose-findes-ikke.js']).map(x => x.besked).join('\n');
   assert.match(f, /fører til "findesikke"/);
 });
+
+test('valg med både terning og bevægelse', () => assert.match(beskeder('bevaeg-begge.js'), /Valget har både terning og bevægelse/));
+test('bevægelse med brudt sværhed', () => assert.match(beskeder('bevaeg-brokent-maal.js'), /Bevægelse uden træk og sværhed til terningen/));
