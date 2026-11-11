@@ -52,7 +52,7 @@ Har den kommende måned allerede en historie på `main`, gør den månedlige kø
 
 Har du en idé til en historie, så opret et issue med mærket `historie-idé`.
 
-For at se en historie, før den er udkommet, åbn `index.html?preview=<id>` (fx `?preview=2026-12-julestjernen`, eller `?preview=<id>` for et enkelt kapitel i en serie). Så bruges et fast prøvehold, og der gemmes ikke noget.
+For at se en historie, før den er udkommet, åbn `index.html?preview=<id>` (fx `?preview=2026-12-julestjernen-1` for første kapitel af Julestjernen). Så bruges et fast prøvehold, og der gemmes ikke noget.
 
 ---
 
