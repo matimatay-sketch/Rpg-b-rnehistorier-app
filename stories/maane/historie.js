@@ -200,9 +200,52 @@ LK.addStory(function (k) {
     ]
   };
 
+  /* Billeder til scenerne, tegnet med delene i art/dele.js (LK.art.scene). maane: false betyder en himmel uden måne. */
+  var billeder = {
+    m1: { sted: 'skovsti', himmel: 'nat', maane: false, alt: 'Uffe kommer forskrækket: lanternerne lyser, men der er ingen måne på himlen.',
+      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'lanterne', x: 95, y: 140, taendt: true }, { navn: 'lanterne', x: 345, y: 150, taendt: true }, { navn: 'gnist', x: 300, y: 70, skala: 0.8, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 205, y: 128, humoer: 'overrasket' }] },
+    m1b: { sted: 'skovsti', himmel: 'nat', maane: false, alt: 'Uffe tror, at månen er ked af det, fordi ingen kigger op på den mere.',
+      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'lanterne', x: 95, y: 140, taendt: true }, { navn: 'lanterne', x: 345, y: 150, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 205, y: 128, humoer: 'bekymret' }] },
+    m_taage: { sted: 'taage', himmel: 'nat', maane: false, alt: 'En tyk, hvid tåge ligger ved skovens kant, og Uffe kan næsten ikke se noget.',
+      figurer: [{ navn: 'uffe', x: 200, y: 176, skala: 0.8, humoer: 'bekymret' }] },
+    m_taageOk: { sted: 'maanesoe', himmel: 'nat', maane: false, alt: 'Tågen letter, og Månesøen ligger helt stille og sort foran jer.',
+      ting: [{ navn: 'svamp', x: 70, y: 236, skala: 0.8, taendt: true }, { navn: 'svamp', x: 95, y: 240, skala: 0.6, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 170, y: 206, skala: 0.65, humoer: 'glad' }] },
+    m_taageFejl: { sted: 'taage', himmel: 'nat', maane: false, alt: 'I er gået i ring i tågen, og Uffe ser sig forvirret omkring.',
+      figurer: [{ navn: 'uffe', x: 200, y: 176, skala: 0.8, humoer: 'overrasket' }] },
+    m_taageGnist: { sted: 'taage', himmel: 'skumring', maane: false, alt: 'En gnist lyser som en lille lanterne, og tågen deler sig.',
+      ting: [{ navn: 'gnist', x: 250, y: 120, skala: 1.4, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 160, y: 176, skala: 0.8, humoer: 'glad' }] },
+    m_sump: { sted: 'sump', himmel: 'nat', maane: false, alt: 'Uffe står ved Kvækkesumpen, hvor frøerne larmer i munden på hinanden.',
+      figurer: [{ navn: 'uffe', x: 150, y: 178, skala: 0.8, humoer: 'overrasket' }] },
+    m_sumpOk: { sted: 'sump', himmel: 'skumring', maane: false, alt: 'Larmen bliver til en melodi, og I går let hen over sumpen.',
+      figurer: [{ navn: 'uffe', x: 150, y: 178, skala: 0.8, humoer: 'glad' }] },
+    m_sumpFejl: { sted: 'sump', himmel: 'nat', maane: false, alt: 'Plask i mudderet! Uffe kigger forbavset på de mudrede sko.',
+      figurer: [{ navn: 'uffe', x: 150, y: 178, skala: 0.8, humoer: 'overrasket' }] },
+    m_sumpGnist: { sted: 'sump', himmel: 'skumring', maane: false, alt: 'En gnist hopper fra sten til sten og lyser dem op.',
+      ting: [{ navn: 'gnist', x: 110, y: 214, taendt: true }, { navn: 'gnist', x: 290, y: 220, skala: 0.7, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 195, y: 178, skala: 0.8, humoer: 'glad' }] },
+    m_maane: { sted: 'maanesoe', himmel: 'nat', alt: 'Midt i søen sidder en lille, bleg måne og hænger med hovedet.',
+      figurer: [{ navn: 'maanen', x: 290, y: 192, skala: 0.45, humoer: 'bekymret' }, { navn: 'uffe', x: 110, y: 206, skala: 0.65, humoer: 'bekymret' }] },
+    m_maaneFejl: { sted: 'maanesoe', himmel: 'nat', alt: 'Månen dykker et stykke ned i vandet, og Uffe sidder stille og lytter.',
+      figurer: [{ navn: 'maanen', x: 290, y: 206, skala: 0.4, humoer: 'bekymret' }, { navn: 'uffe', x: 110, y: 206, skala: 0.65, humoer: 'rolig' }] },
+    m_endHjem: { sted: 'maanesoe', himmel: 'skumring', alt: 'Månen hænger stor og rund på himlen igen, og Uffe jubler.',
+      figurer: [{ navn: 'maanen', x: 290, y: 70, skala: 0.85, humoer: 'glad' }, { navn: 'uffe', x: 110, y: 206, skala: 0.65, humoer: 'glad' }] },
+    m_endStille: { sted: 'maanesoe', himmel: 'skumring', alt: 'Månen løfter sig langsomt fra søen, og I sidder stille sammen.',
+      figurer: [{ navn: 'maanen', x: 290, y: 110, skala: 0.65, humoer: 'rolig' }, { navn: 'uffe', x: 110, y: 206, skala: 0.65, humoer: 'rolig' }] },
+    m_endVenner: { sted: 'maanesoe', himmel: 'skumring', alt: 'Vennerne løfter små lys, og månen stiger rund og skinnende op.',
+      ting: [{ navn: 'lanterne', x: 92, y: 214, skala: 0.7, taendt: true }],
+      figurer: [{ navn: 'maanen', x: 300, y: 70, skala: 0.8, humoer: 'glad' }, { navn: 'nusse', x: 70, y: 206, skala: 0.7 }, { navn: 'moll', x: 150, y: 214, skala: 0.6 }, { navn: 'tut', x: 220, y: 214, skala: 0.6 }] },
+    m_endGnister: { sted: 'maanesoe', himmel: 'skumring', alt: 'Gnisterne sætter sig som små stjerner ved siden af månen.',
+      ting: [{ navn: 'gnist', x: 220, y: 50, skala: 0.8, taendt: true }, { navn: 'gnist', x: 375, y: 95, skala: 0.7, taendt: true }, { navn: 'gnist', x: 240, y: 120, skala: 0.6, taendt: true }],
+      figurer: [{ navn: 'maanen', x: 300, y: 72, skala: 0.8, humoer: 'glad' }, { navn: 'uffe', x: 110, y: 206, skala: 0.65, humoer: 'glad' }] }
+  };
+
   return {
     id: 'maane', start: 'm1', title: 'Månen der gemte sig', tag: 'Del 2 af 4',
     blurb: 'Månen er væk fra himlen. Jeres gnister og venner fra første del kan hjælpe.',
-    scenes: scenes, magi: magi, mester: mester
+    scenes: scenes, magi: magi, mester: mester, billeder: billeder
   };
 });

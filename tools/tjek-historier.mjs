@@ -1,5 +1,5 @@
 // Tjek af historier: kører scenernes kode under falske tilstande og finder blindgyder, manglende mål osv.
-// Brug: node tools/tjek-historier.mjs   (læser stories/katalog.js)
+// Brug: node tools/tjek-historier.mjs   (læser stories/katalog.js og kræver et billede til hver scene, der kan nås)
 import { readFileSync, existsSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { dirname, resolve } from 'node:path';
@@ -54,7 +54,7 @@ function falskeTilstande(kit, story) {
 // Hent historier fra en fil. Returnerer { historier, kit, ctx, sæt } hvor sæt sætter aktuel tilstand.
 function indlaesFil(fil, kraevBilleder) {
   const ctx = nyKontekst();
-  if (kraevBilleder && existsSync(resolve(rod, 'js/art.js'))) koer(ctx, 'js/art.js');
+  if (kraevBilleder) koer(ctx, 'art/dele.js');
   let aktuel = null;
   const kit = ctx.LK.lavKit(() => aktuel);
   const lavere = [];
@@ -185,7 +185,7 @@ function filerFraKatalog() {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const filer = filerFraKatalog();
   if (!filer) { console.error('Kan ikke finde stories/katalog.js'); process.exit(1); }
-  const fejl = tjek(filer, { kraevBilleder: process.argv.includes('--billeder') });
+  const fejl = tjek(filer, { kraevBilleder: true });
   fejl.forEach(f => console.error(f.historie + (f.scene ? ' / ' + f.scene : '') + ': ' + f.besked));
   console.log(fejl.length ? fejl.length + ' fejl' : 'Ingen fejl i ' + filer.length + ' historier');
   process.exit(fejl.length ? 1 : 0);

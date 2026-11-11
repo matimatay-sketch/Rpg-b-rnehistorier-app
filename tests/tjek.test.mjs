@@ -14,3 +14,11 @@ test('fejl peger på historie og scene', () => {
   assert.equal(f.historie, 'blindgyde');
   assert.equal(f.scene, 'b');
 });
+
+const billedBeskeder = (fil) => tjek(['tests/fixtures/' + fil], { kraevBilleder: true });
+test('mangler billede', () => {
+  const f = billedBeskeder('mangler-billede.js');
+  assert.deepEqual(f.map(x => x.scene + ': ' + x.besked), ['b: Mangler billede']);
+});
+test('billede med ukendt del', () => assert.match(billedBeskeder('forkert-billede.js').map(f => f.besked).join('\n'), /Billedfejl: Ukendt sted: mars/));
+test('uden krav om billeder er et manglende billede i orden', () => assert.deepEqual(tjek(['tests/fixtures/mangler-billede.js']), []));

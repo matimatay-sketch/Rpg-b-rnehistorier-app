@@ -204,9 +204,58 @@ LK.addStory(function (k) {
     ]
   };
 
+  /* Billeder til scenerne, tegnet med delene i art/dele.js (LK.art.scene). Koordinater i en ramme på 400 x 250. */
+  var billeder = {
+    v1: { sted: 'skovsti', himmel: 'nat', alt: 'Et lille, krøllet brev fra Vinden blæser rundt, og Uffe lander forbavset på en gren.',
+      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'lanterne', x: 95, y: 140, taendt: true }, { navn: 'brev', x: 305, y: 85, skala: 1.4, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 195, y: 128, humoer: 'overrasket' }] },
+    v1b: { sted: 'skovsti', himmel: 'nat', alt: 'Uffe fortæller om dengang, Vinden var hans bedste ven.',
+      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'lanterne', x: 345, y: 150, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 205, y: 128, humoer: 'rolig' }, { navn: 'vinden', x: 95, y: 70, skala: 0.55, humoer: 'glad' }] },
+    v_skov: { sted: 'lysning', himmel: 'nat', alt: 'Tusind blade hvirvler rundt mellem træerne, og Uffe kan næsten ikke se stien.',
+      ting: [{ navn: 'blade', x: 210, y: 105, skala: 1.6 }],
+      figurer: [{ navn: 'uffe', x: 120, y: 180, skala: 0.8, humoer: 'bekymret' }] },
+    v_skovOk: { sted: 'bjerg', himmel: 'skumring', alt: 'Bladene daler blidt ned, og langt væk rejser Vindbjerget sig.',
+      ting: [{ navn: 'blade', x: 300, y: 150, skala: 0.8 }],
+      figurer: [{ navn: 'uffe', x: 110, y: 180, skala: 0.8, humoer: 'glad' }] },
+    v_skovFejl: { sted: 'lysning', himmel: 'nat', alt: 'En hvirvel af blade har sat jer ned igen, og en lille mus fniser.',
+      ting: [{ navn: 'blade', x: 200, y: 95, skala: 1.3 }],
+      figurer: [{ navn: 'uffe', x: 120, y: 180, skala: 0.8, humoer: 'overrasket' }, { navn: 'mus', x: 290, y: 192, skala: 0.8, humoer: 'glad' }] },
+    v_skovGnist: { sted: 'lysning', himmel: 'skumring', alt: 'En gnist lyser som et lille bål, og bladene falder til ro omkring den.',
+      ting: [{ navn: 'blade', x: 230, y: 120, skala: 1.2 }, { navn: 'gnist', x: 230, y: 120, skala: 1.3, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 110, y: 180, skala: 0.8, humoer: 'glad' }] },
+    v_bjerg: { sted: 'bjerg', himmel: 'nat', alt: 'Det blæser hårdt op ad Vindbjerget, og helt oppe på toppen drejer en lille sky.',
+      ting: [{ navn: 'blade', x: 300, y: 150, skala: 0.7 }],
+      figurer: [{ navn: 'uffe', x: 120, y: 182, skala: 0.75, humoer: 'bekymret' }, { navn: 'vinden', x: 205, y: 40, skala: 0.35, humoer: 'rolig' }] },
+    v_bjergOk: { sted: 'bjerg', himmel: 'skumring', alt: 'Blæsten lægger sig, og øverst på bjerget drejer Vinden rundt, helt alene.',
+      ting: [{ navn: 'blade', x: 200, y: 105, skala: 1.1 }],
+      figurer: [{ navn: 'vinden', x: 205, y: 105, skala: 0.8, humoer: 'bekymret' }, { navn: 'uffe', x: 110, y: 182, skala: 0.75, humoer: 'overrasket' }] },
+    v_bjergFejl: { sted: 'bjerg', himmel: 'nat', alt: 'Blæsten tager fat i alt, og Uffe må holde godt fast for ikke at flyve væk.',
+      ting: [{ navn: 'blade', x: 260, y: 130, skala: 1.1 }],
+      figurer: [{ navn: 'uffe', x: 130, y: 182, skala: 0.75, humoer: 'overrasket' }] },
+    v_bjergGnist: { sted: 'bjerg', himmel: 'skumring', alt: 'En gnist lyser i blæsten, og I går de sidste skridt til toppen i ro.',
+      ting: [{ navn: 'gnist', x: 250, y: 150, skala: 1.3, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 130, y: 182, skala: 0.75, humoer: 'glad' }] },
+    v_vind: { sted: 'bjerg', himmel: 'nat', alt: 'Vinden stopper og ser bange på jer: «Gå væk, I er vrede på mig.»',
+      figurer: [{ navn: 'vinden', x: 230, y: 110, skala: 0.9, humoer: 'bekymret' }, { navn: 'uffe', x: 95, y: 182, skala: 0.75, humoer: 'bekymret' }] },
+    v_vindFejl: { sted: 'bjerg', himmel: 'nat', alt: 'Vinden krøller sig sammen og bliver helt lille, og Uffe hvisker et godt råd.',
+      figurer: [{ navn: 'vinden', x: 240, y: 135, skala: 0.55, humoer: 'bekymret' }, { navn: 'uffe', x: 110, y: 182, skala: 0.75, humoer: 'rolig' }] },
+    v_endHjem: { sted: 'lysning', himmel: 'aften', alt: 'Vinden snurrer glad rundt og bærer lanternernes lys gennem skoven.',
+      ting: [{ navn: 'lanterne', x: 70, y: 120, taendt: true }, { navn: 'lanterne', x: 340, y: 128, taendt: true }, { navn: 'blade', x: 200, y: 95, skala: 1.1 }],
+      figurer: [{ navn: 'vinden', x: 205, y: 95, skala: 0.85, humoer: 'glad' }, { navn: 'uffe', x: 140, y: 184, skala: 0.75, humoer: 'glad' }] },
+    v_endLyt: { sted: 'bjerg', himmel: 'skumring', alt: 'I sidder stille ved Vinden, mens den fortæller om alle de steder, den har været.',
+      figurer: [{ navn: 'vinden', x: 240, y: 120, skala: 0.8, humoer: 'rolig' }, { navn: 'uffe', x: 110, y: 182, skala: 0.75, humoer: 'rolig' }] },
+    v_endVenner: { sted: 'lysning', himmel: 'aften', alt: 'Vennerne rækker ud mod Vinden, og den snurrer rundt af glæde.',
+      figurer: [{ navn: 'vinden', x: 220, y: 85, skala: 0.85, humoer: 'glad' }, { navn: 'nusse', x: 90, y: 182, skala: 0.8 },
+        { navn: 'moll', x: 190, y: 196, skala: 0.7 }, { navn: 'tut', x: 280, y: 194, skala: 0.7 }, { navn: 'uffe', x: 350, y: 182, skala: 0.7, humoer: 'glad' }] },
+    v_endGnister: { sted: 'lysning', himmel: 'skumring', alt: 'Gnisterne leger fangeleg med Vinden i lange, lysende spiraler.',
+      ting: [{ navn: 'gnist', x: 110, y: 70, taendt: true }, { navn: 'gnist', x: 360, y: 150, skala: 0.8, taendt: true }, { navn: 'gnist', x: 260, y: 170, skala: 0.7, taendt: true }],
+      figurer: [{ navn: 'vinden', x: 210, y: 100, skala: 0.9, humoer: 'glad' }, { navn: 'uffe', x: 110, y: 184, skala: 0.75, humoer: 'glad' }] }
+  };
+
   return {
     id: 'vind', start: 'v1', title: 'Vinden der var alene', tag: 'Del 3 af 4',
     blurb: 'Et brev er blæst ind ad vinduet. Hvorfor slukkede Vinden lanternerne?',
-    scenes: scenes, magi: magi, mester: mester
+    scenes: scenes, magi: magi, mester: mester, billeder: billeder
   };
 });

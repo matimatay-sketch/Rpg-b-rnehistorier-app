@@ -245,9 +245,70 @@ LK.addStory(function (k) {
     ]
   };
 
+  /* Billeder til scenerne, tegnet med delene i art/dele.js (LK.art.scene). Koordinater i en ramme på 400 x 250. */
+  var billeder = {
+    f1: { sted: 'skovsti', himmel: 'dag', alt: 'Uffe vil holde fest for hele skoven, og Vinden kigger genert frem bag et træ.',
+      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'brev', x: 120, y: 150, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 205, y: 128, humoer: 'glad' }, { navn: 'vinden', x: 345, y: 165, skala: 0.45, humoer: 'bekymret' }] },
+    f1b: { sted: 'skovsti', himmel: 'dag', alt: 'Uffe fortæller festens vigtigste regel: alle skal have lov at være med.',
+      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'brev', x: 120, y: 150 }, { navn: 'brev', x: 300, y: 150 }],
+      figurer: [{ navn: 'uffe', x: 205, y: 128, humoer: 'rolig' }] },
+    f_lys: { sted: 'lysning', himmel: 'skumring', alt: 'Lanternerne hænger slukkede og skæve højt oppe i træerne.',
+      ting: [{ navn: 'lanterne', x: 60, y: 125 }, { navn: 'lanterne', x: 340, y: 130 }, { navn: 'lanterne', x: 380, y: 150, skala: 0.8 }, { navn: 'lanterne', x: 25, y: 150, skala: 0.8 }],
+      figurer: [{ navn: 'uffe', x: 200, y: 180, skala: 0.8, humoer: 'bekymret' }] },
+    f_lysOk: { sted: 'festplads', himmel: 'aften', alt: 'Alle lanternerne er tændt, og Vinden blæser så blidt, at lysene danser.',
+      ting: [{ navn: 'lanterne', x: 30, y: 140, taendt: true }, { navn: 'lanterne', x: 370, y: 140, taendt: true }],
+      figurer: [{ navn: 'vinden', x: 200, y: 150, skala: 0.6, humoer: 'glad' }, { navn: 'uffe', x: 110, y: 186, skala: 0.7, humoer: 'glad' }] },
+    f_lysFejl: { sted: 'lysning', himmel: 'aften', alt: 'Lanternerne lyser, men hænger lidt pudsigt, og Uffe lægger hovedet på skrå.',
+      ting: [{ navn: 'lanterne', x: 60, y: 110, taendt: true }, { navn: 'lanterne', x: 340, y: 150, taendt: true }, { navn: 'lanterne', x: 380, y: 120, skala: 0.8, taendt: true }, { navn: 'lanterne', x: 25, y: 155, skala: 0.8, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 200, y: 180, skala: 0.8, humoer: 'rolig' }] },
+    f_lysGnist: { sted: 'lysning', himmel: 'skumring', alt: 'En gnist flyver op i træerne og tænder lanterne efter lanterne.',
+      ting: [{ navn: 'lanterne', x: 60, y: 125, taendt: true }, { navn: 'lanterne', x: 340, y: 130, taendt: true }, { navn: 'lanterne', x: 380, y: 150, skala: 0.8 }, { navn: 'gnist', x: 300, y: 105, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 200, y: 180, skala: 0.8, humoer: 'glad' }] },
+    f_musik: { sted: 'lysning', himmel: 'skumring', alt: 'Skoven er helt stille, for ingen har turdet synge, siden Vinden blæste.',
+      ting: [{ navn: 'lanterne', x: 60, y: 125, taendt: true }, { navn: 'lanterne', x: 340, y: 130, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 200, y: 180, skala: 0.8, humoer: 'bekymret' }] },
+    f_musikOk: { sted: 'festplads', himmel: 'aften', alt: 'Hele skoven synger: kragen, Uffe og Vinden, der fløjter med.',
+      figurer: [{ navn: 'vinden', x: 300, y: 145, skala: 0.55, humoer: 'glad' }, { navn: 'krage', x: 90, y: 182, skala: 0.8, humoer: 'glad' }, { navn: 'uffe', x: 185, y: 182, skala: 0.75, humoer: 'glad' }] },
+    f_musikFejl: { sted: 'festplads', himmel: 'aften', alt: 'Tonerne er skæve, men kragen synger med, og det bliver bedre og bedre.',
+      figurer: [{ navn: 'krage', x: 120, y: 182, skala: 0.8, humoer: 'overrasket' }, { navn: 'uffe', x: 280, y: 182, skala: 0.75, humoer: 'rolig' }] },
+    f_musikGnist: { sted: 'festplads', himmel: 'aften', alt: 'En gnist klinger som en lille klokke, og kragen og Tut spiller med.',
+      ting: [{ navn: 'gnist', x: 200, y: 140, skala: 1.2, taendt: true }],
+      figurer: [{ navn: 'krage', x: 110, y: 182, skala: 0.8, humoer: 'glad' }, { navn: 'tut', x: 290, y: 190, skala: 0.75, humoer: 'glad' }] },
+    f_gaester: { sted: 'skovsti', himmel: 'aften', alt: 'En lille mus tør ikke komme til festen, for Vinden har blæst hendes tag af.',
+      figurer: [{ navn: 'mus', x: 300, y: 192, skala: 0.85, humoer: 'bekymret' }, { navn: 'uffe', x: 130, y: 180, skala: 0.8, humoer: 'rolig' }] },
+    f_gaesterOk: { sted: 'festplads', himmel: 'aften', alt: 'Ræve, mus og pindsvin kommer til festen, og den lille mus går forrest.',
+      figurer: [{ navn: 'mus', x: 140, y: 196, skala: 0.75 }, { navn: 'raev', x: 70, y: 182, skala: 0.8 }, { navn: 'pind', x: 230, y: 198, skala: 0.7 }, { navn: 'uffe', x: 330, y: 182, skala: 0.75, humoer: 'glad' }] },
+    f_gaesterFejl: { sted: 'skovsti', himmel: 'aften', alt: 'Kun den lille mus tør komme, men hun fortæller de andre, hvor sjovt der er.',
+      figurer: [{ navn: 'mus', x: 300, y: 192, skala: 0.85, humoer: 'glad' }, { navn: 'uffe', x: 130, y: 180, skala: 0.8, humoer: 'glad' }] },
+    f_fest: { sted: 'festplads', himmel: 'aften', alt: 'Gæsterne står i en rundkreds, og midt i står Vinden, helt lille, og vil sige undskyld.',
+      figurer: [{ navn: 'vinden', x: 200, y: 150, skala: 0.5, humoer: 'bekymret' }, { navn: 'raev', x: 55, y: 182, skala: 0.75, humoer: 'rolig' }, { navn: 'mus', x: 120, y: 198, skala: 0.7, humoer: 'overrasket' },
+        { navn: 'pind', x: 280, y: 200, skala: 0.65, humoer: 'overrasket' }, { navn: 'uffe', x: 345, y: 184, skala: 0.7, humoer: 'rolig' }] },
+    f_festFejl: { sted: 'festplads', himmel: 'skumring', alt: 'Der er helt stille i rundkredsen, og Vinden kigger ned.',
+      figurer: [{ navn: 'vinden', x: 200, y: 165, skala: 0.45, humoer: 'bekymret' }, { navn: 'raev', x: 55, y: 182, skala: 0.75, humoer: 'bekymret' }, { navn: 'mus', x: 125, y: 198, skala: 0.7, humoer: 'rolig' },
+        { navn: 'pind', x: 280, y: 200, skala: 0.65, humoer: 'bekymret' }, { navn: 'uffe', x: 345, y: 184, skala: 0.7, humoer: 'bekymret' }] },
+    f_endTilgiv: { sted: 'festplads', himmel: 'aften', alt: 'Gæsterne tilgiver Vinden, og den danser med, mens musikken spiller.',
+      figurer: [{ navn: 'vinden', x: 200, y: 145, skala: 0.6, humoer: 'glad' }, { navn: 'raev', x: 55, y: 182, skala: 0.75 }, { navn: 'mus', x: 125, y: 198, skala: 0.7 },
+        { navn: 'pind', x: 280, y: 200, skala: 0.65 }, { navn: 'uffe', x: 345, y: 184, skala: 0.7, humoer: 'glad' }] },
+    f_endDans: { sted: 'festplads', himmel: 'aften', alt: 'Alle danser, og Vinden løfter bladene i spiraler, mens lanternerne blinker.',
+      ting: [{ navn: 'blade', x: 200, y: 125, skala: 1.1 }],
+      figurer: [{ navn: 'vinden', x: 200, y: 125, skala: 0.55, humoer: 'glad' }, { navn: 'raev', x: 55, y: 182, skala: 0.75 }, { navn: 'mus', x: 125, y: 198, skala: 0.7 },
+        { navn: 'pind', x: 280, y: 200, skala: 0.65 }, { navn: 'uffe', x: 345, y: 184, skala: 0.7, humoer: 'glad' }] },
+    f_endLys: { sted: 'festplads', himmel: 'aften', alt: 'Vinden lader lanternerne svæve op i luften som lysende balloner.',
+      ting: [{ navn: 'lanterne', x: 120, y: 150, taendt: true }, { navn: 'lanterne', x: 200, y: 115, taendt: true }, { navn: 'lanterne', x: 280, y: 150, taendt: true }],
+      figurer: [{ navn: 'vinden', x: 200, y: 175, skala: 0.45, humoer: 'glad' }, { navn: 'raev', x: 55, y: 182, skala: 0.75, humoer: 'overrasket' },
+        { navn: 'mus', x: 345, y: 198, skala: 0.7, humoer: 'overrasket' }] },
+    f_endVenner: { sted: 'festplads', himmel: 'aften', alt: 'Vennerne synger for Vinden, og den lytter med lukkede øjne.',
+      figurer: [{ navn: 'vinden', x: 200, y: 140, skala: 0.6, humoer: 'rolig' }, { navn: 'nusse', x: 70, y: 182, skala: 0.8 }, { navn: 'moll', x: 150, y: 198, skala: 0.7 },
+        { navn: 'tut', x: 260, y: 196, skala: 0.7 }, { navn: 'uffe', x: 340, y: 184, skala: 0.7, humoer: 'glad' }] },
+    f_endStille: { sted: 'festplads', himmel: 'skumring', alt: 'Alle sidder stille i rundkredsen, og en blød brise lægger sig om dem som et tæppe.',
+      figurer: [{ navn: 'vinden', x: 200, y: 150, skala: 0.55, humoer: 'rolig' }, { navn: 'raev', x: 55, y: 182, skala: 0.75, humoer: 'rolig' }, { navn: 'mus', x: 125, y: 198, skala: 0.7, humoer: 'rolig' },
+        { navn: 'pind', x: 280, y: 200, skala: 0.65, humoer: 'rolig' }, { navn: 'uffe', x: 345, y: 184, skala: 0.7, humoer: 'rolig' }] }
+  };
+
   return {
     id: 'fest', start: 'f1', title: 'Lanternefesten', tag: 'Del 4 af 4',
     blurb: 'Skoven holder fest, så Vinden kan sige undskyld. Alle venner skal med.',
-    scenes: scenes, magi: magi, mester: mester
+    scenes: scenes, magi: magi, mester: mester, billeder: billeder
   };
 });
