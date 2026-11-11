@@ -3,6 +3,7 @@
 // Hver del er en funktion (c, ...) => SVG-streng. c.u('navn') giver url(#præfiks-navn) til billedets egne gradienter,
 // så flere billeder på samme side aldrig deler id'er.
 // Figurer tegnes om (0,0) = midt på kroppen; fødderne står ca. 40-46 længere nede (som Uffe på grenen i skitsen).
+// spec.maane: false giver en nattehimmel uden måne (fx når Månen er forsvundet).
 // Bevægelse sker via CSS-klasserne lk-blafr (lanterneglød), lk-blink (øjne) og lk-glimt (stjerner, gnister); se LK.art.css.
 self.LK = self.LK || {};
 (function () {
@@ -99,6 +100,14 @@ self.LK = self.LK || {};
 
   // ---------- Steder ----------
 
+  // Lanternetræet med sine seks små lys, tændte eller slukkede.
+  const TRAELYS = [[120, 112], [165, 94], [200, 110], [240, 92], [285, 114], [190, 64]];
+  const trae = (c, p, taendt) => skovkant(p) + jord(p) +
+    `<path d="M178 215 Q190 160 176 112 L224 112 Q210 160 222 215 Q240 222 250 220 L150 220 Q160 222 178 215Z" fill="#5A3E26"/>` +
+    `<g fill="${p.trae2}">${[[200, 72, 70], [140, 98, 38], [262, 98, 38], [150, 60, 34], [250, 60, 34], [200, 30, 34], [115, 112, 24], [288, 112, 24]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join('')}</g>` +
+    `<g stroke="#3B2A1A" stroke-width="1">${TRAELYS.map(([x, y]) => `<line x1="${x}" y1="${y - 12}" x2="${x}" y2="${y - 2}"/>`).join('')}</g>` +
+    (taendt ? lyskaede(c, TRAELYS) : `<g fill="#5B6B6A">${TRAELYS.map(([x, y]) => `<rect x="${x - 3}" y="${y - 3}" width="6" height="8" rx="2"/>`).join('')}</g>`);
+
   const steder = {
     skovsti: (c, p) => skovkant(p) + jord(p) +
       `<path d="M150 250 Q185 228 200 212 Q210 203 222 201 L232 202 Q224 212 232 226 Q244 240 280 250Z" fill="${p.sti}"/>` +
@@ -121,11 +130,9 @@ self.LK = self.LK || {};
       `<path d="M30 250 L30 150 Q60 80 150 75 Q230 60 300 95 Q360 115 370 160 L370 250Z" fill="${p.sten}"/>` +
       `<path d="M140 250 V175 Q140 118 200 118 Q260 118 260 175 V250Z" fill="#14141C"/>` +
       `<g fill="${p.trae2}"><ellipse cx="120" cy="92" rx="22" ry="7"/><ellipse cx="290" cy="104" rx="18" ry="6"/></g>` + jord(p, 12),
-    lanternetrae: (c, p) => skovkant(p) + jord(p) +
-      `<path d="M178 215 Q190 160 176 112 L224 112 Q210 160 222 215 Q240 222 250 220 L150 220 Q160 222 178 215Z" fill="#5A3E26"/>` +
-      `<g fill="${p.trae2}">${[[200, 72, 70], [140, 98, 38], [262, 98, 38], [150, 60, 34], [250, 60, 34], [200, 30, 34], [115, 112, 24], [288, 112, 24]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join('')}</g>` +
-      `<g stroke="#3B2A1A" stroke-width="1">${[[120, 110], [165, 92], [200, 108], [240, 90], [285, 112], [190, 62]].map(([x, y]) => `<line x1="${x}" y1="${y - 10}" x2="${x}" y2="${y}"/>`).join('')}</g>` +
-      lyskaede(c, [[120, 112], [165, 94], [200, 110], [240, 92], [285, 114], [190, 64]]),
+    lanternetrae: (c, p) => trae(c, p, true),
+    // Samme træ, før lanternerne er tændt.
+    slukkettrae: (c, p) => trae(c, p, false),
     taage: (c, p) => skovkant(p, ' opacity=".55"') + jord(p) +
       `<g fill="${p.taage}">${[[80, 175, 120, 14, 0.3], [300, 185, 140, 16, 0.3], [180, 205, 200, 14, 0.35], [60, 225, 120, 12, 0.3], [330, 230, 110, 10, 0.3]]
         .map(([x, y, rx, ry, o]) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" opacity="${o}"/>`).join('')}</g>`,
@@ -269,6 +276,11 @@ self.LK = self.LK || {};
       `<rect x="-14" y="-9" width="28" height="18" rx="2" fill="#F4EBD8" stroke="#C9B89A"/>` +
       `<path d="M-14 -9 L0 3 L14 -9" fill="none" stroke="#C9B89A" stroke-width="1.2"/>` +
       `<path d="M0 7 Q-6 1 -3.5 -1 Q-1.5 -2.5 0 0 Q1.5 -2.5 3.5 -1 Q6 1 0 7Z" fill="#C8352E"/>`,
+    // En hvirvel af blade, som Vinden leger med (ca. 120 x 70 om midten).
+    blade: () =>
+      `<path d="M-58 20 Q-40 -34 8 -30 Q52 -24 40 8 Q30 30 -4 22" fill="none" stroke="#DDEBF5" stroke-width="2.5" stroke-linecap="round" opacity=".55"/>` +
+      [[-56, 14, 30, '#7DC47A'], [-38, -20, -20, '#E3A21A'], [-6, -32, 60, '#4E8B5E'], [30, -22, 10, '#D9772E'], [44, 4, 80, '#7DC47A'], [22, 26, -40, '#E3A21A'], [-14, 22, 20, '#4E8B5E']]
+        .map(([x, y, v, f]) => `<g transform="translate(${x} ${y}) rotate(${v})"><path d="M-8 0 Q0 -6 8 0 Q0 6 -8 0Z" fill="${f}"/><line x1="-8" y1="0" x2="6" y2="0" stroke="#3B2A1A" stroke-width=".6" opacity=".5"/></g>`).join(''),
   };
 
   // ---------- Samling ----------
@@ -279,25 +291,32 @@ self.LK = self.LK || {};
     if (!Object.prototype.hasOwnProperty.call(samling, navn)) throw new Error(`Ukendt ${slags}: ${navn}`);
     return samling[navn];
   };
-  const placer = (d, indhold) => `<g transform="translate(${d.x} ${d.y}) scale(${d.skala == null ? 1 : d.skala})">${indhold}</g>`;
+  // Placeringen kommer fra historiefiler, som AI skriver: lav den om til tal, og stop ved noget, der ikke er et tal.
+  const placering = d => {
+    const tal = [Number(d.x), Number(d.y), d.skala == null ? 1 : Number(d.skala)];
+    if (d.x == null || d.y == null || !tal.every(Number.isFinite)) throw new Error(`Ugyldig placering for ${d.navn}`);
+    return tal;
+  };
+  const placer = ([x, y, skala], indhold) => `<g transform="translate(${x} ${y}) scale(${skala})">${indhold}</g>`;
 
   function scene(spec) {
     const sted = hent(steder, spec.sted, 'sted'), p = hent(PALETTE, spec.himmel, 'himmel');
     const figs = (spec.figurer || []).map(f => {
       const humoer = f.humoer || 'glad';
       if (!HUMOER.includes(humoer)) throw new Error(`Ukendt humør: ${humoer}`);
-      return [f, hent(figurer, f.navn, 'figur'), humoer];
+      return [f, hent(figurer, f.navn, 'figur'), humoer, placering(f)];
     });
-    const tings = (spec.ting || []).map(t => [t, hent(ting, t.navn, 'ting')]);
+    const tings = (spec.ting || []).map(t => [t, hent(ting, t.navn, 'ting'), placering(t)]);
     const pre = `lk${++taeller}-`, c = { u: n => `url(#${pre}${n})` };
-    const harMaane = figs.some(([f]) => f.navn === 'maanen');
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" role="img" aria-label="${escape(spec.alt)}">` +
+    // Himlen får en måne om natten og i skumringen, medmindre Månen selv er med, eller spec.maane er false.
+    const harMaane = spec.maane === false || figs.some(([f]) => f.navn === 'maanen');
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${escape(spec.alt)}">` +
       `<defs><linearGradient id="${pre}himmel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.himmel[0]}"/><stop offset="1" stop-color="${p.himmel[1]}"/></linearGradient>` +
       `<radialGradient id="${pre}glod"><stop offset="0" stop-color="#FFD66B" stop-opacity=".85"/><stop offset="1" stop-color="#FFD66B" stop-opacity="0"/></radialGradient>` +
       `<radialGradient id="${pre}kold"><stop offset="0" stop-color="#DFF6F0" stop-opacity=".7"/><stop offset="1" stop-color="#DFF6F0" stop-opacity="0"/></radialGradient></defs>` +
       `<rect width="400" height="250" fill="${c.u('himmel')}"/>` + himle[spec.himmel](c, p, !harMaane) + sted(c, p) +
-      tings.map(([t, tegn]) => placer(t, tegn(c, !!t.taendt))).join('') +
-      figs.map(([f, tegn, humoer]) => placer(f, tegn(c, humoer))).join('') + '</svg>';
+      tings.map(([t, tegn, sted]) => placer(sted, tegn(c, !!t.taendt))).join('') +
+      figs.map(([f, tegn, humoer, sted]) => placer(sted, tegn(c, humoer))).join('') + '</svg>';
   }
 
   const css = '.lk-blink{transform-box:fill-box;transform-origin:center;animation:lk-blink 5s infinite}' +

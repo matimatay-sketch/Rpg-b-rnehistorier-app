@@ -44,9 +44,9 @@ test('alle url(#...) peger på et id i samme billede', () => {
 });
 
 test('startsættet findes', () => {
-  assert.deepEqual(Object.keys(LK.art.steder).sort(), ['baek', 'bjerg', 'festplads', 'hule', 'lanternetrae', 'lysning', 'maanesoe', 'skovsti', 'sump', 'taage', 'tornekrat'].sort());
+  assert.deepEqual(Object.keys(LK.art.steder).sort(), ['baek', 'bjerg', 'festplads', 'hule', 'lanternetrae', 'lysning', 'maanesoe', 'skovsti', 'slukkettrae', 'sump', 'taage', 'tornekrat'].sort());
   assert.deepEqual(Object.keys(LK.art.figurer).sort(), ['bjorn', 'krage', 'lysorm', 'maanen', 'moll', 'mus', 'nusse', 'pind', 'raev', 'tut', 'uffe', 'vinden'].sort());
-  assert.deepEqual(Object.keys(LK.art.ting).sort(), ['bog', 'brev', 'gnist', 'gren', 'lanterne', 'svamp'].sort());
+  assert.deepEqual(Object.keys(LK.art.ting).sort(), ['blade', 'bog', 'brev', 'gnist', 'gren', 'lanterne', 'svamp'].sort());
 });
 
 test('alle steder, figurer og ting kan tegnes', () => {
@@ -90,4 +90,36 @@ test('natten har blinkende stjerner, figurer blinker', () => {
   const s = LK.art.scene({ sted: 'lysning', himmel: 'nat', alt: 'x', figurer: [{ navn: 'uffe', x: 200, y: 150 }] });
   assert.match(s, /lk-glimt/); assert.match(s, /lk-blink/);
   assert.doesNotMatch(LK.art.scene({ sted: 'lysning', himmel: 'dag', alt: 'x' }), /lk-glimt/);
+});
+
+test('placering laves om til tal, og en ugyldig placering giver en tydelig fejl', () => {
+  const s = LK.art.scene({ sted: 'lysning', himmel: 'dag', alt: 'x', figurer: [{ navn: 'uffe', x: '200', y: '150', skala: '0.8' }] });
+  assert.match(s, /translate\(200 150\) scale\(0\.8\)/);
+  for (const forkert of [{ x: 'venstre', y: 150 }, { x: 200 }, { x: 200, y: 150, skala: 'stor' }, { x: Infinity, y: 0 }]) {
+    assert.throws(() => LK.art.scene({ sted: 'lysning', himmel: 'dag', alt: 'x', figurer: [Object.assign({ navn: 'uffe' }, forkert)] }), /Ugyldig placering for uffe/);
+  }
+  assert.throws(() => LK.art.scene({ sted: 'lysning', himmel: 'dag', alt: 'x', ting: [{ navn: 'brev', x: 10, y: null }] }), /Ugyldig placering for brev/);
+});
+
+test('reduceret bevægelse slår alle tre animationer fra', () => {
+  const m = LK.art.css.match(/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{([^{}]*)\{([^{}]*)\}/);
+  assert.ok(m, 'ingen regel for prefers-reduced-motion: reduce');
+  const vaelgere = m[1].split(',').map(v => v.trim());
+  for (const k of ['.lk-blafr', '.lk-blink', '.lk-glimt']) assert.ok(vaelgere.includes(k), k);
+  assert.match(m[2], /animation:\s*none/);
+});
+
+test('Lanternetræet lyser, det slukkede træ gør ikke', () => {
+  const tegn = sted => LK.art.scene({ sted, himmel: 'dag', alt: 'x' });
+  assert.match(tegn('lanternetrae'), /lk-glimt/);
+  assert.doesNotMatch(tegn('slukkettrae'), /lk-glimt/);
+  assert.match(tegn('slukkettrae'), /#5B6B6A/); // slukkede lanterner
+});
+
+test('maane: false fjerner månen fra himlen', () => {
+  const maane = s => /#F6E7B8/.test(s);
+  for (const himmel of ['nat', 'skumring']) {
+    assert.ok(maane(LK.art.scene({ sted: 'lysning', himmel, alt: 'x' })), himmel);
+    assert.ok(!maane(LK.art.scene({ sted: 'lysning', himmel, alt: 'x', maane: false })), himmel);
+  }
 });
