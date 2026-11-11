@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { tjek, tjekKatalog } from '../tools/tjek-historier.mjs';
+import { tjek, tjekKatalog, tjekSerier, posterFraKatalog } from '../tools/tjek-historier.mjs';
 
 const beskeder = (fil) => tjek(['tests/fixtures/' + fil]).map(f => f.besked).join('\n');
 
@@ -85,3 +85,21 @@ test('bevægelsens mål tjekkes', () => {
 
 test('valg med både terning og bevægelse', () => assert.match(beskeder('bevaeg-begge.js'), /Valget har både terning og bevægelse/));
 test('bevægelse med brudt sværhed', () => assert.match(beskeder('bevaeg-brokent-maal.js'), /Bevægelse uden træk og sværhed til terningen/));
+
+// Serier: kapitler på fredage i træk i samme måned, det sidste på månedens sidste fredag.
+const serieBeskeder = (fil) => tjekSerier(posterFraKatalog('tests/fixtures/katalog-tjek/' + fil)).map(f => f.besked).join('\n');
+test('serie fra midt i måneden er god', () => assert.deepEqual(tjekKatalog('tests/fixtures/katalog-tjek/serie-god.js'), []));
+test('serie: hul', () => assert.match(serieBeskeder('serie-hul.js'), /Serien har huller: kapitlerne skal ligge på fredage i træk/));
+test('serie: ikke fredag', () => assert.match(serieBeskeder('serie-ikke-fredag.js'), /Et kapitel skal udgives på en fredag/));
+test('serie: sidste kapitel er ikke månedens sidste fredag', () => assert.match(serieBeskeder('serie-ikke-sidste.js'), /Seriens sidste kapitel skal ligge på månedens sidste fredag/));
+test('serie: forkert antal kapitler', () => assert.match(serieBeskeder('serie-kapitler.js'), /Kapitlet har kapitler: 4, men serien har 3/));
+test('serie: to måneder', () => assert.match(serieBeskeder('serie-anden-maaned.js'), /Seriens kapitler skal ligge i samme måned/));
+test('serie: forkert nummerering', () => assert.match(serieBeskeder('serie-nummer.js'), /Kapitlerne skal være nummereret 1 til 2/));
+test('serie: den gode serie giver ingen seriefejl', () => assert.equal(serieBeskeder('serie-god.js'), ''));
+test('serie: filens serie, kapitel og kapitler skal passe med posten', () => {
+  const post = { id: 'sg1', fil: 'tests/fixtures/katalog-tjek/serie-god-1.js', type: 'maaned', udgives: '2026-11-13', serie: { id: 'andet', titel: 'Serien' }, kapitel: 2, kapitler: 4 };
+  const b = tjek([post.fil], { poster: [post] }).map(f => f.besked).join('\n');
+  assert.match(b, /har serie "sg \/ Serien", men kataloget siger "andet \/ Serien"/);
+  assert.match(b, /har kapitel 1, men kataloget siger 2/);
+  assert.match(b, /har kapitler 3, men kataloget siger 4/);
+});
