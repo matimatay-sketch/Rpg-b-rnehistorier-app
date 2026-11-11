@@ -208,7 +208,7 @@ LK.addStory(function (k) {
       title: 'Alle sammen', end: true, all: true,
       text: function () {
         return ['I løfter gnisterne højt. Men træet er stort og gnisterne er små. &laquo;Vi klarer det ikke alene,&raquo; siger Uffe.']
-          .concat(k.friendLines(), ['Hver ven får en gnist at bære. De klatrer op i træet og tænder lanterne efter lanterne, til hele Lanterneskoven skinner som en stjernehimmel.',
+          .concat(k.friendLines(), ['Hver ven får en gnist at bære. Fuglene flyver gnisterne op mellem grenene, og lanterne efter lanterne tænder, til hele Lanterneskoven skinner som en stjernehimmel.',
             'Uffe flyver ned og sætter sig på jeres skulder. &laquo;Det var den bedste nat i hele skoven,&raquo; hvisker han.']);
       },
       ask: 'Hvorfor tror I, det virkede bedre, da I gjorde det sammen?'

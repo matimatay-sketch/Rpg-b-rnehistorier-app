@@ -27,7 +27,7 @@ LK.addStory(function (k) {
       ask: 'Hvordan gør man et stort arbejde lettere?',
       dyn: function () {
         function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'f_lysOk', lose: 'f_lysFejl', flag: 'tutVen', flagTxt: 'fordi Tuts svampe lyser op' } }; }
-        var c = [R('List', 'Byg en stige af grene og reb'), R('Mod', 'Klatr op i træerne med en rygsæk fuld af lanterner', 7), R('Fantasi', 'Mal en stjernehimmel på lanternerne med fingrene')];
+        var c = [R('List', 'Byg en lang stang af grene med en krog i enden'), R('Mod', 'Gå først ind i den mørkeste del af skoven med en rygsæk fuld af lanterner', 7), R('Fantasi', 'Mal en stjernehimmel på lanternerne med fingrene')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at tænde de højeste lanterner', to: 'f_lysGnist', use: n }); });
         c.push({ label: 'Bed Tuts lysende svampe stå som lamper langs stien', to: 'f_lysOk', lock: function () { return k.state.flags.tutVen ? null : 'Kræver at I har hjulpet Tut'; } });
         return c;
@@ -225,7 +225,7 @@ LK.addStory(function (k) {
   var mester = {
     f_lys: [
       { stat: 'List', l: 'Lav et system, hvor alle har deres egen række lanterner', to: 'f_lysOk', n: function (n) { return n + ' deler alle op i hold, så hver har sin egen række af lanterner at passe. Pludselig går det som en leg.'; } },
-      { stat: 'Mod', l: 'Klatr op i det højeste træ og tænd den øverste lanterne', to: 'f_lysOk', n: function (n) { return n + ' klatrer helt op i det højeste træ og tænder den øverste lanterne. Så følger de andre efter.'; } },
+      { stat: 'Mod', l: 'Gå først ind i det mørkeste krat og tænd den første lanterne', to: 'f_lysOk', n: function (n) { return n + ' går først ind i det mørkeste krat og tænder den første lanterne. Så følger de andre efter.'; } },
       { stat: 'Fantasi', l: 'Kald på lanternerne, som var de små drager', to: 'f_lysOk', n: function (n) { return n + ' kalder på lanternerne, som var de små drager. Én efter én svæver de ned og lader sig tænde.'; } }
     ],
     f_musik: [
