@@ -9,5 +9,7 @@ LK.katalog([
     serie: { id: '2026-11-pjuske', titel: 'Pjuskes efterårsliste' }, kapitel: 1, kapitler: 4 },
   { id: '2026-11-pjuske-2', fil: 'stories/2026-11-pjuske-2/historie.js', type: 'maaned', udgives: '2026-11-13',
     serie: { id: '2026-11-pjuske', titel: 'Pjuskes efterårsliste' }, kapitel: 2, kapitler: 4 },
+  { id: '2026-11-pjuske-3', fil: 'stories/2026-11-pjuske-3/historie.js', type: 'maaned', udgives: '2026-11-20',
+    serie: { id: '2026-11-pjuske', titel: 'Pjuskes efterårsliste' }, kapitel: 3, kapitler: 4 },
   { id: '2026-12-julestjernen', fil: 'stories/2026-12-julestjernen/historie.js', type: 'maaned', udgives: '2026-12-01' }
 ]);
