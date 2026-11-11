@@ -44,7 +44,7 @@ Lanterneskoven er et lille, børnevenligt rollespil i en historiebog: lidt som D
 
 ### Månedens historie
 
-Ud over de fire dele kommer der en ny historie hver fredag. En måneds historier er en serie med et kapitel pr. fredag (4 eller 5), og hvert kapitel er en hel historie, der kan spilles uden at kende resten. Den første er **Julestjernen** (december 2026).
+Ud over de fire dele kommer der en ny historie hver fredag. En måneds historier er en serie med et kapitel pr. fredag (4 eller 5), og hvert kapitel er en hel historie, der kan spilles uden at kende resten. Den første serie er **Pjuskes efterårsliste** (november 2026), og i december 2026 kommer **Julestjernen** i fire kapitler.
 
 Månedens historier laves af en planlagt Claude-session den 15. i måneden. Den åbner én pull request for hele serien med titlen "Månedens historier: …", og så er det ejeren, der godkender den ved at lægge den ind (merge), senest den 1. Først da kommer kapitlerne med i spillet, ét hver fredag.
 
