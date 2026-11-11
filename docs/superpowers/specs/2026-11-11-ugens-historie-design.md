@@ -1,7 +1,7 @@
 # En ny historie hver uge
 
 **Dato:** 2026-11-11
-**Status:** Klar til godkendelse
+**Status:** Godkendt af ejeren 2026-11-11, med ændringerne under "Ejerens tilføjelser"
 
 ## Hvorfor
 
@@ -46,7 +46,7 @@ Lanterneskoven skal blive en abonnementsforretning, og ejeren vil have, at famil
 ### Udgivelse
 - **En historie hver fredag i måneden.** Det bliver fire eller fem, alt efter hvor mange fredage måneden har. *(Claudes valg.)*
 - `udgives` er datoen for en fredag. Den bliver synlig fra kl. 00:00 den dag, efter enhedens lokale dato, som i dag.
-- **Start i januar 2027:** december beholder kun Julestjernen. Den 15. december 2026 skrives januars historier til fredagene 1., 8., 15., 22. og 29. januar. *(Claudes valg.)*
+- **Start allerede i november 2026** (ejerens valg, se "Ejerens tilføjelser").
 
 ### Serien
 - Hver historie i katalogen og i historiefilen får `serie` (id og titel, fx `{ id: '2027-01-vinterkongen', titel: 'Vinterkongens kort' }`) og `kapitel` (nummer) samt `kapitler` (antal i serien). Bygherren vælger de præcise navne.
@@ -76,6 +76,14 @@ Lanterneskoven skal blive en abonnementsforretning, og ejeren vil have, at famil
 - **Sen godkendelse:** godkender ejeren efter den første fredag, bliver de kapitler, hvis fredag er passeret, synlige med det samme. Det accepteres. Pull requestens beskrivelse beder om godkendelse senest den 1., og den eksisterende påmindelse på en åben pull request bevares.
 - **Antal kapitler følger kalenderen:** fire eller fem, og fortællingen lægges an på det antal.
 - **Sidste kapitel** viser ingen "næste kapitel"-knap. Slutskærmen siger i stedet, at der kommer en ny serie næste måned.
+
+## Ejerens tilføjelser (godkendt 2026-11-11)
+
+- **November 2026 får en serie** til de fredage, der er tilbage: 13., 20. og 27. november (3 kapitler). 6. november er gået. Emnet vælges efter årstiden (sent efterår), da der ikke er nogen idé-issue.
+- **Julestjernen deles op i 4 kapitler** til december-fredagene 4., 11., 18. og 25. december. Historien om de fire stykker af Nusses julestjerne passer naturligt: hvert kapitel finder ét stykke (kælkebakken, Månesøen, Molls julegåde, snemanden), og kapitel 4 sætter stjernen på Lanternetræet. Hvert kapitel får samme længde som en hel historie i dag (15-30 scener) og 1-2 bevægelser. Den nuværende `udgives: '2026-12-01'` udgår.
+- **Tjekkets regel for en serie** bliver: kapitlerne ligger på fredage i rækkefølge uden huller, i samme måned, og det sidste kapitel ligger på månedens sidste fredag. Så kan en serie starte midt i en måned, som november. For en serie, der laves den 15. til den kommende måned, betyder det i praksis én historie pr. fredag.
+- **Pull requesten** til de to serier hedder "Månedens historier: november og december 2026", så den planlagte opgave den 15. november ser den og kun skriver en påmindelse, hvis den ikke er godkendt endnu.
+- **Tidsfrist:** første novemberkapitel udkommer fredag den 13. november, så ejeren skal godkende inden da. Ellers kommer det ud, når det godkendes.
 
 ## Det, bygherren selv afgør
 
