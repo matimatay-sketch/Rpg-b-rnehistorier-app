@@ -30,7 +30,9 @@ LK.addStory(function (k) {
       ask: 'Hvordan føles det at lege helt alene i lang tid?',
       dyn: function () {
         function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'v_skovOk', lose: 'v_skovFejl', flag: 'nusseVen', flagTxt: 'fordi Nusse kender de små stier' } }; }
-        var c = [R('Mod', 'Gå lige gennem bladene med hovedet først', 7), R('List', 'Vent på et hul mellem hvirvlerne og løb'), R('Humor', 'Dans med bladene, så de bliver glade')];
+        // Bevægelse: samme valg som R, men familien danser selv med bladene.
+        function B(stat, label, goer) { var c = R(stat, label), r = c.roll; return { label: label, bevaeg: { goer: goer, stat: r.stat, target: r.target, win: r.win, lose: r.lose, flag: r.flag, flagTxt: r.flagTxt } }; }
+        var c = [R('Mod', 'Gå lige gennem bladene med hovedet først', 7), R('List', 'Vent på et hul mellem hvirvlerne og løb'), B('Humor', 'Dans med bladene, så de bliver glade', 'Stil jer over for hinanden og vær blade i vinden. Den ene svajer langsomt med armene, og den anden gør præcis det samme som et spejl.')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at lyse en rolig sti', to: 'v_skovGnist', use: n }); });
         c.push({ label: 'Forestil jer, at bladene er sommerfugle, der gerne vil hjælpe', to: 'v_skovOk', lock: function () { return k.lockTxt('Fantasi', 3); } });
         return c;
@@ -70,7 +72,9 @@ LK.addStory(function (k) {
       ask: 'Hvad gør man, når noget blæser imod én?',
       dyn: function () {
         function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'v_bjergOk', lose: 'v_bjergFejl', flag: 'mollLoefte', flagTxt: 'fordi Moll har vist jer en genvej' } }; }
-        var c = [R('Mod', 'Bøj jer ned og gå ét skridt ad gangen', 7), R('List', 'Hold jer i læ bag klipperne'), R('Nysgerrighed', 'Find ud af, hvor blæsten kommer fra, og gå med den')];
+        // Bevægelse: samme valg som R, men familien går selv op ad bjerget i blæsten.
+        function B(stat, label, t, goer) { var c = R(stat, label, t), r = c.roll; return { label: label, bevaeg: { goer: goer, stat: r.stat, target: r.target, win: r.win, lose: r.lose, flag: r.flag, flagTxt: r.flagTxt } }; }
+        var c = [B('Mod', 'Bøj jer ned og gå ét skridt ad gangen', 7, 'Gør jer så små som en mus, og gå langsomt tværs over stuen, ét lille skridt ad gangen, som om blæsten skubber imod jer.'), R('List', 'Hold jer i læ bag klipperne'), R('Nysgerrighed', 'Find ud af, hvor blæsten kommer fra, og gå med den')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at lyse op i blæsten', to: 'v_bjergGnist', use: n }); });
         c.push({ label: 'Bed Moll grave en tunnel gennem klippen', to: 'v_bjergOk', lock: function () { return k.state.flags.mollLoefte ? null : 'Kræver at I har hjulpet Moll'; } });
         return c;

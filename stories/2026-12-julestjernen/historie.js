@@ -77,7 +77,7 @@ LK.addStory(function (k) {
         'Men bakken er glat som en rutsjebane, og hver gang I tager et skridt op, glider I et halvt skridt ned igen.'],
       ask: 'Hvordan kommer man op ad noget, der er glat og svært?',
       choices: [
-        { label: 'Kravl op på alle fire som en isbjørn', roll: { stat: 'Mod', target: 6, win: 'snBakkeOk', lose: 'snBakkeFejl' } },
+        { label: 'Kravl op på alle fire som en isbjørn', bevaeg: { goer: 'Gør jer så store som en isbjørn, og gå på alle fire fra den ene ende af stuen til den anden. Brum gerne undervejs!', stat: 'Mod', target: 6, win: 'snBakkeOk', lose: 'snBakkeFejl' } },
         { label: 'Træd trin i sneen, så I får en trappe', roll: { stat: 'List', target: 6, win: 'snBakkeOk', lose: 'snBakkeFejl' } },
         { label: 'Gå op baglæns og vralt som en pingvin', roll: { stat: 'Humor', target: 6, win: 'snBakkeOk', lose: 'snBakkeFejl' } }
       ]
@@ -166,7 +166,7 @@ LK.addStory(function (k) {
       choices: [
         { label: 'Find på en ny næse af en grankogle', roll: { stat: 'Fantasi', target: 6, win: 'snSporOk', lose: 'snSporFejl' } },
         { label: 'Fortæl ræveungerne om julestjernen og spørg pænt', roll: { stat: 'Venlighed', target: 6, win: 'snSporOk', lose: 'snSporFejl' } },
-        { label: 'Hold en sjov opvisning med alle slags næser', roll: { stat: 'Humor', target: 6, win: 'snSporOk', lose: 'snSporFejl' } }
+        { label: 'Hold en sjov opvisning med alle slags næser', bevaeg: { goer: 'Stil jer over for hinanden. Den ene står som en snemand og laver en sjov næse med hænderne, og de andre gør præcis det samme som et spejl.', stat: 'Humor', target: 6, win: 'snSporOk', lose: 'snSporFejl' } }
       ]
     },
     snSporOk: {

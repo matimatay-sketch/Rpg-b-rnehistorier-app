@@ -28,7 +28,9 @@ LK.addStory(function (k) {
       ask: 'Hvordan finder man vej, når man ikke kan se noget?',
       dyn: function () {
         function R(stat, label) { return { label: label, roll: { stat: stat, target: 6, win: 'm_taageOk', lose: 'm_taageFejl', flag: 'tutVen', flagTxt: 'fordi Tuts svampe lyser vejen' } }; }
-        var c = [R('Nysgerrighed', 'Kig efter små spor på jorden'), R('List', 'Lyt efter lyden af vand og følg den'), R('Venlighed', 'Hold hinanden i hænderne og gå sammen')];
+        // Bevægelse: samme valg som R, men familien går selv igennem tågen.
+        function B(stat, label, goer) { var c = R(stat, label), r = c.roll; return { label: label, bevaeg: { goer: goer, stat: r.stat, target: r.target, win: r.win, lose: r.lose, flag: r.flag, flagTxt: r.flagTxt } }; }
+        var c = [R('Nysgerrighed', 'Kig efter små spor på jorden'), R('List', 'Lyt efter lyden af vand og følg den'), B('Venlighed', 'Hold hinanden i hænderne og gå sammen', 'Tag hinanden i hænderne. List helt lydløst fra den ene ende af stuen til den anden, så tågen ikke hører jer.')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at lyse vejen', to: 'm_taageGnist', use: n }); });
         c.push({ label: 'Tegn en lysende sti i tågen med fantasien', to: 'm_taageOk', lock: function () { return k.lockTxt('Fantasi', 3); } });
         return c;
@@ -67,7 +69,9 @@ LK.addStory(function (k) {
       ask: 'Hvad gør man, når der er så meget larm, at man ikke kan tænke?',
       dyn: function () {
         function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'm_sumpOk', lose: 'm_sumpFejl', flag: 'mollLoefte', flagTxt: 'fordi Moll har vist en genvej' } }; }
-        var c = [R('Humor', 'Kvæk med og få frøerne til at grine'), R('Mod', 'Hop fra sten til sten over sumpen', 7), R('Fantasi', 'Find på en melodi, som frøerne kan synge med på')];
+        // Bevægelse: samme valg som R, men familien hopper selv over sumpen.
+        function B(stat, label, t, goer) { var c = R(stat, label, t), r = c.roll; return { label: label, bevaeg: { goer: goer, stat: r.stat, target: r.target, win: r.win, lose: r.lose, flag: r.flag, flagTxt: r.flagTxt } }; }
+        var c = [R('Humor', 'Kvæk med og få frøerne til at grine'), B('Mod', 'Hop fra sten til sten over sumpen', 7, 'Sæt jer på hug og hop som en frø tre gange hen over gulvet. Sig &laquo;kvæk&raquo; ved hvert hop!'), R('Fantasi', 'Find på en melodi, som frøerne kan synge med på')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at lyse stenene op', to: 'm_sumpGnist', use: n }); });
         c.push({ label: 'Bed Moll vise sin hemmelige genvej', to: 'm_sumpOk', lock: function () { return k.state.flags.mollLoefte ? null : 'Kræver at I har hjulpet Moll'; } });
         return c;

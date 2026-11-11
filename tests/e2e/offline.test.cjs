@@ -74,6 +74,8 @@ async function spilTilSlut(page) {
       await page.click('#roll');
       continue;
     }
+    // Bevægelse er slået til (som fra starten); en bevægelse klares.
+    if (await page.$('#klarede')) { await page.click('#klarede'); continue; }
     await page.locator('#choices .crow > .btn:not([disabled])').first().click();
   }
   throw new Error('Nåede ikke slutskærmen');
