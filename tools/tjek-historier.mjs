@@ -7,10 +7,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const rod = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
-const STATS = [['Mod', ''], ['List', ''], ['Venlighed', ''], ['Fantasi', ''], ['Humor', ''], ['Nysgerrighed', '']];
-const COMPS = [{ id: 'raev', name: 'Rikke Ræv', stat: 'List' }];
-const MAGICS = [{ id: 'gnist', name: 'Gnistmagi', stat: 'Fantasi' }];
-
 function koer(ctx, fil) {
   runInContext(readFileSync(resolve(rod, fil), 'utf8'), ctx, { filename: fil });
 }
@@ -20,6 +16,7 @@ function nyKontekst() {
   ctx.self = ctx;
   ctx.window = ctx;
   createContext(ctx);
+  koer(ctx, 'js/data.js');
   koer(ctx, 'js/kit.js');
   return ctx;
 }
@@ -59,7 +56,7 @@ function indlaesFil(fil, kraevBilleder) {
   const ctx = nyKontekst();
   if (kraevBilleder && existsSync(resolve(rod, 'js/art.js'))) koer(ctx, 'js/art.js');
   let aktuel = null;
-  const kit = ctx.LK.lavKit(() => aktuel, { stats: STATS, comps: COMPS, magics: MAGICS });
+  const kit = ctx.LK.lavKit(() => aktuel);
   const lavere = [];
   ctx.LK.addStory = (fn) => { lavere.push(fn); };
   koer(ctx, fil);
@@ -171,15 +168,17 @@ export function tjek(filer, valg = {}) {
   return fejl;
 }
 
-// Katalogen er stories/katalog.js; hver post peger på sin fil med `fil`, ellers stories/<id>/historie.js.
+// Kataloget er stories/katalog.js, som kalder LK.katalog([...]) fra js/katalog.js.
+// Hver post peger på sin fil med `fil`, ellers stories/<id>/historie.js.
 function filerFraKatalog() {
   const sti = resolve(rod, 'stories/katalog.js');
   if (!existsSync(sti)) return null;
   const ctx = {};
   ctx.self = ctx; ctx.window = ctx;
   createContext(ctx);
+  koer(ctx, 'js/katalog.js');
   koer(ctx, 'stories/katalog.js');
-  const kat = (ctx.LK && ctx.LK.katalog) || [];
+  const kat = ctx.LK.katalogPoster || [];
   return kat.map(e => e.fil || 'stories/' + e.id + '/historie.js');
 }
 

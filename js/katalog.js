@@ -1,6 +1,9 @@
 // Katalog: udgivelsesdato for historier. Klassisk script, sætter self.LK.
 self.LK = self.LK || {};
 
+// stories/katalog.js kalder LK.katalog([...]) med alle historier (Entry-listen). Listen gemmes i LK.katalogPoster.
+self.LK.katalog = function (poster) { self.LK.katalogPoster = poster; };
+
 // Lokal dato som 'ÅÅÅÅ-MM-DD'.
 self.LK.datoStreng = function (d) {
   const aar = d.getFullYear();

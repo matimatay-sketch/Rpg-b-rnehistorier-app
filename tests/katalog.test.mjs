@@ -14,3 +14,12 @@ test('synlige: saga først, månedshistorier nyeste først, fremtidige skjult', 
   assert.deepEqual(LK.synlige(k, new Date(2026, 11, 2), null).map(e => e.id), ['lantern', 'dec', 'nov']);
   assert.deepEqual(LK.synlige(k, new Date(2026, 11, 2), 'jan').map(e => e.id), ['lantern', 'jan', 'dec', 'nov']);
 });
+test('stories/katalog.js registrerer de fire dele i rækkefølge, og filerne findes', async () => {
+  const { existsSync } = await import('node:fs');
+  const { LK: lk } = indlaes(['js/katalog.js', 'stories/katalog.js']);
+  assert.deepEqual([...lk.katalogPoster.map(e => e.id)], ['lantern', 'maane', 'vind', 'fest']);
+  lk.katalogPoster.forEach(e => {
+    assert.equal(e.type, 'saga');
+    assert.ok(existsSync(new URL('../' + e.fil, import.meta.url)), e.fil);
+  });
+});

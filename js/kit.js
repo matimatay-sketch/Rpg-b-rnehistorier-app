@@ -1,16 +1,17 @@
 // Kit: hjælpefunktioner, som historiekoden må bruge. Klassisk script, sætter self.LK.lavKit.
-// hentState giver den aktuelle spiltilstand. data = { stats, comps, magics } ejes af motoren.
+// hentState giver den aktuelle spiltilstand. data = { stats, comps, magics, friendFlags } fra js/data.js,
+// som skal være indlæst før.
 self.LK = self.LK || {};
 
 self.LK.lavKit = function (hentState, data) {
-  data = data || {};
+  data = data || self.LK.data;
   var k = {};
   Object.defineProperty(k, 'state', { get: function () { return hentState(); }, enumerable: true });
 
-  k.stats = data.stats || [];
-  k.comps = data.comps || [];
-  k.magics = data.magics || [];
-  k.FRIEND_FLAGS = ['nusseVen', 'nusseHonning', 'mollLoefte', 'tutVen', 'maaneVen', 'vindVen'];
+  k.stats = data.stats;
+  k.comps = data.comps;
+  k.magics = data.magics;
+  k.FRIEND_FLAGS = data.friendFlags;
 
   k.esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   k.gen = function (n) { return /[sxz]$/i.test(n) ? n : n + 's'; };

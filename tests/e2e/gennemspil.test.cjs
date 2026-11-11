@@ -134,3 +134,52 @@ test('gamle gemte data virker stadig', async () => {
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
+
+test('en historie, der ikke kan hentes, springes over', async () => {
+  const { context, page, fejl } = await nySide({ heroes: [helt()], play: { h1: true }, world: {} }, 0.99);
+  await page.route('**/stories/vind/historie.js', r => r.fulfill({ status: 404, body: 'findes ikke' }));
+  await page.goto(server.base + 'index.html');
+  await page.waitForSelector('input[name=story]');
+  const ids = await page.$$eval('input[name=story]', l => l.map(i => i.value));
+  assert.deepStrictEqual(ids, ['lantern', 'maane', 'fest']);
+  for (const id of ids) {
+    await page.check('input[name=story][value="' + id + '"]');
+    assert.strictEqual(await page.isChecked('input[name=story][value="' + id + '"]'), true);
+  }
+  await page.check('input[name=comp][value="raev"]');
+  await page.click('#go');
+  assert.match(await page.textContent('#stage h2'), /\S/);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('en historie, hvis kode fejler, springes over og logges', async () => {
+  const { context, page, fejl } = await nySide({ heroes: [helt()], play: { h1: true }, world: {} }, 0.99);
+  const logget = [];
+  page.on('console', m => { if (m.type() === 'error') logget.push(m.text()); });
+  await page.route('**/stories/vind/historie.js', r => r.fulfill({ status: 200, contentType: 'text/javascript', body: "LK.addStory(function (k) { throw new Error('ødelagt'); });" }));
+  await page.goto(server.base + 'index.html');
+  await page.waitForSelector('input[name=story]');
+  assert.deepStrictEqual(await page.$$eval('input[name=story]', l => l.map(i => i.value)), ['lantern', 'maane', 'fest']);
+  assert.ok(logget.some(t => /ødelagt/.test(t)), logget.join('\n'));
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('historierne kan spilles uden internet, når appen har været åbnet én gang', async () => {
+  const context = await browser.newContext();
+  await context.addInitScript(libJson => {
+    try { localStorage.setItem('lk-heroes', libJson); localStorage.setItem('lk-welcomed', '1'); } catch (e) {}
+  }, JSON.stringify({ heroes: [helt()], play: { h1: true }, world: {} }));
+  const page = await context.newPage();
+  await page.goto(server.base + 'index.html');
+  await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
+  // Tøm browserens almindelige cache, så kun service workerens gemte filer kan bruges.
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('Network.clearBrowserCache');
+  await context.setOffline(true);
+  await page.reload();
+  await page.waitForSelector('input[name=story]');
+  assert.deepStrictEqual(await page.$$eval('input[name=story]', l => l.map(i => i.value)), DELE);
+  await context.close();
+});
