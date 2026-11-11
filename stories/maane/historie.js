@@ -69,9 +69,7 @@ LK.addStory(function (k) {
       ask: 'Hvad gør man, når der er så meget larm, at man ikke kan tænke?',
       dyn: function () {
         function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'm_sumpOk', lose: 'm_sumpFejl', flag: 'mollLoefte', flagTxt: 'fordi Moll har vist en genvej' } }; }
-        // Bevægelse: samme valg som R, men familien hopper selv over sumpen.
-        function B(stat, label, t, goer) { var c = R(stat, label, t), r = c.roll; return { label: label, bevaeg: { goer: goer, stat: r.stat, target: r.target, win: r.win, lose: r.lose, flag: r.flag, flagTxt: r.flagTxt } }; }
-        var c = [R('Humor', 'Kvæk med og få frøerne til at grine'), B('Mod', 'Hop fra sten til sten over sumpen', 7, 'Sæt jer på hug og hop som en frø tre gange hen over gulvet. Sig &laquo;kvæk&raquo; ved hvert hop!'), R('Fantasi', 'Find på en melodi, som frøerne kan synge med på')];
+        var c = [R('Humor', 'Kvæk med og få frøerne til at grine'), R('Mod', 'Hop fra sten til sten over sumpen', 7), R('Fantasi', 'Find på en melodi, som frøerne kan synge med på')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at lyse stenene op', to: 'm_sumpGnist', use: n }); });
         c.push({ label: 'Bed Moll vise sin hemmelige genvej', to: 'm_sumpOk', lock: function () { return k.state.flags.mollLoefte ? null : 'Kræver at I har hjulpet Moll'; } });
         return c;
