@@ -247,12 +247,12 @@ LK.addStory(function (k) {
 
   /* Billeder til scenerne, tegnet med delene i art/dele.js (LK.art.scene). Koordinater i en ramme på 400 x 250. */
   var billeder = {
-    f1: { sted: 'skovsti', himmel: 'dag', alt: 'Uffe vil holde fest for hele skoven, og Vinden kigger genert frem bag et træ.',
-      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'brev', x: 120, y: 150, taendt: true }],
-      figurer: [{ navn: 'uffe', x: 205, y: 128, humoer: 'glad' }, { navn: 'vinden', x: 345, y: 165, skala: 0.45, humoer: 'bekymret' }] },
-    f1b: { sted: 'skovsti', himmel: 'dag', alt: 'Uffe fortæller festens vigtigste regel: alle skal have lov at være med.',
-      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'brev', x: 120, y: 150 }, { navn: 'brev', x: 300, y: 150 }],
-      figurer: [{ navn: 'uffe', x: 205, y: 128, humoer: 'rolig' }] },
+    f1: { sted: 'vindue', himmel: 'dag', alt: 'Uffe sidder på vindueskarmen og vil holde fest, og udenfor kigger Vinden genert frem bag et træ.',
+      ting: [{ navn: 'brev', x: 95, y: 176, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 180, y: 141, skala: 0.9, humoer: 'glad' }, { navn: 'vinden', x: 285, y: 140, skala: 0.35, humoer: 'bekymret' }] },
+    f1b: { sted: 'vindue', himmel: 'dag', alt: 'Uffe sidder på vindueskarmen og fortæller festens vigtigste regel: alle skal have lov at være med.',
+      ting: [{ navn: 'brev', x: 95, y: 176 }, { navn: 'brev', x: 300, y: 176 }],
+      figurer: [{ navn: 'uffe', x: 200, y: 141, skala: 0.9, humoer: 'rolig' }] },
     f_lys: { sted: 'lysning', himmel: 'skumring', alt: 'Lanternerne hænger slukkede og skæve højt oppe i træerne.',
       ting: [{ navn: 'lanterne', x: 60, y: 125 }, { navn: 'lanterne', x: 340, y: 130 }, { navn: 'lanterne', x: 380, y: 150, skala: 0.8 }, { navn: 'lanterne', x: 25, y: 150, skala: 0.8 }],
       figurer: [{ navn: 'uffe', x: 200, y: 180, skala: 0.8, humoer: 'bekymret' }] },

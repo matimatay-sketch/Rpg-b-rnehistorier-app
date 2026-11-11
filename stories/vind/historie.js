@@ -206,9 +206,9 @@ LK.addStory(function (k) {
 
   /* Billeder til scenerne, tegnet med delene i art/dele.js (LK.art.scene). Koordinater i en ramme på 400 x 250. */
   var billeder = {
-    v1: { sted: 'skovsti', himmel: 'nat', alt: 'Et lille, krøllet brev fra Vinden blæser rundt, og Uffe lander forbavset på en gren.',
-      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'lanterne', x: 95, y: 140, taendt: true }, { navn: 'brev', x: 305, y: 85, skala: 1.4, taendt: true }],
-      figurer: [{ navn: 'uffe', x: 195, y: 128, humoer: 'overrasket' }] },
+    v1: { sted: 'vindue', himmel: 'nat', alt: 'Et lille, krøllet brev fra Vinden blæser rundt i stuen, og Uffe lander forbavset på vindueskarmen.',
+      ting: [{ navn: 'lanterne', x: 110, y: 120, skala: 0.6, taendt: true }, { navn: 'blade', x: 340, y: 205, skala: 0.45 }, { navn: 'brev', x: 330, y: 215, skala: 1.3, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 150, y: 141, skala: 0.9, humoer: 'overrasket' }] },
     v1b: { sted: 'skovsti', himmel: 'nat', alt: 'Uffe fortæller om dengang, Vinden var hans bedste ven.',
       ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'lanterne', x: 345, y: 150, taendt: true }],
       figurer: [{ navn: 'uffe', x: 205, y: 128, humoer: 'rolig' }, { navn: 'vinden', x: 95, y: 70, skala: 0.55, humoer: 'glad' }] },

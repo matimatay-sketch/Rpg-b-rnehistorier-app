@@ -202,9 +202,9 @@ LK.addStory(function (k) {
 
   /* Billeder til scenerne, tegnet med delene i art/dele.js (LK.art.scene). maane: false betyder en himmel uden måne. */
   var billeder = {
-    m1: { sted: 'skovsti', himmel: 'nat', maane: false, alt: 'Uffe kommer forskrækket: lanternerne lyser, men der er ingen måne på himlen.',
-      ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'lanterne', x: 95, y: 140, taendt: true }, { navn: 'lanterne', x: 345, y: 150, taendt: true }, { navn: 'gnist', x: 300, y: 70, skala: 0.8, taendt: true }],
-      figurer: [{ navn: 'uffe', x: 205, y: 128, humoer: 'overrasket' }] },
+    m1: { sted: 'vindue', himmel: 'nat', maane: false, alt: 'Uffe rasler på ruden: lanternerne lyser i skoven, men der er ingen måne på himlen.',
+      ting: [{ navn: 'lanterne', x: 110, y: 120, skala: 0.6, taendt: true }, { navn: 'lanterne', x: 290, y: 130, skala: 0.6, taendt: true }, { navn: 'gnist', x: 300, y: 60, skala: 0.7, taendt: true }],
+      figurer: [{ navn: 'uffe', x: 200, y: 141, skala: 0.9, humoer: 'overrasket' }] },
     m1b: { sted: 'skovsti', himmel: 'nat', maane: false, alt: 'Uffe tror, at månen er ked af det, fordi ingen kigger op på den mere.',
       ting: [{ navn: 'gren', x: 150, y: 172 }, { navn: 'lanterne', x: 95, y: 140, taendt: true }, { navn: 'lanterne', x: 345, y: 150, taendt: true }],
       figurer: [{ navn: 'uffe', x: 205, y: 128, humoer: 'bekymret' }] },

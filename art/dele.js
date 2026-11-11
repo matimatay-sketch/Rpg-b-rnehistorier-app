@@ -1,7 +1,8 @@
 // Billeddele i billedbogsstil (stil A). Klassisk script, sætter self.LK.art.
 // LK.art.scene(spec) sætter et sted, en himmel, ting og figurer sammen til én SVG (viewBox 0 0 400 250).
 // Hver del er en funktion (c, ...) => SVG-streng. c.u('navn') giver url(#præfiks-navn) til billedets egne gradienter,
-// så flere billeder på samme side aldrig deler id'er.
+// så flere billeder på samme side aldrig deler id'er; c.ny('navn') giver et nyt, unikt id til en del, der har sin egen gradient.
+// Ting kaldes som (c, taendt, spec), så en ting kan læse sine egne valg (fx gnistens farve).
 // Figurer tegnes om (0,0) = midt på kroppen; fødderne står ca. 40-46 længere nede (som Uffe på grenen i skitsen).
 // spec.maane: false giver en nattehimmel uden måne (fx når Månen er forsvundet).
 // Bevægelse sker via CSS-klasserne lk-blafr (lanterneglød), lk-blink (øjne) og lk-glimt (stjerner, gnister); se LK.art.css.
@@ -77,10 +78,10 @@ self.LK = self.LK || {};
   // ---------- Himmel ----------
 
   const PALETTE = {
-    nat: { himmel: ['#1E2E52', '#355C78'], trae1: '#24514A', trae2: '#2F6B58', jord1: '#1F4A3C', jord2: '#183A30', sti: '#4E4636', vand: '#2C5470', glans: '#7FA6C4', sten: '#4A4E5E', sump: '#24403A', bjerg: '#3E4E6E', taage: '#C9D6E8' },
-    skumring: { himmel: ['#2C3463', '#A9748C'], trae1: '#2E4A55', trae2: '#365E58', jord1: '#2A4A42', jord2: '#203A34', sti: '#6A5848', vand: '#4A5A80', glans: '#C9A0B4', sten: '#5A5468', sump: '#2E4640', bjerg: '#544E72', taage: '#E0CCD8' },
-    aften: { himmel: ['#3D4F86', '#F2A96B'], trae1: '#3F6B55', trae2: '#4A7A58', jord1: '#4E7E4E', jord2: '#3E6A42', sti: '#9A7A56', vand: '#5A7AA0', glans: '#F6C99A', sten: '#7A6E6A', sump: '#3E5A44', bjerg: '#6A6488', taage: '#F4E0D0' },
-    dag: { himmel: ['#7FC4E6', '#D4F0F2'], trae1: '#4F9A6E', trae2: '#3E8A5C', jord1: '#6DB06A', jord2: '#5A9A58', sti: '#C9A878', vand: '#5AA8D0', glans: '#E6F6FF', sten: '#9A9690', sump: '#5A8A5E', bjerg: '#8A9AB4', taage: '#FFFFFF' },
+    nat: { himmel: ['#1E2E52', '#355C78'], trae1: '#24514A', trae2: '#2F6B58', jord1: '#1F4A3C', jord2: '#183A30', sti: '#4E4636', vand: '#2C5470', glans: '#7FA6C4', sten: '#4A4E5E', sump: '#24403A', bjerg: '#3E4E6E', taage: '#C9D6E8', vaeg: '#4E3A4C', karm: '#9A7250' },
+    skumring: { himmel: ['#2C3463', '#A9748C'], trae1: '#2E4A55', trae2: '#365E58', jord1: '#2A4A42', jord2: '#203A34', sti: '#6A5848', vand: '#4A5A80', glans: '#C9A0B4', sten: '#5A5468', sump: '#2E4640', bjerg: '#544E72', taage: '#E0CCD8', vaeg: '#5E4458', karm: '#A87A56' },
+    aften: { himmel: ['#3D4F86', '#F2A96B'], trae1: '#3F6B55', trae2: '#4A7A58', jord1: '#4E7E4E', jord2: '#3E6A42', sti: '#9A7A56', vand: '#5A7AA0', glans: '#F6C99A', sten: '#7A6E6A', sump: '#3E5A44', bjerg: '#6A6488', taage: '#F4E0D0', vaeg: '#8A5E4C', karm: '#C99A6A' },
+    dag: { himmel: ['#7FC4E6', '#D4F0F2'], trae1: '#4F9A6E', trae2: '#3E8A5C', jord1: '#6DB06A', jord2: '#5A9A58', sti: '#C9A878', vand: '#5AA8D0', glans: '#E6F6FF', sten: '#9A9690', sump: '#5A8A5E', bjerg: '#8A9AB4', taage: '#FFFFFF', vaeg: '#E3C9A0', karm: '#C99A6A' },
   };
 
   const halvmaane = (x, y, r, farve, op = 1) =>
@@ -133,6 +134,18 @@ self.LK = self.LK || {};
     lanternetrae: (c, p) => trae(c, p, true),
     // Samme træ, før lanternerne er tændt.
     slukkettrae: (c, p) => trae(c, p, false),
+    // Inde i familiens stue: et vindue med skoven og himlen udenfor, gardiner og en karm forrest.
+    // Karmen er en hylde fra x 44 til 356 med overkant i y 183; en figur sidder på den med y ca. 183 - 46 * skala.
+    vindue: (c, p) =>
+      traeer(p.trae1, [[95, 185, 90], [150, 185, 120], [255, 185, 110], [315, 185, 85]]) + traeer(p.trae2, [[200, 190, 70], [115, 195, 60], [290, 195, 60]]) +
+      `<rect x="60" y="168" width="280" height="20" fill="${p.jord1}"/>` +
+      `<path fill-rule="evenodd" d="M0 0 H400 V250 H0Z M60 22 V185 H340 V22Z" fill="${p.vaeg}"/>` +
+      `<rect x="0" y="212" width="400" height="38" fill="#000" opacity=".12"/>` +
+      `<g fill="none" stroke="${p.karm}"><rect x="60" y="22" width="280" height="163" stroke-width="8"/><path d="M200 22 V185 M60 100 H340" stroke-width="5"/></g>` +
+      `<rect x="16" y="5" width="368" height="6" rx="3" fill="${p.karm}"/>` +
+      `<g fill="#A8443A"><path d="M20 8 H68 Q56 100 72 204 H20Z"/><path d="M380 8 H332 Q344 100 328 204 H380Z"/></g>` +
+      `<g stroke="#7E2E28" stroke-width="2" fill="none" opacity=".6"><path d="M36 12 Q32 110 38 200 M52 12 Q46 110 54 200 M364 12 Q368 110 362 200 M348 12 Q354 110 346 200"/></g>` +
+      `<rect x="44" y="183" width="312" height="14" rx="4" fill="${p.karm}"/><rect x="52" y="197" width="296" height="6" fill="#000" opacity=".18"/>`,
     taage: (c, p) => skovkant(p, ' opacity=".55"') + jord(p) +
       `<g fill="${p.taage}">${[[80, 175, 120, 14, 0.3], [300, 185, 140, 16, 0.3], [180, 205, 200, 14, 0.35], [60, 225, 120, 12, 0.3], [330, 230, 110, 10, 0.3]]
         .map(([x, y, rx, ry, o]) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" opacity="${o}"/>`).join('')}</g>`,
@@ -255,12 +268,26 @@ self.LK = self.LK || {};
 
   // ---------- Ting ----------
 
+  // Gnisternes farver (samme som gnist.col i Del 1). Guld er standard.
+  const GNISTFARVER = { guld: '#FFE08A', blaa: '#4A90D9', roed: '#E0525A', groen: '#4CAF6A', lilla: '#9B6BD6' };
+
   const ting = {
     lanterne: (c, t) =>
       `<line x1="0" y1="-24" x2="0" y2="-10" stroke="#3B2A1A" stroke-width="2"/>` + (t ? glod(c, 0, 0, 20) : '') +
       `<rect x="-7" y="-10" width="14" height="18" rx="4" fill="${t ? '#E3A21A' : '#5B6B6A'}"/><rect x="-4" y="-7" width="8" height="12" rx="2" fill="${t ? '#FFE08A' : '#3E4A4A'}"/>`,
-    gnist: (c, t) => (t ? glod(c, 0, 0, 14, 'guld', 'lk-glimt') : '') +
-      `<path d="M0 -8 Q1.5 -1.5 8 0 Q1.5 1.5 0 8 Q-1.5 1.5 -8 0 Q-1.5 -1.5 0 -8Z" fill="${t ? '#FFE08A' : '#8A8F9A'}"/>`,
+    // d.farve: et navn fra GNISTFARVER eller en farve som #4A90D9. Uden farve er gnisten guld.
+    gnist: (c, t, d = {}) => {
+      const navn = d.farve == null ? 'guld' : d.farve;
+      const farve = Object.prototype.hasOwnProperty.call(GNISTFARVER, navn) ? GNISTFARVER[navn] : /^#[0-9a-fA-F]{6}$/.test(navn) ? navn : null;
+      if (!farve) throw new Error(`Ukendt farve på gnist: ${navn}`);
+      const stjerne = f => `<path d="M0 -8 Q1.5 -1.5 8 0 Q1.5 1.5 0 8 Q-1.5 1.5 -8 0 Q-1.5 -1.5 0 -8Z" fill="${f}"/>`;
+      if (navn === 'guld') return (t ? glod(c, 0, 0, 14, 'guld', 'lk-glimt') : '') + stjerne(t ? farve : '#8A8F9A');
+      if (!t) return `<g opacity=".6" transform="scale(1.3)">${stjerne(farve)}</g>`;
+      const id = c.ny('gnist');
+      return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${farve}" stop-opacity=".9"/><stop offset="1" stop-color="${farve}" stop-opacity="0"/></radialGradient></defs>` +
+        `<circle class="lk-glimt" cx="0" cy="0" r="20" fill="url(#${id})"/>` + `<g transform="scale(1.3)">${stjerne(farve)}</g>` +
+        `<g transform="scale(.55)" opacity=".8">${stjerne('#FFFFFF')}</g>`;
+    },
     gren: () =>
       `<path d="M-150 6 Q-60 -12 25 0 Q90 8 150 -4" fill="none" stroke="#6B4A2F" stroke-width="12" stroke-linecap="round"/>` +
       `<path d="M100 0 Q112 -14 130 -18" fill="none" stroke="#6B4A2F" stroke-width="5" stroke-linecap="round"/>` +
@@ -307,7 +334,8 @@ self.LK = self.LK || {};
       return [f, hent(figurer, f.navn, 'figur'), humoer, placering(f)];
     });
     const tings = (spec.ting || []).map(t => [t, hent(ting, t.navn, 'ting'), placering(t)]);
-    const pre = `lk${++taeller}-`, c = { u: n => `url(#${pre}${n})` };
+    let lokal = 0;
+    const pre = `lk${++taeller}-`, c = { u: n => `url(#${pre}${n})`, ny: n => `${pre}${n}-${++lokal}` };
     // Himlen får en måne om natten og i skumringen, medmindre Månen selv er med, eller spec.maane er false.
     const harMaane = spec.maane === false || figs.some(([f]) => f.navn === 'maanen');
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${escape(spec.alt)}">` +
@@ -315,7 +343,7 @@ self.LK = self.LK || {};
       `<radialGradient id="${pre}glod"><stop offset="0" stop-color="#FFD66B" stop-opacity=".85"/><stop offset="1" stop-color="#FFD66B" stop-opacity="0"/></radialGradient>` +
       `<radialGradient id="${pre}kold"><stop offset="0" stop-color="#DFF6F0" stop-opacity=".7"/><stop offset="1" stop-color="#DFF6F0" stop-opacity="0"/></radialGradient></defs>` +
       `<rect width="400" height="250" fill="${c.u('himmel')}"/>` + himle[spec.himmel](c, p, !harMaane) + sted(c, p) +
-      tings.map(([t, tegn, sted]) => placer(sted, tegn(c, !!t.taendt))).join('') +
+      tings.map(([t, tegn, sted]) => placer(sted, tegn(c, !!t.taendt, t))).join('') +
       figs.map(([f, tegn, humoer, sted]) => placer(sted, tegn(c, humoer))).join('') + '</svg>';
   }
 
@@ -325,5 +353,5 @@ self.LK = self.LK || {};
     '.lk-glimt{animation:lk-glimt 3s ease-in-out infinite}@keyframes lk-glimt{0%,100%{opacity:1}50%{opacity:.35}}' +
     '@media (prefers-reduced-motion:reduce){.lk-blink,.lk-blafr,.lk-glimt{animation:none}}';
 
-  self.LK.art = { scene, steder, figurer, ting, css };
+  self.LK.art = { scene, steder, figurer, ting, gnistfarver: GNISTFARVER, css };
 })();

@@ -44,7 +44,7 @@ test('alle url(#...) peger på et id i samme billede', () => {
 });
 
 test('startsættet findes', () => {
-  assert.deepEqual(Object.keys(LK.art.steder).sort(), ['baek', 'bjerg', 'festplads', 'hule', 'lanternetrae', 'lysning', 'maanesoe', 'skovsti', 'slukkettrae', 'sump', 'taage', 'tornekrat'].sort());
+  assert.deepEqual(Object.keys(LK.art.steder).sort(), ['baek', 'bjerg', 'festplads', 'hule', 'lanternetrae', 'lysning', 'maanesoe', 'skovsti', 'slukkettrae', 'sump', 'taage', 'tornekrat', 'vindue'].sort());
   assert.deepEqual(Object.keys(LK.art.figurer).sort(), ['bjorn', 'krage', 'lysorm', 'maanen', 'moll', 'mus', 'nusse', 'pind', 'raev', 'tut', 'uffe', 'vinden'].sort());
   assert.deepEqual(Object.keys(LK.art.ting).sort(), ['blade', 'bog', 'brev', 'gnist', 'gren', 'lanterne', 'svamp'].sort());
 });
@@ -121,5 +121,35 @@ test('maane: false fjerner månen fra himlen', () => {
   for (const himmel of ['nat', 'skumring']) {
     assert.ok(maane(LK.art.scene({ sted: 'lysning', himmel, alt: 'x' })), himmel);
     assert.ok(!maane(LK.art.scene({ sted: 'lysning', himmel, alt: 'x', maane: false })), himmel);
+  }
+});
+
+test('en gnist kan have en farve; guld er standard', () => {
+  const tegn = (farve, taendt = true) => LK.art.scene({ sted: 'hule', himmel: 'nat', alt: 'x', ting: [{ navn: 'gnist', x: 100, y: 100, taendt, farve }] });
+  assert.match(tegn(undefined), /#FFE08A/);
+  const farver = { blaa: '#4A90D9', roed: '#E0525A', groen: '#4CAF6A', lilla: '#9B6BD6' };
+  for (const [navn, hex] of Object.entries(farver)) {
+    assert.match(tegn(navn), new RegExp(hex), navn);
+    assert.doesNotMatch(tegn(navn), /#FFE08A/, navn);
+    assert.match(tegn(hex), new RegExp(hex), hex);
+    assert.match(tegn(navn, false), new RegExp(hex), navn + ' slukket');
+  }
+  assert.deepEqual(Object.keys(LK.art.gnistfarver).sort(), ['blaa', 'groen', 'guld', 'lilla', 'roed']);
+  assert.throws(() => tegn('pink'), /Ukendt farve på gnist: pink/);
+  assert.throws(() => tegn('#12'), /Ukendt farve på gnist: #12/);
+});
+
+test('to farvede gnister i samme billede har hver sit id, og alle url(#...) findes', () => {
+  const s = LK.art.scene({ sted: 'hule', himmel: 'nat', alt: 'x', ting: [{ navn: 'gnist', x: 100, y: 100, taendt: true, farve: 'blaa' }, { navn: 'gnist', x: 200, y: 100, taendt: true, farve: 'blaa' }] });
+  const ids = [...s.matchAll(/id="([^"]+)"/g)].map(m => m[1]);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const m of s.matchAll(/url\(#([^)]+)\)/g)) assert.ok(ids.includes(m[1]), m[1]);
+});
+
+test('vinduet viser himlen gennem ruden med en karm forrest', () => {
+  for (const himmel of ['nat', 'skumring', 'aften', 'dag']) {
+    const s = LK.art.scene({ sted: 'vindue', himmel, alt: 'x' });
+    assert.match(s, /fill-rule="evenodd"/, himmel);
+    assert.doesNotMatch(s, /undefined|NaN/, himmel);
   }
 });
