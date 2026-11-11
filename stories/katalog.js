@@ -16,5 +16,7 @@ LK.katalog([
   { id: '2026-12-julestjernen-1', fil: 'stories/2026-12-julestjernen-1/historie.js', type: 'maaned', udgives: '2026-12-04',
     serie: { id: '2026-12-julestjernen', titel: 'Julestjernen' }, kapitel: 1, kapitler: 4 },
   { id: '2026-12-julestjernen-2', fil: 'stories/2026-12-julestjernen-2/historie.js', type: 'maaned', udgives: '2026-12-11',
-    serie: { id: '2026-12-julestjernen', titel: 'Julestjernen' }, kapitel: 2, kapitler: 4 }
+    serie: { id: '2026-12-julestjernen', titel: 'Julestjernen' }, kapitel: 2, kapitler: 4 },
+  { id: '2026-12-julestjernen-3', fil: 'stories/2026-12-julestjernen-3/historie.js', type: 'maaned', udgives: '2026-12-18',
+    serie: { id: '2026-12-julestjernen', titel: 'Julestjernen' }, kapitel: 3, kapitler: 4 }
 ]);
