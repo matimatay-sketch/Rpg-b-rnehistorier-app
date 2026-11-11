@@ -207,6 +207,8 @@ test('uden nogen historier giver Start en venlig besked i stedet for en fejl', a
 test('er alle dele spillet, og mangler første del, er den første historie på listen valgt', async () => {
   const world = { done_lantern: true, done_maane: true, done_vind: true, done_fest: true };
   const { context, page, fejl } = await nySide(standard(world), null);
+  // Uret står før den første månedshistorie (december 2026), så listen kun har sagaens dele.
+  await context.clock.setFixedTime(new Date('2026-11-15T12:00:00'));
   await page.route('**/stories/lantern/historie.js', r => r.fulfill({ status: 404, body: 'findes ikke' }));
   await page.goto(server.base + 'index.html');
   assert.deepStrictEqual(await historieIds(page), ['maane', 'vind', 'fest']);
