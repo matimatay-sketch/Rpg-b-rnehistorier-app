@@ -355,12 +355,12 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     if (STORIES.some(function (s) { return s.start === id; })) return one(v.intro);
     if (/(Fejl|Hint)$/.test(id)) return one(v.fail);
     var ch = sc.dyn ? sc.dyn() : (sc.choices || []);
-    if (ch.some(function (c) { return c.roll; })) { state.compCount = (state.compCount || 0) + 1; return state.compCount % 2 === 1 ? one(v.challenge) : ''; }
+    if (ch.some(function (c) { return c.roll || c.bevaeg; })) { state.compCount = (state.compCount || 0) + 1; return state.compCount % 2 === 1 ? one(v.challenge) : ''; }
     return '';
   }
   function fresh(keep) {
     state = { players: keep ? keep.players : [], comp: keep ? keep.comp : null, compName: '', compStat: '',
-      visited: [], gnists: 0, feather: false, featherUsed: false, turn: 0, rolls: 0, wrong: {}, scene: null, awarded: false, flags: {}, remembered: [], story: (keep && keep.story) || 'lantern', gnistList: [], usedG: {}, lastUse: '',
+      visited: [], gnists: 0, feather: false, featherUsed: false, turn: 0, rolls: 0, bevaegelser: 0, wrong: {}, scene: null, awarded: false, flags: {}, remembered: [], story: (keep && keep.story) || 'lantern', gnistList: [], usedG: {}, lastUse: '',
       gnisterIn: ((lib && lib.world && lib.world.gnistNavne) || []).slice(0, 4), magicUsed: {}, magicNote: '', maxUsed: {}, mester: null };
     var wd = (lib && lib.world) || {};
     FRIEND_FLAGS.forEach(function (k) { if (wd[k]) state.flags[k] = true; });
@@ -544,8 +544,9 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     return '<svg viewBox="0 0 120 140" width="' + px + '" height="' + Math.round(px * 140 / 120) + '" role="img" aria-label="Figur: ' + esc(h.name || 'helt') + '">' + s + '</svg>';
   }
 
-  var prefs = { auto: false, big: false };
-  try { var sp = JSON.parse(store.get('lk-prefs') || '{}'); prefs.auto = !!sp.auto; prefs.big = !!sp.big; } catch (e) {}
+  /* bevaeg: bevægelsesudfordringer slået til. Mangler feltet (gamle indstillinger), er de slået til. */
+  var prefs = { auto: false, big: false, bevaeg: true };
+  try { var sp = JSON.parse(store.get('lk-prefs') || '{}'); prefs.auto = !!sp.auto; prefs.big = !!sp.big; prefs.bevaeg = sp.bevaeg !== false; } catch (e) {}
   function savePrefs() { store.set('lk-prefs', JSON.stringify(prefs)); }
   document.body.classList.toggle('big', prefs.big);
   var speech = { ok: 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window, words: [], text: '', choiceText: '', speaking: false, cur: null, noted: false };
@@ -605,7 +606,8 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   function toolsHtml() {
     return '<div class="tools">' +
       (speech.ok ? '<button type="button" class="chip" id="rd" aria-pressed="false">Læs højt</button><button type="button" class="chip" id="auto" aria-pressed="' + prefs.auto + '">Læs altid højt</button>' : '') +
-      '<button type="button" class="chip" id="big" aria-pressed="' + prefs.big + '">Stor skrift</button></div>' +
+      '<button type="button" class="chip" id="big" aria-pressed="' + prefs.big + '">Stor skrift</button>' +
+      '<button type="button" class="chip" id="bevaeg" aria-pressed="' + prefs.bevaeg + '">Bevægelse</button></div>' +
       '<p class="vnote" id="vnote" hidden>Din enhed har ingen dansk stemme, så oplæsningen kan lyde mærkelig. Du kan som regel hente en dansk stemme i enhedens indstillinger for tale.</p>';
   }
   function bindTools(choices, isEnd) {
@@ -617,6 +619,8 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       if (prefs.auto && !speech.speaking) speak(speech.text + speech.choiceText, true);
     };
     $('big').onclick = function () { prefs.big = !prefs.big; savePrefs(); document.body.classList.toggle('big', prefs.big); this.setAttribute('aria-pressed', prefs.big); };
+    /* Bevægelse til eller fra gælder fra næste skærm; valgene på denne skærm er allerede lavet. */
+    $('bevaeg').onclick = function () { prefs.bevaeg = !prefs.bevaeg; savePrefs(); this.setAttribute('aria-pressed', prefs.bevaeg); };
     if (prefs.auto && speech.ok) setTimeout(function () { speak(speech.text + speech.choiceText, true); }, 250);
   }
   var SPK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
@@ -887,6 +891,13 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     if (state.compNote) paras = paras.concat([state.compNote]);
     var choices = sc.dyn ? sc.dyn() : (sc.choices || (sc.next ? [{ label: 'Læs videre', to: sc.next, main: true }] : []));
     if (!sc.end) choices = choices.concat(magicChoices(id), maxChoices(id));
+    /* Med bevægelse slået fra er et bevægelsesvalg et almindeligt terningvalg med samme træk, sværhed og udfald. */
+    if (!prefs.bevaeg) choices = choices.map(function (c) {
+      if (!c.bevaeg) return c;
+      var bv = c.bevaeg, r = { stat: bv.stat, target: bv.target, win: bv.win, lose: bv.lose };
+      if (bv.flag) { r.flag = bv.flag; r.flagTxt = bv.flagTxt; }
+      return { label: c.label, key: c.key, roll: r };
+    });
     var isChoice = choices.length > 1;
     var askTxt = typeof sc.ask === 'function' ? sc.ask() : sc.ask;
     var gi = sc.gnist ? state.gnistList.filter(function (g) { return g.key === id; })[0] : null;
@@ -898,7 +909,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     if (sc.end) {
       if (state.players.length) h += '<div class="heroes">' + state.players.map(function (p) { return '<figure>' + avatar(p, 72) + '<figcaption>' + esc(p.name) + '</figcaption></figure>'; }).join('') + '</div>';
       h += awardHtml();
-      h += '<div class="stats">' + (state.story === 'lantern' ? '<span>Gnister: ' + (state.gnists ? joinNames(gnistNames()) : '0') + '</span>' : '') + (friendNames(state.flags).length ? '<span>Venner: ' + joinNames(friendNames(state.flags)) + '</span>' : '') + '<span>Terningkast: ' + state.rolls + '</span><span>Følgesvend: ' + esc(state.compName) + '</span></div>' +
+      h += '<div class="stats">' + (state.story === 'lantern' ? '<span>Gnister: ' + (state.gnists ? joinNames(gnistNames()) : '0') + '</span>' : '') + (friendNames(state.flags).length ? '<span>Venner: ' + joinNames(friendNames(state.flags)) + '</span>' : '') + '<span>Terningkast: ' + state.rolls + '</span>' + (state.bevaegelser > 0 ? '<span>Bevægelser: ' + state.bevaegelser + '</span>' : '') + '<span>Følgesvend: ' + esc(state.compName) + '</span></div>' +
         '<div class="choices"><button class="btn main" id="again" type="button">Læs eventyret igen</button>' + (erMaaned(state.story) ? '<button class="btn" id="back" type="button">Tilbage til historierne</button>' : nextStory(state.story) ? '<button class="btn" id="nextstory" type="button">Spil næste del: ' + nextStory(state.story).title + '</button>' : '') + '<button class="btn" id="team" type="button">Forbedre helte</button></div>';
     } else {
       h += magiBar() + '<p class="note" id="wrongnote" hidden></p><div class="choices" id="choices"></div>';
@@ -921,7 +932,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       b.type = 'button';
       b.className = 'btn' + (c.main ? ' main' : '') + (c.mag ? ' magic' : '') + (c.maxStat ? ' max' : '');
       var wr = state.wrong[c.key], lk = c.lock ? c.lock() : null;
-      b.innerHTML = '<span>' + c.label + '</span>' + (lk ? '<span class="tag lk">' + lk + '</span>' : c.mag ? '<span class="tag">✨ Magi</span>' : c.maxStat ? '<span class="tag">⭐ Mester</span>' : c.roll ? '<span class="tag">🎲 ' + c.roll.stat + '</span>' : '');
+      b.innerHTML = '<span>' + c.label + '</span>' + (lk ? '<span class="tag lk">' + lk + '</span>' : c.mag ? '<span class="tag">✨ Magi</span>' : c.maxStat ? '<span class="tag">⭐ Mester</span>' : c.roll ? '<span class="tag">🎲 ' + c.roll.stat + '</span>' : c.bevaeg ? '<span class="tag">🤸</span>' : '');
       if (wr || lk) b.disabled = true;
       if (lk) b.classList.add('locked');
       b.onclick = function () {
@@ -937,6 +948,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
           state.turn++; enter(c.to); return;
         }
         if (c.roll) { if (c.key) state.wrong[c.key] = true; return startRoll(c); }
+        if (c.bevaeg) { if (c.key) state.wrong[c.key] = true; return startMove(c); }
         if (c.wrong) { state.wrong[c.key] = true; b.disabled = true; var n = $('wrongnote'); n.innerHTML = c.wrong; n.hidden = false; return; }
         if (c.use) { state.usedG[c.use] = true; state.lastUse = c.use; }
         state.turn++;
@@ -1006,6 +1018,23 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       }, 900);
     };
     $('roll').onclick = rollOnce;
+  }
+
+  /* Bevægelsesudfordring: familien gør instruktionen og afgør selv, hvordan det gik. Samme udfald og tur som et kast,
+     men den tæller som en bevægelse, ikke et terningkast, og hverken fjer eller Lysskjold bruges. */
+  function startMove(c) {
+    var bv = c.bevaeg;
+    var who = state.players[state.turn % state.players.length] || { name: 'I' };
+    var box = $('choices');
+    box.innerHTML = '<div class="dicebox bevaeg">' +
+      '<div class="sum">' + bv.goer + '</div>' +
+      '<div class="sum">' + esc(who.name) + ' prøver, og alle må gerne være med</div>' +
+      '<button class="btn main" id="klarede" type="button" style="width:100%">Vi klarede det!</button>' +
+      '<button class="btn" id="vaklede" type="button" style="width:100%">Vi vaklede</button></div>';
+    function videre(to) { return function () { state.bevaegelser++; state.turn++; enter(to); }; }
+    $('klarede').onclick = videre(bv.win);
+    $('vaklede').onclick = videre(bv.lose);
+    if (prefs.auto) speak(plain(bv.goer), false);
   }
 
   /* Forhåndsvisningens eksempelhold: Asta og Bo med 2 i hvert træk og Bastian Bjørn. Gemmes aldrig. */

@@ -54,7 +54,7 @@ async function alleGemte(page) {
   return page.evaluate(() => { const o = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); o[k] = localStorage.getItem(k); } return o; });
 }
 
-// Tryk på det første valg, der kan trykkes på, og slå terningen, til slutskærmen.
+// Tryk på det første valg, der kan trykkes på, slå terningen eller klar bevægelsen, til slutskærmen.
 async function spilTilSlut(page) {
   for (let i = 0; i < 300; i++) {
     if (await page.$('.end')) return;
@@ -64,6 +64,7 @@ async function spilTilSlut(page) {
       await page.click('#roll');
       continue;
     }
+    if (await page.$('#klarede')) { await page.click('#klarede'); continue; } // en bevægelse: "Vi klarede det!"
     await page.locator('#choices .crow > .btn:not([disabled])').first().click();
   }
   throw new Error('Nåede ikke slutskærmen');
