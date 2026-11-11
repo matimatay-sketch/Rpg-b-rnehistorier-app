@@ -27,3 +27,12 @@ test('månedshistorierne i e2e-kataloget har billeder og er i orden', () => {
   const filer = ['tests/fixtures/stories-maaned/efteraar/historie.js', 'tests/fixtures/stories-maaned/juletraeet/historie.js'];
   assert.deepEqual(tjek(filer, { kraevBilleder: true }), []);
 });
+
+test('samme scene-id i to historier er en fejl', () => {
+  const f = tjek(['tests/fixtures/god.js', 'tests/fixtures/god.js']);
+  assert.deepEqual(f.map(x => x.scene + ': ' + x.besked), ['a: Scene-id findes også i historien god', 'b: Scene-id findes også i historien god', 'c: Scene-id findes også i historien god']);
+});
+test('en månedshistorie må ikke sætte et venne-flag', () => {
+  assert.match(beskeder('maaned-venneflag.js'), /En månedshistorie må ikke sætte venne-flaget "tutVen"/);
+  assert.doesNotMatch(beskeder('maaned-venneflag.js'), /eget/);
+});

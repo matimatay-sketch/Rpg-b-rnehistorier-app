@@ -82,5 +82,5 @@ Se `stories/lantern/historie.js` for et helt eksempel.
 
 ## Tjek
 
-- `node tools/tjek-historier.mjs` skal give `Ingen fejl`. Det tjekker, at alle valg fører til en scene, der findes, at hver scene har titel, tekst, spørgsmål og billede, at alle veje kan nå en slutning, og at der ikke er blindgyder.
-- `node --test 'tests/*.test.mjs'` og `node --test 'tests/e2e/*.test.cjs'` skal være grønne.
+- `node tools/tjek-historier.mjs` skal give `Ingen fejl`. Det tjekker, at alle valg fører til en scene, der findes, at hver scene har titel, tekst, spørgsmål og billede, at alle veje kan nå en slutning, at der ikke er blindgyder, at ingen scene-id findes i to historier, og at en månedshistorie ikke sætter et venne-flag.
+- `node --test 'tests/*.test.mjs'` og `node --test 'tests/e2e/*.test.cjs'` skal være grønne. E2e-testen `tests/e2e/maanedens.test.cjs` spiller alle månedshistorier i kataloget igennem i forhåndsvisningen.

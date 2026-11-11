@@ -157,13 +157,25 @@ function tjekHistorie(story, kit, saet, ctx, valg, fejl) {
 
 export function tjek(filer, valg = {}) {
   const fejl = [];
+  const ejer = {}; // scene-id -> historien, der først brugte det (motoren springer en historie over ved dobbelte id'er)
   for (const fil of filer) {
     let l;
     try { l = indlaesFil(fil, valg.kraevBilleder); } catch (e) {
       fejl.push({ historie: fil, scene: '', besked: 'Fejl i koden: ' + (e && e.message) });
       continue;
     }
-    for (const story of l.historier) tjekHistorie(story, l.kit, l.saet, l.ctx, valg, fejl);
+    for (const story of l.historier) {
+      tjekHistorie(story, l.kit, l.saet, l.ctx, valg, fejl);
+      const navn = story.id || '(uden id)';
+      Object.keys(story.scenes || {}).forEach(id => {
+        if (ejer[id]) fejl.push({ historie: navn, scene: id, besked: 'Scene-id findes også i historien ' + ejer[id] });
+        else ejer[id] = navn;
+        // En månedshistorie må læse vennerne fra sagaen, men aldrig sætte dem.
+        const flag = story.scenes[id] && story.scenes[id].flag;
+        if (story.type === 'maaned' && flag && l.kit.FRIEND_FLAGS.indexOf(flag) >= 0)
+          fejl.push({ historie: navn, scene: id, besked: 'En månedshistorie må ikke sætte venne-flaget "' + flag + '"' });
+      });
+    }
   }
   return fejl;
 }
