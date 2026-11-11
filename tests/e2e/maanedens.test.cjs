@@ -69,7 +69,7 @@ for (const id of ids) {
       page.on('console', m => { if (m.type() === 'error') fejl.push(m.text()); });
       await page.goto(server.base + 'index.html?preview=' + id);
       await page.waitForSelector('#stage h2');
-      assert.match(await page.textContent('#epi'), /^Månedens eventyr · /);
+      assert.match(await page.textContent('#epi'), /^(Månedens|Ugens) eventyr · /);
       assert.strictEqual(await page.getAttribute('#bevaeg', 'aria-pressed'), 'true');
       const { titler, bevaegelser } = await spilTilSlut(page, knap);
       assert.ok(titler.length >= 4, titler.join(' > '));
