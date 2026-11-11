@@ -1,6 +1,6 @@
 // Lanterneskoven: gør spillet til en app, der også virker uden internet.
 // Hæv versionen, når index.html, js/, art/ eller en historie ændres, så gamle filer ryddes op.
-const VERSION = 'lk-v10';
+const VERSION = 'lk-v11';
 const SHELL = [
   './',
   './index.html',
@@ -42,9 +42,11 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
 
   // Selve siden: prøv nettet først (så nye historier kommer med), ellers den gemte udgave.
+  // cache: 'no-cache' spørger altid serveren, så en kopi i browserens almindelige cache (GitHub Pages må gemme i
+  // 10 minutter) aldrig giver en gammel side sammen med de nye scripts nedenfor.
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req)
+      fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' })
         .then(res => { const copy = res.clone(); caches.open(VERSION).then(c => c.put('./index.html', copy)); return res; })
         .catch(() => caches.match('./index.html'))
     );
