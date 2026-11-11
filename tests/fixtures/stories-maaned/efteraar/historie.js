@@ -6,7 +6,7 @@ LK.addStory(function (k) {
       ef_start: { title: 'Bladene falder', flag: 'nusseVen', text: ['Bladene danser ned fra træerne.'], ask: 'Hvilken farve har bladene?', choices: [{ label: 'Saml blade', to: 'ef_bunke' }, { label: 'Hop i bladene', key: 'hop', bevaeg: { goer: 'Stå på ét ben og tæl til ti.', stat: 'Mod', target: 6, win: 'ef_hop', lose: 'ef_hopFejl' } }] },
       ef_hop: { title: 'Bladene flyver', text: ['Bladene flyver højt op i luften.'], ask: 'Hvor højt kan blade flyve?', next: 'ef_slut' },
       ef_hopFejl: { title: 'Bums i bunken', text: ['Hov! I lander på numsen i bladene og griner.'], ask: 'Hvad var det sjoveste?', choices: [{ label: 'Gå tilbage til træerne', to: 'ef_start' }] },
-      ef_bunke: { title: 'En stor bunke', text: ['Bunken bliver stor og blød.'], ask: 'Hvad gemmer sig i bunken?', next: 'ef_slut' },
+      ef_bunke: { title: 'En stor bunke', text: ['Bunken bliver stor og blød.'], ask: 'Hvad gemmer sig i bunken?', choices: [{ label: 'Læs videre', to: 'ef_slut', main: true }, { label: 'Kryb ind i bunken', lock: function () { return 'Kræver en bunke mere'; }, bevaeg: { goer: 'Kryb stille hen over gulvet.', stat: 'List', target: 6, win: 'ef_slut', lose: 'ef_slut' } }] },
       ef_slut: { title: 'Godnat, blade', text: ['Alle går glade hjem.'], ask: 'Hvad var det bedste?', end: true }
     },
     billeder: {

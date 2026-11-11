@@ -896,7 +896,9 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       if (!c.bevaeg) return c;
       var bv = c.bevaeg, r = { stat: bv.stat, target: bv.target, win: bv.win, lose: bv.lose };
       if (bv.flag) { r.flag = bv.flag; r.flagTxt = bv.flagTxt; }
-      return { label: c.label, key: c.key, roll: r };
+      var o = Object.assign({}, c, { roll: r });
+      delete o.bevaeg;
+      return o;
     });
     var isChoice = choices.length > 1;
     var askTxt = typeof sc.ask === 'function' ? sc.ask() : sc.ask;
@@ -1034,12 +1036,15 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     function videre(to) { return function () { state.bevaegelser++; state.turn++; enter(to); }; }
     $('klarede').onclick = videre(bv.win);
     $('vaklede').onclick = videre(bv.lose);
-    if (prefs.auto) speak(plain(bv.goer), false);
+    stopSpeak();
+    speech.text = plain(bv.goer); speech.choiceText = '';
+    if (prefs.auto) speak(speech.text, false);
   }
 
   /* Forhåndsvisningens eksempelhold: Asta og Bo med 2 i hvert træk og Bastian Bjørn. Gemmes aldrig. */
   function startPreview() {
     $('pvtag').hidden = false;
+    prefs.bevaeg = true; /* forhåndsvisningen viser altid bevægelserne, og gemmer ikke (se savePrefs) */
     var st = storyById(PREVIEW_ID);
     var helte = ['Asta', 'Bo'].map(function (navn, i) {
       var h = makeHero(i);

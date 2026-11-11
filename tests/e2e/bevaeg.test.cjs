@@ -184,3 +184,39 @@ test('slutskærmen har ingen Bevægelser-linje uden bevægelser', async () => {
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
+
+test('med bevægelse slået fra bevarer et bevægelsesvalg sine øvrige felter, fx lock', async () => {
+  for (const p of ['{"bevaeg":false}', undefined]) {
+    const { context, page, fejl } = await startEfteraar(standard(p));
+    await page.click('#choices .crow > .btn:has-text("Saml blade")');
+    const KRYB = '#choices .crow > .btn:has-text("Kryb ind i bunken")';
+    assert.strictEqual(await page.isDisabled(KRYB), true, 'lock skal bevares, prefs ' + p);
+    assert.match(await page.textContent('#choices'), /Kræver en bunke mere/);
+    assert.deepStrictEqual(fejl, []);
+    await context.close();
+  }
+});
+
+test('"Læs højt" i bevægelsesboksen læser instruktionen', async () => {
+  const { context, page, fejl } = await startEfteraar(standard());
+  await page.evaluate(() => {
+    window.__sagt = [];
+    speechSynthesis.speak = (u) => { window.__sagt.push(u.text); };
+    speechSynthesis.cancel = () => {};
+  });
+  await page.click(HOP);
+  await page.click('#rd');
+  assert.deepStrictEqual(await page.evaluate(() => window.__sagt), ['Stå på ét ben og tæl til ti.']);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('forhåndsvisningen viser bevægelsen, selv når Bevægelse er slået fra i de gemte indstillinger, og gemmer intet', async () => {
+  const { context, page, fejl } = await nySide({ 'lk-prefs': '{"bevaeg":false}' });
+  await page.goto(server.base + 'index.html?preview=efteraar&' + KATALOG);
+  await page.waitForSelector(HOP);
+  assert.strictEqual((await page.textContent(HOP + ' .tag')).trim(), '🤸');
+  assert.deepStrictEqual(await page.evaluate(() => window.__skrevet), []);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
