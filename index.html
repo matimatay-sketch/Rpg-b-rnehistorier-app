@@ -191,7 +191,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 /* Topbjælken: navnet og tandhjulet på forsiden; "‹ Forside" alle andre steder, hvor navnet stod. */
 .bar .barl { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
 .bar .barl .pvtag { margin-left: 0; }
-.tilbage { font-family: var(--font-display); font-weight: 600; font-size: 16px; color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 6px 16px 6px 12px; min-height: 44px; cursor: pointer; }
+.tilbage { white-space: nowrap; flex: none; font-family: var(--font-display); font-weight: 600; font-size: 16px; color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 6px 16px 6px 12px; min-height: 44px; cursor: pointer; }
 .tilbage:hover, .gear:hover { border-color: var(--ink); }
 .gear { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); color: var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; margin-left: auto; }
 .gear svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -220,6 +220,8 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 .helt:hover .ring { border-color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .helt .ring { transition: none; } }
 #helt-besked { margin-top: -4px; }
+#helt-besked:empty { margin: 0; }
+#ledsager-titel:focus:not(:focus-visible) { outline: none; }
 .gruppe { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; }
 .gruppe > h2 { font-size: 24px; font-weight: 800; }
 .gruppe > h2 span { display: block; font-family: var(--font-body); font-weight: 400; font-size: 15px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
@@ -268,6 +270,7 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
 .ledsager h2 { font-size: 24px; font-weight: 800; margin-top: 8px; }
 .sv { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .sv button { display: flex; flex-direction: column; text-align: left; border: 2px solid var(--line); background: var(--surface); border-radius: 16px; overflow: hidden; padding: 0; font: inherit; color: var(--ink); cursor: pointer; }
+.sv .bill { display: block; }
 .sv button svg { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; }
 .sv button[aria-pressed="true"] { border-color: var(--lantern); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lantern) 40%, transparent); }
 .sv button:hover { border-color: var(--ink); }
@@ -283,7 +286,9 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
 .topp { display: flex; flex-direction: column; gap: 10px; }
 .topp.fast { position: sticky; top: 0; z-index: 10; background: var(--bg); margin-inline: -16px; padding: 8px 16px; margin-block: -8px; }
 .bar { flex-wrap: nowrap; }
-#barr { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#barr { min-width: 0; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+#barr .spark { flex: none; }
+#epi, #epi-kort { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 #epi-kort { display: none; }
 @media (max-width: 560px) {
   #epi { display: none; }
@@ -496,6 +501,7 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
     return '';
   }
   function fresh(keep) {
+    if (state) { clearTimeout(state.rollTimer); clearInterval(state.rollIv); }
     state = { players: keep ? keep.players : [], comp: keep ? keep.comp : null, compName: '', compStat: '',
       valgt: false, visited: [], gnists: 0, feather: false, featherUsed: false, turn: 0, rolls: 0, bevaegelser: 0, wrong: {}, scene: null, awarded: false, flags: {}, remembered: [], story: (keep && keep.story) || 'lantern', gnistList: [], usedG: {}, lastUse: '',
       gnisterIn: ((lib && lib.world && lib.world.gnistNavne) || []).slice(0, 4), magicUsed: {}, magicNote: '', maxUsed: {}, mester: null };
@@ -926,7 +932,7 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
   }
   function stopHtml(s, i) {
     var kl = 'st' + (i % 2 === 0 ? ' h' : '') + (s.kommer ? ' slukket' : '') + (s.nu ? ' nu' : '');
-    var tx = '<span class="tx"><b>' + (s.nr ? s.nr + '. ' : '') + s.titel + '</b> <small>' + s.linje + '</small></span>';
+    var tx = '<span class="tx"><b>' + (s.nr ? s.nr + '. ' : '') + esc(s.titel) + '</b> <small>' + s.linje + '</small></span>';
     if (s.kommer) return '<div class="' + kl + '" data-kommer="' + s.id + '">' + lygte(false) + tx + '</div>';
     return '<button type="button" class="' + kl + '" data-story="' + s.id + '">' + lygte(true, s.nu) + tx + '</button>';
   }
@@ -952,7 +958,7 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
 
   function heltKnap(h) {
     var med = !!lib.play[h.id];
-    return '<button type="button" class="helt' + (med ? '' : ' fra') + '" data-helt="' + h.id + '" aria-pressed="' + med + '"><span class="ring">' + avatar(h, 58) + '</span> <span class="hn">' + esc(h.name) + '</span></button>';
+    return '<button type="button" class="helt' + (med ? '' : ' fra') + '" data-helt="' + h.id + '" aria-pressed="' + med + '"><span class="ring" aria-hidden="true">' + avatar(h, 58) + '</span> <span class="hn">' + esc(h.name) + '</span></button>';
   }
   function renderHome() {
     stopSpeak();
@@ -961,9 +967,9 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
     if (lib.heroes.length) h += '<p class="helte-tekst">Med i aften. Tryk for at slå til og fra.</p>';
     h += '<div class="helte2">' + lib.heroes.map(heltKnap).join('') +
       '<button type="button" class="helt ny" id="helte"><span class="ring" aria-hidden="true">+</span> <span class="hn">' + (lib.heroes.length ? 'Helte' : 'Lav jeres første helt') + '</span></button></div>' +
-      '<p class="note" id="helt-besked" role="status" hidden></p>';
+      '<p class="note" id="helt-besked" role="status"></p>';
     h += '<div id="stien">' + (STORIES.length ? stiGrupper().map(function (g) {
-      return '<section class="gruppe"><h2>' + esc(g.titel) + ' <span>' + g.linje + '</span></h2><div class="sti2">' +
+      return '<section class="gruppe"><h2>' + esc(g.titel) + ' <span>' + esc(g.linje) + '</span></h2><div class="sti2">' +
         '<svg class="vej" aria-hidden="true" preserveAspectRatio="none"><path d="M0 0" fill="none" stroke="var(--line)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/></svg>' +
         g.stop.map(stopHtml).join('') + '</div></section>';
     }).join('') : '<p class="tom">Der er ingen historier at vise lige nu. Prøv igen senere, når der er internet.</p>') + '</div>';
@@ -972,8 +978,8 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
       b.onclick = function () {
         var id = b.getAttribute('data-helt'), besked = $('helt-besked');
         var antal = lib.heroes.filter(function (x) { return lib.play[x.id]; }).length;
-        if (!lib.play[id] && antal >= 4) { besked.textContent = 'Der kan højst være fire helte med ad gangen.'; besked.hidden = false; return; }
-        lib.play[id] = !lib.play[id]; saveLib(); besked.hidden = true;
+        if (!lib.play[id] && antal >= 4) { besked.textContent = 'Der kan højst være fire helte med ad gangen.'; return; }
+        lib.play[id] = !lib.play[id]; saveLib(); besked.textContent = '';
         b.setAttribute('aria-pressed', String(lib.play[id])); b.classList.toggle('fra', !lib.play[id]);
       };
     });
@@ -986,13 +992,13 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
 
   /* Arket: historiens billede, hvor den hører til, titel, kort beskrivelse, "Start eventyret" og "Luk".
      Fokus flyttes ind i arket og tilbage til lanternen, når det lukkes; resten af siden er inaktiv imens. */
-  var arkFra = null;
+  var arkFra = null, stiForaeldet = false;
   function aabnArk(id, knap) {
     var st = storyById(id);
     if (!st) return;
     arkFra = knap || null;
     $('ark').innerHTML = '<div class="greb" aria-hidden="true"></div>' + artHtml(st.start) +
-      '<div class="ak"><p class="ark-sted">' + stedTekst(id) + '</p><h2 id="ark-titel">' + st.title + '</h2><p class="blurb">' + st.blurb + '</p>' +
+      '<div class="ak"><p class="ark-sted">' + esc(stedTekst(id)) + '</p><h2 id="ark-titel">' + esc(st.title) + '</h2><p class="blurb">' + esc(st.blurb) + '</p>' +
       '<button type="button" class="btn lys" id="ark-start">Start eventyret</button><button type="button" class="luk" id="ark-luk">Luk</button></div>';
     $('ark-bag').hidden = false;
     document.querySelector('.wrap').inert = true;
@@ -1007,11 +1013,20 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
     $('ark').innerHTML = '';
     document.querySelector('.wrap').inert = false;
     document.documentElement.style.overflow = '';
+    if (!stille && stiForaeldet && view === 'home') {
+      var fra = arkFra && arkFra.getAttribute('data-story');
+      stiForaeldet = false; arkFra = null;
+      renderHome();
+      var b = fra && stage.querySelector('button.st[data-story="' + fra + '"]');
+      if (b) b.focus();
+      return;
+    }
     if (!stille && arkFra && document.contains(arkFra)) arkFra.focus();
     arkFra = null;
   }
   $('ark-dim').onclick = function () { lukArk(); };
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !$('stopbox').hidden) { e.preventDefault(); $('stop-nej').click(); return; }
     if ($('ark-bag').hidden) return;
     if (e.key === 'Escape') { e.preventDefault(); lukArk(); return; }
     if (e.key !== 'Tab') return;
@@ -1035,13 +1050,13 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
     setView('ledsager');
     var spillere = lib.heroes.filter(function (h) { return lib.play[h.id]; });
     stage.innerHTML = '<div class="valgt-hist"><div class="mini">' + (ART[st.start] && LK.art ? (function () { try { return LK.art.scene(ART[st.start]); } catch (e) { return ''; } })() : '') + '</div>' +
-      '<div><small>' + stedTekst(st.id) + '</small><b>' + st.title + '</b></div></div>' +
+      '<div><small>' + esc(stedTekst(st.id)) + '</small><b>' + esc(st.title) + '</b></div></div>' +
       '<h2 id="ledsager-titel" tabindex="-1">Hvem tager I med?</h2>' +
       '<div class="sv">' + COMPS.map(function (c) {
-        return '<button type="button" data-comp="' + c.id + '" aria-pressed="' + (setup.comp === c.id) + '">' + foelgesvendBillede(c) +
+        return '<button type="button" data-comp="' + c.id + '" aria-pressed="' + (setup.comp === c.id) + '"><span class="bill" aria-hidden="true">' + foelgesvendBillede(c) + '</span>' +
           '<span class="t"><b>' + c.name + '</b><small>' + c.desc + '</small><span class="plus">+1 i ' + c.stat + '</span></span></button>';
       }).join('') + '</div>' +
-      (spillere.length ? '' : '<p class="note" id="ingen-helte">Vælg mindst én helt på forsiden</p>') +
+      (spillere.length ? '' : '<p class="note" id="ingen-helte">' + (lib.heroes.length ? 'Vælg mindst én helt på forsiden' : 'Lav jeres første helt på forsiden') + '</p>') +
       '<button type="button" class="btn lys" id="afsted"></button>';
     function opdater() {
       var c = COMPS.filter(function (x) { return x.id === setup.comp; })[0];
@@ -1207,8 +1222,15 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
     $('save').onclick = function () {
       h.name = h.name.trim();
       if (!h.name) { $('err').hidden = false; return; }
-      if (setup.isNew) { lib.heroes.push(h); lib.play[h.id] = true; }
-      saveLib(); setup.view = 'lib'; renderSetup();
+      var ny = setup.isNew;
+      if (ny) {
+        var med = lib.heroes.filter(function (x) { return lib.play[x.id]; }).length;
+        lib.heroes.push(h);
+        if (med < 4) lib.play[h.id] = true;
+      }
+      saveLib(); setup.view = 'lib';
+      /* En ny helt fører til forsiden, hvor eventyret begynder; en rettet helt tilbage til heltelisten. */
+      if (ny) { renderHome(); tilToppen(); } else renderSetup();
     };
     if ($('cancel')) $('cancel').onclick = function () {
       if (!setup.isNew && setup.orig) { var o = JSON.parse(setup.orig); for (var k in o) h[k] = o[k]; }
@@ -1409,15 +1431,19 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
       '<div class="sum" id="res"></div>' +
       '<button class="btn main" id="roll" type="button" style="width:100%">Slå terningen</button></div>';
     var rollOnce = function () {
-      var die = $('die'), btn = $('roll');
+      var die = $('die'), btn = $('roll'), mit = state;
       var old = $('shield'); if (old) old.remove();
       btn.disabled = true;
       var fe = canFeather && !state.featherUsed && $('fe').checked;
       if (canFeather) $('fe').disabled = true;
       die.classList.add('rolling');
       var t = setInterval(function () { die.textContent = 1 + Math.floor(Math.random() * 6); }, 70);
-      setTimeout(function () {
+      state.rollIv = t;
+      /* Stoppes historien, mens terningen ruller, ryddes timerne i fresh; tjekket her er en ekstra sikring. */
+      state.rollTimer = setTimeout(function () {
         clearInterval(t);
+        mit.rollTimer = mit.rollIv = null;
+        if (state !== mit || !document.contains(die)) return;
         die.classList.remove('rolling');
         var d = 1 + Math.floor(Math.random() * 6);
         die.textContent = d;
@@ -1551,7 +1577,9 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState !== 'visible' || PREVIEW_ID || henter || !hentetDato || LK.datoStreng(new Date()) === hentetDato) return;
     hentHistorier(function () {
-      if (view === 'home') renderHome();
+      /* Står arket åbent, tegnes forsiden først igen, når det lukkes (se lukArk). */
+      if (view === 'home' && !$('ark-bag').hidden) stiForaeldet = true;
+      else if (view === 'home') renderHome();
     });
   });
 })();

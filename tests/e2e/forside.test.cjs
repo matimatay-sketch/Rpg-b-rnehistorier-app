@@ -728,6 +728,162 @@ test('slutskærmens "Tilbage til historierne" fører til forsiden', async () => 
   await context.close();
 });
 
+/* ---------- Rettelser efter gennemsynet ---------- */
+
+test('stoppes historien, mens terningen ruller, sker der ingen fejl, og kastet tæller ikke med', async () => {
+  const { context, page, fejl } = await nySide(standard({}, { 'lk-prefs': '{"bevaeg":false}' }), '2026-11-11T10:00:00');
+  // Med Playwrights ur kommer en fejl i en timer som en konsolfejl, ikke som en sidefejl.
+  page.on('console', m => { if (m.type() === 'error') fejl.push(m.text()); });
+  await page.goto(server.base + 'index.html?' + MAANED);
+  await startFraForsiden(page, 'efteraar');
+  await page.click(HOP);
+  await page.click('#roll');
+  await page.click('#forside');
+  await page.click('#stop-ja');
+  await page.waitForSelector('#stien');
+  await page.waitForTimeout(1300);
+  assert.deepStrictEqual(fejl, []);
+  // En ny historie starter med et rent kast-tal.
+  await startFraForsiden(page, 'efteraar');
+  await page.click(HOP);
+  await page.click('#roll');
+  await page.waitForFunction(() => { const b = document.getElementById('roll'); return b && b.textContent === 'Læs videre' && !b.disabled; });
+  await page.click('#roll');
+  await spilTilSlut(page);
+  assert.match(await tekst(page, '#stage .stats'), /Terningkast: 1(?!\d)/);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('telefonens overskriftslinje med stor skrift på 320 px: "‹ Forside" på én linje, og gnisterne kan ses', async () => {
+  const { context, page, fejl } = await nySide(standard({}, { 'lk-prefs': '{"big":true}' }), '2026-11-11T10:00:00', null, { viewport: { width: 320, height: 640 } });
+  await page.goto(server.base + 'index.html');
+  await startFraForsiden(page, '2026-11-pjuske-1');
+  const m = await page.evaluate(() => {
+    const f = document.getElementById('forside').getBoundingClientRect(), barr = document.getElementById('barr').getBoundingClientRect();
+    const gnister = [...document.querySelectorAll('#spark i')].map(i => i.getBoundingClientRect());
+    return { forsideH: f.height, gnisterInde: gnister.length === 4 && gnister.every(g => g.width > 0 && g.right <= barr.right + 1 && g.right <= window.innerWidth) };
+  });
+  assert.ok(m.forsideH <= 48, JSON.stringify(m));
+  assert.strictEqual(m.gnisterInde, true, JSON.stringify(m));
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('den første helt: efter "Gem helt" står familien på forsiden med helten valgt', async () => {
+  const { context, page, fejl } = await nySide({ 'lk-welcomed': '1' }, '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await page.click('#helte');
+  await page.fill('#hn', 'Ida');
+  await page.click('#save');
+  await page.waitForSelector('#stien');
+  assert.deepStrictEqual(await page.$$eval('.helt[data-helt]', l => l.map(b => [b.textContent.trim(), b.getAttribute('aria-pressed')])), [['Ida', 'true']]);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('en ny helt slås ikke til, når fire allerede er med', async () => {
+  const { context, page, fejl } = await nySide({ 'lk-heroes': mange({ h1: true, h2: true, h3: true, h4: true }), 'lk-welcomed': '1' }, '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await tilHelte(page);
+  await page.click('#newh');
+  await page.fill('#hn', 'Nora');
+  await page.click('#save');
+  await page.waitForSelector('#stien');
+  const lib = JSON.parse(await gemt(page, 'lk-heroes'));
+  const ny = lib.heroes.find(h => h.name === 'Nora');
+  assert.ok(!lib.play[ny.id], JSON.stringify(lib.play));
+  assert.strictEqual(Object.values(lib.play).filter(Boolean).length, 4);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('uden nogen helte siger følgesvend-skærmen "Lav jeres første helt på forsiden"', async () => {
+  const { context, page, fejl } = await nySide({ 'lk-welcomed': '1' }, '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await tilFoelgesvend(page, 'lantern');
+  assert.strictEqual(await tekst(page, '#ingen-helte'), 'Lav jeres første helt på forsiden');
+  assert.strictEqual(await page.isDisabled('#afsted'), true);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('heltene og følgesvendene hedder kun deres navn; billederne er skjult for skærmlæsere', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await page.waitForSelector('#stien');
+  const navn = async (sel) => (await page.locator(sel).ariaSnapshot()).replace(/\s+/g, ' ');
+  assert.match(await navn('.helt[data-helt="h1"]'), /^- button "Kaj" \[pressed\]$/);
+  await tilFoelgesvend(page, 'lantern');
+  assert.match(await navn('.sv [data-comp="raev"]'), /^- button "Rikke Ræv Snedig, hurtig og svær at narre \+1 i List"/);
+  assert.doesNotMatch(await navn('.sv [data-comp="raev"]'), /img/);
+  // Overskriften får fokus uden en synlig fokusring.
+  assert.strictEqual(await page.evaluate(() => document.activeElement.id), 'ledsager-titel');
+  assert.strictEqual(await page.$eval('#ledsager-titel', h => getComputedStyle(h).outlineStyle), 'none');
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('beskeden om fire helte står i en statuslinje, der bliver i siden; Escape i stop-spørgsmålet er "Bliv i historien"', async () => {
+  const { context, page, fejl } = await nySide({ 'lk-heroes': mange({ h1: true, h2: true, h3: true, h4: true }), 'lk-welcomed': '1' }, '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html?' + MAANED);
+  await page.waitForSelector('#stien');
+  const foer = await page.$('#helt-besked');
+  assert.ok(foer, 'statuslinjen findes fra starten');
+  assert.strictEqual(await page.$eval('#helt-besked', e => e.hidden || getComputedStyle(e).display === 'none'), false);
+  await page.click('.helt[data-helt="h5"]');
+  assert.strictEqual(await tekst(page, '#helt-besked'), 'Der kan højst være fire helte med ad gangen.');
+  assert.strictEqual(await page.evaluate(e => e.isConnected, foer), true);
+  await page.click('.helt[data-helt="h1"]');
+  assert.strictEqual(await tekst(page, '#helt-besked'), '');
+  await startFraForsiden(page, 'efteraar');
+  await page.click(HOP);
+  await page.click('#forside');
+  assert.strictEqual(await page.isVisible('#stopbox'), true);
+  await page.keyboard.press('Escape');
+  assert.strictEqual(await page.isVisible('#stopbox'), false);
+  assert.strictEqual(await tekst(page, '#stage h2'), 'Bladene falder');
+  assert.strictEqual(await page.evaluate(() => document.activeElement.id), 'forside');
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('vågner appen på en ny dato, mens arket er åbent, bliver arket stående med fokus', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2099-12-17T23:59:00');
+  await page.goto(server.base + 'index.html?' + UGE);
+  await aabnHistorie(page, 'sti1');
+  await context.clock.setFixedTime(new Date('2099-12-18T07:30:00'));
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  await page.waitForFunction(() => document.querySelectorAll('script[src$="sti2/historie.js"]').length > 1);
+  await page.waitForTimeout(300);
+  assert.strictEqual(await page.isVisible('#ark'), true);
+  assert.strictEqual(await fokusI(page, '#ark'), true);
+  await page.click('#ark-luk');
+  // Stien er tegnet igen med det nye kapitel, når arket lukkes.
+  await page.waitForSelector('#stien .st[data-story="sti2"]');
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('titler og beskrivelser med < og & vises som tekst', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
+  await page.route('**/stories-maaned/efteraar/historie.js', r => r.fulfill({
+    status: 200, contentType: 'text/javascript',
+    body: "LK.addStory(function (k) { return { id: 'efteraar', title: 'Ræv & <b>Mus</b>', tag: 'x', blurb: 'A < B & <i>C</i>', start: 'ef_a', scenes: { ef_a: { title: 'A', text: ['a'], ask: 'a?', end: true } } }; });"
+  }));
+  await page.goto(server.base + 'index.html?' + MAANED);
+  await page.waitForSelector('#stien .st[data-story="efteraar"]');
+  assert.strictEqual(!!(await page.$('#stien b b')), false, 'titlen må ikke blive til HTML');
+  assert.match(await tekst(page, '#stien .st[data-story="efteraar"]'), /Ræv & <b>Mus<\/b>/);
+  await aabnHistorie(page, 'efteraar');
+  assert.strictEqual(await tekst(page, '#ark h2'), 'Ræv & <b>Mus</b>');
+  assert.match(await tekst(page, '#ark .blurb'), /A < B & <i>C<\/i>/);
+  await page.click('#ark-start');
+  assert.strictEqual(await tekst(page, '#stage .valgt-hist b'), 'Ræv & <b>Mus</b>');
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
 /* ---------- Forhåndsvisning ---------- */
 
 test('forhåndsvisningen starter stadig i historien, og "‹ Forside" fører til forsiden uden at gemme noget', async () => {
