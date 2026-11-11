@@ -7,6 +7,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { chromium } = require('playwright');
 const { startServer } = require('../helpers/server.cjs');
+const { tilOpsaetning } = require('../helpers/forside.cjs');
 
 const rod = path.resolve(__dirname, '../..');
 const SAGA = ['lantern', 'maane', 'vind', 'fest'];
@@ -104,10 +105,12 @@ test('en kommende månedshistorie, som appen har hentet, åbner på udgivelsesda
   await page.goto(server.base + 'index.html');
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
   await page.reload(); // nu styrer service workeren siden
+  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), SAGA);
   await iCachen(page, JUL_FIL);
   await context.clock.setFixedTime(new Date('2026-12-04T12:00:00'));
   await udenNet(context, page);
+  await tilOpsaetning(page);
   assert.ok(listen('2026-12-04T12:00:00').includes(JUL));
   assert.deepStrictEqual(await historieIds(page), listen('2026-12-04T12:00:00'));
   await spilJulestjernen(page);
@@ -120,9 +123,11 @@ test('en familie, der først åbner appen efter udgivelsen, kan spille månedshi
   await page.goto(server.base + 'index.html'); // første besøg: service workeren styrer ikke siden endnu
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
   assert.ok(listen('2026-12-05T12:00:00').includes(JUL));
+  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), listen('2026-12-05T12:00:00'));
   await iCachen(page, JUL_FIL);
   await udenNet(context, page);
+  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), listen('2026-12-05T12:00:00'));
   await spilJulestjernen(page);
   assert.deepStrictEqual(fejl, []);
@@ -139,6 +144,7 @@ test('en ny udgave af en historie vises ved næste besøg, selvom service worker
     await page.goto(egen.base + 'index.html');
     await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
     await page.reload();
+    await tilOpsaetning(page);
     await historieIds(page);
     assert.strictEqual(await titel(), 'Lanterneskoven');
     const fil = path.join(mappe, 'stories/lantern/historie.js');
@@ -147,6 +153,7 @@ test('en ny udgave af en historie vises ved næste besøg, selvom service worker
     const senere = new Date(Date.now() + 5000);
     fs.utimesSync(fil, senere, senere);
     await page.reload();
+    await tilOpsaetning(page);
     await historieIds(page);
     assert.strictEqual(await titel(), 'Den nye Lanterneskov');
     assert.deepStrictEqual(fejl, []);
@@ -177,6 +184,7 @@ test('?katalog= virker kun på testmaskinen, ikke fra en rigtig adresse', async 
     return r.fulfill({ status: 200, contentType: type, body: fs.readFileSync(sti) });
   });
   await page.goto('http://lanterne.test/index.html?katalog=tests/fixtures/stories-maaned/katalog.js');
+  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), SAGA);
   assert.deepStrictEqual(fejl, []);
   await context.close();
@@ -185,6 +193,7 @@ test('?katalog= virker kun på testmaskinen, ikke fra en rigtig adresse', async 
 test('en app, der vågner på en ny dato, viser den nye månedshistorie', async () => {
   const { context, page, fejl } = await nySide('2026-12-03T23:58:00', false);
   await page.goto(server.base + 'index.html');
+  await tilOpsaetning(page);
   assert.ok(!listen('2026-12-03T23:58:00').includes(JUL));
   assert.deepStrictEqual(await historieIds(page), listen('2026-12-03T23:58:00'));
   await context.clock.setFixedTime(new Date('2026-12-04T07:30:00'));
@@ -198,6 +207,7 @@ test('en app, der vågner på en ny dato, viser den nye månedshistorie', async 
 test('en ny dato midt i en historie afbryder ikke historien', async () => {
   const { context, page, fejl } = await nySide('2026-12-03T23:58:00', false);
   await page.goto(server.base + 'index.html');
+  await tilOpsaetning(page);
   await historieIds(page);
   await page.check('input[name=story][value="lantern"]');
   await page.check('input[name=comp][value="raev"]');

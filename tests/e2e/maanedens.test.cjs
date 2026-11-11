@@ -70,13 +70,16 @@ for (const id of ids) {
       await page.goto(server.base + 'index.html?preview=' + id);
       await page.waitForSelector('#stage h2');
       assert.match(await page.textContent('#epi'), /^(Månedens|Ugens) eventyr · /);
-      assert.strictEqual(await page.getAttribute('#bevaeg', 'aria-pressed'), 'true');
       const { titler, bevaegelser } = await spilTilSlut(page, knap);
       assert.ok(titler.length >= 4, titler.join(' > '));
       assert.ok(bevaegelser >= 1, 'ingen bevægelser mødt: ' + titler.join(' > '));
       assert.ok(await page.isVisible('#stage .end'));
       assert.ok(await page.$('#stage figure.scene-art svg'), 'intet billede på slutskærmen');
       assert.ok((await page.$$eval('#stage .choices button', l => l.map(b => b.textContent))).includes('Tilbage til historierne'));
+      // Forhåndsvisningen viser altid bevægelserne: Bevægelse står til i indstillingerne.
+      await page.click('#forside');
+      await page.click('#indst');
+      assert.strictEqual(await page.getAttribute('#bevaeg', 'aria-pressed'), 'true');
       assert.deepStrictEqual(fejl, []);
       await context.close();
     });
