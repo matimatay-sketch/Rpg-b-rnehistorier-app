@@ -64,6 +64,7 @@ Se `stories/lantern/historie.js` for et helt eksempel.
 ## Regler for månedshistorier
 
 - `type: 'maaned'` i kataloget og `udgives: 'ÅÅÅÅ-MM-01'`, den 1. i den måned, historien er til.
+- Der laves højst én historie pr. måned. Har `stories/katalog.js` på `main` allerede en historie til den kommende måned (måneden efter dagens dato), laves der ingen ny.
 - Historiens id er mappens navn, fx `2026-12-julestjernen`, så det aldrig støder sammen med en anden historie.
 - **Scene-id'er skal være unikke på tværs af alle historier.** Giv alle scener et kort præfiks for historien, fx `snStart`, `snHub`, `snBakkeOk`.
 - En gennemført månedshistorie tæller som et eventyr, så heltene stiger i level.

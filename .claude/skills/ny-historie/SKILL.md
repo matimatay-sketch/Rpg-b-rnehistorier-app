@@ -13,7 +13,8 @@ Opskriften på en ny månedshistorie: én selvstændig, illustreret historie, so
 
 1. **Er sidste måneds historie godkendt?** Søg efter åbne pull requests med "Månedens historie" i titlen (GitHub-værktøjerne, fx `list_pull_requests`, eller `gh pr list --search "Månedens historie in:title" --state open`).
    - Findes der en, så lav **ikke** en ny historie. Skriv en kort, venlig påmindelse som kommentar på den åbne pull request, fx: "Hej! Månedens historie venter stadig på at blive læst og godkendt. Spil den fra linket i beskrivelsen, og merge, når den er klar. Skriv en kommentar her, hvis noget skal rettes." Stop så.
-2. Find måneden: historien er til **den kommende måned**. Kører du den 15. november 2026, er det december 2026, og `udgives` er `'2026-12-01'`.
+2. **Har den kommende måned allerede en historie?** Historien er til **den kommende måned**, dvs. måneden efter dagens dato. Kører du den 15. november 2026, er det december 2026, og `udgives` er `'2026-12-01'`. Hent den nyeste `main` (`git fetch origin main`), og læs `stories/katalog.js` på `origin/main` (`git show origin/main:stories/katalog.js`).
+   - Står der allerede en historie med `udgives` den 1. i den kommende måned, så stop uden at gøre noget: ingen gren, ingen pull request og ingen kommentar.
 3. Lav en gren fra den nyeste `main`: `claude/maanedens-historie-<ÅÅÅÅ-MM>`, fx `claude/maanedens-historie-2026-12`.
 
 ## Trin
