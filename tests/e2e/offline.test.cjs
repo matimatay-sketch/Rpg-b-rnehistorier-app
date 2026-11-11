@@ -7,7 +7,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { chromium } = require('playwright');
 const { startServer } = require('../helpers/server.cjs');
-const { tilOpsaetning } = require('../helpers/forside.cjs');
+const { historieIds, startHistorie, aabnHistorie } = require('../helpers/forside.cjs');
 
 const rod = path.resolve(__dirname, '../..');
 const SAGA = ['lantern', 'maane', 'vind', 'fest'];
@@ -20,7 +20,22 @@ function listen(dato) {
   const ctx = {}; ctx.self = ctx; ctx.window = ctx;
   vm.createContext(ctx);
   for (const fil of ['js/katalog.js', 'stories/katalog.js']) vm.runInContext(fs.readFileSync(path.join(rod, fil), 'utf8'), ctx, { filename: fil });
-  return Array.from(ctx.LK.synlige(ctx.LK.katalogPoster, new Date(dato)), e => e.id); // en almindelig liste, ikke en fra vm-konteksten
+  return stien(Array.from(ctx.LK.synlige(ctx.LK.katalogPoster, new Date(dato)))); // en almindelig liste, ikke en fra vm-konteksten
+}
+// Lanternestiens rækkefølge: serierne (nyeste først, kapitlerne i rækkefølge), månedshistorier uden serie, så sagaen.
+function stien(poster) {
+  const serier = new Map(), enkelte = [], saga = [];
+  for (const e of poster) {
+    if (e.type !== 'maaned') saga.push(e.id);
+    else if (!e.serie) enkelte.push(e.id);
+    else {
+      if (!serier.has(e.serie.id)) serier.set(e.serie.id, []);
+      serier.get(e.serie.id).push(e);
+    }
+  }
+  const nyeste = l => l.reduce((m, e) => (e.udgives > m ? e.udgives : m), '');
+  const grupper = [...serier.values()].sort((a, b) => (nyeste(a) < nyeste(b) ? 1 : nyeste(a) > nyeste(b) ? -1 : 0));
+  return grupper.flatMap(g => g.sort((a, b) => a.kapitel - b.kapitel).map(e => e.id)).concat(enkelte, saga);
 }
 
 let server, browser;
@@ -51,11 +66,6 @@ async function nySide(dato, sw) {
   const fejl = [];
   page.on('pageerror', e => fejl.push(e.message));
   return { context, page, fejl };
-}
-
-async function historieIds(page) {
-  await page.waitForSelector('input[name=story]');
-  return page.$$eval('input[name=story]', l => l.map(i => i.value));
 }
 
 // Vent (højst et par sekunder), til service workerens gemte filer har `sti`.
@@ -92,9 +102,7 @@ async function spilTilSlut(page) {
 }
 
 async function spilJulestjernen(page) {
-  await page.check('input[name=story][value="' + JUL + '"]');
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  await startHistorie(page, JUL, 'raev');
   assert.strictEqual((await page.textContent('#epi')).trim(), 'Ugens eventyr · Julestjernen · kapitel 1 af 4');
   await spilTilSlut(page);
   assert.ok(await page.isVisible('#stage .end'));
@@ -105,12 +113,10 @@ test('en kommende månedshistorie, som appen har hentet, åbner på udgivelsesda
   await page.goto(server.base + 'index.html');
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
   await page.reload(); // nu styrer service workeren siden
-  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), SAGA);
   await iCachen(page, JUL_FIL);
   await context.clock.setFixedTime(new Date('2026-12-04T12:00:00'));
   await udenNet(context, page);
-  await tilOpsaetning(page);
   assert.ok(listen('2026-12-04T12:00:00').includes(JUL));
   assert.deepStrictEqual(await historieIds(page), listen('2026-12-04T12:00:00'));
   await spilJulestjernen(page);
@@ -123,11 +129,9 @@ test('en familie, der først åbner appen efter udgivelsen, kan spille månedshi
   await page.goto(server.base + 'index.html'); // første besøg: service workeren styrer ikke siden endnu
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
   assert.ok(listen('2026-12-05T12:00:00').includes(JUL));
-  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), listen('2026-12-05T12:00:00'));
   await iCachen(page, JUL_FIL);
   await udenNet(context, page);
-  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), listen('2026-12-05T12:00:00'));
   await spilJulestjernen(page);
   assert.deepStrictEqual(fejl, []);
@@ -140,11 +144,10 @@ test('en ny udgave af en historie vises ved næste besøg, selvom service worker
   const egen = await startServer(mappe);
   try {
     const { context, page, fejl } = await nySide('2026-11-25T12:00:00', true);
-    const titel = () => page.textContent('label.comp:has(input[value="lantern"]) .nm');
+    const titel = async () => { await aabnHistorie(page, 'lantern'); const t = await page.textContent('#ark h2'); await page.click('#ark-luk'); return t; };
     await page.goto(egen.base + 'index.html');
     await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
     await page.reload();
-    await tilOpsaetning(page);
     await historieIds(page);
     assert.strictEqual(await titel(), 'Lanterneskoven');
     const fil = path.join(mappe, 'stories/lantern/historie.js');
@@ -153,7 +156,6 @@ test('en ny udgave af en historie vises ved næste besøg, selvom service worker
     const senere = new Date(Date.now() + 5000);
     fs.utimesSync(fil, senere, senere);
     await page.reload();
-    await tilOpsaetning(page);
     await historieIds(page);
     assert.strictEqual(await titel(), 'Den nye Lanterneskov');
     assert.deepStrictEqual(fejl, []);
@@ -184,7 +186,6 @@ test('?katalog= virker kun på testmaskinen, ikke fra en rigtig adresse', async 
     return r.fulfill({ status: 200, contentType: type, body: fs.readFileSync(sti) });
   });
   await page.goto('http://lanterne.test/index.html?katalog=tests/fixtures/stories-maaned/katalog.js');
-  await tilOpsaetning(page);
   assert.deepStrictEqual(await historieIds(page), SAGA);
   assert.deepStrictEqual(fejl, []);
   await context.close();
@@ -193,12 +194,11 @@ test('?katalog= virker kun på testmaskinen, ikke fra en rigtig adresse', async 
 test('en app, der vågner på en ny dato, viser den nye månedshistorie', async () => {
   const { context, page, fejl } = await nySide('2026-12-03T23:58:00', false);
   await page.goto(server.base + 'index.html');
-  await tilOpsaetning(page);
   assert.ok(!listen('2026-12-03T23:58:00').includes(JUL));
   assert.deepStrictEqual(await historieIds(page), listen('2026-12-03T23:58:00'));
   await context.clock.setFixedTime(new Date('2026-12-04T07:30:00'));
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-  await page.waitForSelector('input[name=story][value="' + JUL + '"]');
+  await page.waitForSelector('#stien .st[data-story="' + JUL + '"]');
   assert.deepStrictEqual(await historieIds(page), listen('2026-12-04T07:30:00'));
   assert.deepStrictEqual(fejl, []);
   await context.close();
@@ -207,18 +207,15 @@ test('en app, der vågner på en ny dato, viser den nye månedshistorie', async 
 test('en ny dato midt i en historie afbryder ikke historien', async () => {
   const { context, page, fejl } = await nySide('2026-12-03T23:58:00', false);
   await page.goto(server.base + 'index.html');
-  await tilOpsaetning(page);
   await historieIds(page);
-  await page.check('input[name=story][value="lantern"]');
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  await startHistorie(page, 'lantern', 'raev');
   const foer = await page.textContent('#stage h2');
   await context.clock.setFixedTime(new Date('2026-12-04T07:30:00'));
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
   await page.waitForFunction(() => window.LK && LK.katalogPoster && document.querySelectorAll('script[src$="julestjernen-1/historie.js"]').length > 0);
   await new Promise(r => setTimeout(r, 300));
   assert.strictEqual(await page.textContent('#stage h2'), foer);
-  assert.strictEqual(await page.$('input[name=story]'), null);
+  assert.strictEqual(await page.$('#stien'), null);
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });

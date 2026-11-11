@@ -1,12 +1,15 @@
-// Forside, indstillinger og tilbage-knap (docs/superpowers/specs/2026-11-11-forside-og-navigation-design.md).
+// Forside (Lanternestien), arket, valget af følgesvend, indstillinger og tilbage-knap
+// (docs/superpowers/specs/2026-11-11-forside-og-navigation-design.md, også afsnittet "Ændring: Lanternestien").
 const { test, before, after } = require('node:test');
 const assert = require('node:assert');
 const { chromium } = require('playwright');
 const { startServer } = require('../helpers/server.cjs');
+const { historieIds, kommendeIds, aabnHistorie, tilFoelgesvend, vaelgOgAfsted, startHistorie, tilHelte } = require('../helpers/forside.cjs');
 
 const UGE = 'katalog=tests/fixtures/stories-uge/katalog.js';
 const MAANED = 'katalog=tests/fixtures/stories-maaned/katalog.js';
 const HOP = '#choices .crow > .btn:has-text("Hop i bladene")';
+const HOP_JUL = '#choices .crow > .btn:has-text("Hæng en lanterne op")';
 const SPOERG = 'Vil I stoppe historien her? I kan altid starte forfra.';
 const NULSTIL_SPOERG = 'Er I sikre? Skovens venner glemmer jer.';
 
@@ -29,8 +32,8 @@ const standard = (world, ekstra) => Object.assign({ 'lk-heroes': bibliotek(world
 
 // Ny side med gemte data (lagt ind ved første indlæsning) og (valgfrit) uret på `dato`. Alle skrivninger til localStorage tælles i window.__skrevet,
 // og en confirm()/alert() fra appen tælles i `dialoger`.
-async function nySide(gem, dato, rnd) {
-  const context = await browser.newContext({ serviceWorkers: 'block' });
+async function nySide(gem, dato, rnd, valg) {
+  const context = await browser.newContext(Object.assign({ serviceWorkers: 'block' }, valg || {}));
   await context.addInitScript(([g, r]) => {
     // Kun ved første indlæsning, så en genindlæsning viser det, appen selv har gemt.
     try {
@@ -76,119 +79,319 @@ async function spilTilSlut(page) {
   throw new Error('Nåede ikke slutskærmen');
 }
 
-// Fra forsiden: vælg historien på listen, vælg Rikke Ræv og start.
+// Fra forsiden: tryk på historiens lanterne, "Start eventyret", vælg Rikke Ræv og "Afsted med Rikke Ræv".
 async function startFraForsiden(page, id) {
-  await page.click('#stage .hist[data-story="' + id + '"]');
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  await startHistorie(page, id, 'raev');
   await page.waitForSelector('#stage .scene-art');
 }
 
-/* ---------- Forsiden ---------- */
+const to = (over) => [helt(), helt(Object.assign({ id: 'h2', name: 'Mo', skin: '#C98E62' }, over))];
+const mange = (play) => JSON.stringify({ heroes: to().concat(['h3', 'h4', 'h5'].map((id, i) => helt({ id, name: ['Ida', 'Liv', 'Sofus'][i] }))), play, world: {} });
+const lys = (page, id) => '#stien .st[data-' + (id.kommer ? 'kommer' : 'story') + '="' + (id.kommer || id) + '"]';
+const synlig = (page, sel) => page.isVisible(sel);
+const fokusI = (page, sel) => page.evaluate(s => !!document.activeElement && !!document.activeElement.closest(s), sel);
 
-test('appen åbner på forsiden med navnet, tandhjulet og ugens nyeste kapitel', async () => {
-  const { context, page, fejl } = await nySide(standard(), '2099-12-18T10:00:00');
-  await page.goto(server.base + 'index.html?' + UGE);
-  await page.waitForSelector('#ugens');
+/* ---------- Forsiden: heltene og Lanternestien ---------- */
+
+test('forsiden har navnet, tandhjulet, heltene og "+"-knappen "Helte"', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await page.waitForSelector('#stien');
   assert.strictEqual(await page.isVisible('.bar .brand'), true);
   assert.strictEqual(await tekst(page, '.bar .brand'), 'Lanterneskoven');
   assert.strictEqual(await page.getAttribute('#indst', 'aria-label'), 'Indstillinger');
   assert.strictEqual(await page.isVisible('#indst'), true);
   assert.strictEqual(await page.isVisible('#forside'), false);
   assert.strictEqual(await page.$('input[name=story]'), null);
-  const kort = await tekst(page, '#stage .ugens');
-  assert.match(kort, /Stjernestien/);
-  assert.match(kort, /Kapitel 2 af 3/);
-  assert.match(kort, /Stjernestien 2/);
-  assert.match(kort, /Kapitel 2 af testserien\./);
-  assert.ok(await page.$('#stage .ugens figure.scene-art svg[role="img"]'), 'billedet fra kapitlets første scene');
-  assert.strictEqual(await tekst(page, '#ugens'), 'Start kapitlet');
-  assert.match(await tekst(page, '#stage'), /Ugens eventyr/);
-  assert.match(await tekst(page, '#stage'), /Alle historier/);
-  assert.match(await tekst(page, '#stage'), /Jeres helte/);
+  assert.strictEqual(await page.$('#ugens'), null, 'Ugens eventyr-kortet er væk; stien er forsiden');
+  assert.strictEqual(await tekst(page, '#stage .helte-tekst'), 'Med i aften. Tryk for at slå til og fra.');
+  // Helten står, som den ser ud (appens egen figur), med navn under og en ring, når den er med.
+  assert.ok(await page.$('#stage .helt[data-helt="h1"] svg[role="img"]'));
+  assert.strictEqual(await tekst(page, '#stage .helt[data-helt="h1"]'), 'Kaj');
+  assert.strictEqual(await page.getAttribute('#stage .helt[data-helt="h1"]', 'aria-pressed'), 'true');
+  assert.strictEqual(await tekst(page, '#helte'), '+ Helte');
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
 
-test('"Start kapitlet" fører til opsætningen med kapitlet valgt, og "Start eventyret" starter det', async () => {
+test('Lanternestien 11. november: Pjuske-serien med tændte og slukkede lanterner, så Den store fortælling', async () => {
+  const { context, page, fejl } = await nySide(standard({ done_lantern: true }), '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  assert.deepStrictEqual(await historieIds(page), ['2026-11-pjuske-1', 'lantern', 'maane', 'vind', 'fest']);
+  assert.deepStrictEqual(await kommendeIds(page), ['2026-11-pjuske-2', '2026-11-pjuske-3', '2026-11-pjuske-4']);
+  const grupper = await page.$$eval('#stien .gruppe > h2', l => l.map(h => h.textContent.replace(/\s+/g, ' ').trim()));
+  assert.deepStrictEqual(grupper, [
+    'Pjuskes efterårsliste En lanterne tændes hver fredag i november',
+    'Den store fortælling Fire dele, der hænger sammen'
+  ]);
+  // Stien går i kapitlernes rækkefølge, også de kommende kapitler.
+  assert.deepStrictEqual(await page.$$eval('#stien .gruppe:first-child .st', l => l.map(s => s.getAttribute('data-story') || s.getAttribute('data-kommer'))),
+    ['2026-11-pjuske-1', '2026-11-pjuske-2', '2026-11-pjuske-3', '2026-11-pjuske-4']);
+  assert.strictEqual(await tekst(page, lys(page, '2026-11-pjuske-1')), '1. Den første frost Ude nu');
+  assert.strictEqual(await page.$eval(lys(page, '2026-11-pjuske-1'), s => s.classList.contains('nu')), true);
+  assert.strictEqual(await tekst(page, lys(page, { kommer: '2026-11-pjuske-2' })), '2. Trækfuglenes farvel Tændes fredag 13. nov.');
+  assert.strictEqual(await tekst(page, lys(page, { kommer: '2026-11-pjuske-3' })), '3. Den lange aften Tændes fredag 20. nov.');
+  assert.strictEqual(await tekst(page, lys(page, { kommer: '2026-11-pjuske-4' })), '4. Godnat, Pjuske Tændes fredag 27. nov.');
+  assert.strictEqual(await tekst(page, lys(page, 'lantern')), '1. Lanterneskoven Gennemført');
+  assert.strictEqual(await tekst(page, lys(page, 'maane')), '2. Månen der gemte sig Del 2 af 4');
+  assert.strictEqual(await tekst(page, lys(page, 'fest')), '4. Lanternefesten Del 4 af 4');
+  // En tændt lanterne er en knap; en slukket er ikke.
+  assert.strictEqual(await page.$eval(lys(page, 'maane'), s => s.tagName), 'BUTTON');
+  assert.strictEqual(await page.$eval(lys(page, { kommer: '2026-11-pjuske-2' }), s => s.tagName === 'BUTTON'), false);
+  assert.strictEqual(await page.$eval(lys(page, { kommer: '2026-11-pjuske-2' }), s => s.classList.contains('slukket')), true);
+  assert.strictEqual(await page.$eval(lys(page, 'maane'), s => s.classList.contains('slukket')), false);
+  // Zigzag: lanternerne skifter mellem højre og venstre, og en prikket linje forbinder dem.
+  const xs = await page.$$eval('#stien .gruppe:first-child .st .lys2', l => l.map(e => { const r = e.getBoundingClientRect(); return r.left + r.width / 2; }));
+  const midt = await page.$eval('#stien .gruppe:first-child .sti2', e => { const r = e.getBoundingClientRect(); return r.left + r.width / 2; });
+  assert.deepStrictEqual(xs.map(x => x > midt), [true, false, true, false]);
+  assert.match(await page.getAttribute('#stien .gruppe:first-child svg.vej path', 'd'), /^M[\d.]+ [\d.]+ C/);
+  assert.ok(await page.getAttribute('#stien .gruppe:first-child svg.vej path', 'stroke-dasharray'));
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('en slukket lanterne kan ikke åbnes, men titel og dato kan ses', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await page.waitForSelector(lys(page, { kommer: '2026-11-pjuske-2' }));
+  await page.click(lys(page, { kommer: '2026-11-pjuske-2' }));
+  await page.waitForTimeout(200);
+  assert.strictEqual(await synlig(page, '#ark'), false);
+  assert.strictEqual(await page.$('#afsted'), null);
+  assert.ok(await page.$('#stien'));
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('et tryk på en lanterne åbner arket med billede, titel, "Start eventyret" og "Luk"; Escape, Luk og baggrunden lukker det', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await aabnHistorie(page, '2026-11-pjuske-1');
+  assert.strictEqual(await synlig(page, '#ark'), true);
+  assert.ok(await page.$('#ark figure.scene-art svg[role="img"]'), 'billedet fra historiens første scene');
+  assert.strictEqual(await tekst(page, '#ark .ark-sted'), 'Kapitel 1 af 4 i Pjuskes efterårsliste');
+  assert.strictEqual(await tekst(page, '#ark h2'), 'Den første frost');
+  assert.match(await tekst(page, '#ark'), /pindsvinet Pjuske skal snart sove hele vinteren/);
+  assert.strictEqual(await tekst(page, '#ark-start'), 'Start eventyret');
+  assert.strictEqual(await tekst(page, '#ark-luk'), 'Luk');
+  assert.strictEqual(await page.getAttribute('#ark', 'role'), 'dialog');
+  assert.strictEqual(await fokusI(page, '#ark'), true, 'fokus flyttes ind i arket');
+  // Tab bliver i arket.
+  for (let i = 0; i < 4; i++) { await page.keyboard.press('Tab'); assert.strictEqual(await fokusI(page, '#ark'), true, 'Tab ' + i); }
+  await page.keyboard.press('Escape');
+  assert.strictEqual(await synlig(page, '#ark'), false);
+  assert.strictEqual(await page.evaluate(() => document.activeElement.getAttribute('data-story')), '2026-11-pjuske-1', 'fokus tilbage på lanternen');
+  await aabnHistorie(page, '2026-11-pjuske-1');
+  await page.click('#ark-luk');
+  assert.strictEqual(await synlig(page, '#ark'), false);
+  await aabnHistorie(page, 'vind');
+  assert.strictEqual(await tekst(page, '#ark .ark-sted'), 'Del 3 af 4');
+  assert.strictEqual(await tekst(page, '#ark h2'), 'Vinden der var alene');
+  await page.mouse.click(195, 20); // baggrunden over arket
+  assert.strictEqual(await synlig(page, '#ark'), false);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('et tryk på en helt slår den til og fra og gemmer det i lib.play; højst fire ad gangen', async () => {
+  const { context, page, fejl } = await nySide({ 'lk-heroes': mange({ h1: true, h3: true, h4: true }), 'lk-welcomed': '1' }, '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await page.waitForSelector('#stien');
+  const play = async () => JSON.parse(await gemt(page, 'lk-heroes')).play;
+  assert.strictEqual(await page.getAttribute('.helt[data-helt="h2"]', 'aria-pressed'), 'false');
+  assert.strictEqual(await page.$eval('.helt[data-helt="h2"]', b => b.classList.contains('fra')), true);
+  await page.click('.helt[data-helt="h2"]');
+  assert.strictEqual(await page.getAttribute('.helt[data-helt="h2"]', 'aria-pressed'), 'true');
+  assert.strictEqual(await page.$eval('.helt[data-helt="h2"]', b => b.classList.contains('fra')), false);
+  assert.strictEqual((await play()).h2, true);
+  await page.click('.helt[data-helt="h1"]');
+  assert.strictEqual(await page.getAttribute('.helt[data-helt="h1"]', 'aria-pressed'), 'false');
+  assert.strictEqual((await play()).h1, false);
+  await page.click('.helt[data-helt="h1"]');
+  // Fire er med; den femte kan ikke slås til.
+  await page.click('.helt[data-helt="h5"]');
+  assert.strictEqual(await page.getAttribute('.helt[data-helt="h5"]', 'aria-pressed'), 'false');
+  assert.strictEqual(await tekst(page, '#helt-besked'), 'Der kan højst være fire helte med ad gangen.');
+  assert.ok(!(await play()).h5);
+  // Det huskes næste gang.
+  await page.reload();
+  await page.waitForSelector('#stien');
+  assert.deepStrictEqual(await page.$$eval('.helt[data-helt]', l => l.map(b => b.getAttribute('aria-pressed'))), ['true', 'true', 'true', 'true', 'false']);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('"+" åbner heltelisten, og uden helte står der "Lav jeres første helt", som åbner heltebyggeren', async () => {
+  let s = await nySide(standard());
+  await s.page.goto(server.base + 'index.html');
+  await tilHelte(s.page);
+  await s.page.waitForSelector('.hcard');
+  assert.strictEqual(await tekst(s.page, '.hcard .hn'), 'Kaj');
+  assert.ok(await s.page.$('#newh'));
+  assert.strictEqual(await s.page.$('input[name=story]'), null, 'historie vælges på stien, ikke her');
+  assert.strictEqual(await s.page.$('input[name=comp]'), null, 'følgesvend vælges efter "Start eventyret"');
+  assert.strictEqual(await s.page.isVisible('#forside'), true);
+  assert.deepStrictEqual(s.fejl, []);
+  await s.context.close();
+  s = await nySide({ 'lk-welcomed': '1' });
+  await s.page.goto(server.base + 'index.html');
+  await s.page.waitForSelector('#stien');
+  assert.strictEqual(await s.page.$('.helt[data-helt]'), null);
+  assert.strictEqual(await tekst(s.page, '#helte'), '+ Lav jeres første helt');
+  await s.page.click('#helte');
+  await s.page.waitForSelector('#hn');
+  assert.strictEqual(await tekst(s.page, '#stage h2'), 'Ny helt');
+  assert.deepStrictEqual(s.fejl, []);
+  await s.context.close();
+});
+
+/* ---------- Vælg følgesvend ---------- */
+
+test('"Start eventyret" viser historien og de seks følgesvende med billeder og "+1 i <træk>"', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await tilFoelgesvend(page, '2026-11-pjuske-1');
+  assert.strictEqual(await synlig(page, '#ark'), false);
+  assert.strictEqual(await page.isVisible('#forside'), true);
+  assert.strictEqual(await page.isVisible('#indst'), true);
+  assert.strictEqual(await tekst(page, '#stage .valgt-hist small'), 'Kapitel 1 af 4 i Pjuskes efterårsliste');
+  assert.strictEqual(await tekst(page, '#stage .valgt-hist b'), 'Den første frost');
+  assert.ok(await page.$('#stage .valgt-hist svg[role="img"]'));
+  assert.strictEqual(await tekst(page, '#stage h2'), 'Hvem tager I med?');
+  const kort = await page.$$eval('.sv [data-comp]', l => l.map(b => [b.getAttribute('data-comp'), b.querySelector('b').textContent, b.querySelector('.plus').textContent, !!b.querySelector('svg[role="img"]')]));
+  assert.deepStrictEqual(kort, [
+    ['raev', 'Rikke Ræv', '+1 i List', true], ['bjorn', 'Bastian Bjørn', '+1 i Mod', true], ['pind', 'Pip Pindsvin', '+1 i Venlighed', true],
+    ['lysorm', 'Lulle Lysorm', '+1 i Fantasi', true], ['krage', 'Krage Krølle', '+1 i Humor', true], ['mus', 'Mille Mus', '+1 i Nysgerrighed', true]
+  ]);
+  assert.match(await tekst(page, '.sv [data-comp="pind"]'), /Lille, blød og god til at lytte/);
+  // Første gang er ingen valgt.
+  assert.deepStrictEqual(await page.$$eval('.sv [data-comp]', l => l.map(b => b.getAttribute('aria-pressed'))), Array(6).fill('false'));
+  assert.strictEqual(await page.isDisabled('#afsted'), true);
+  await page.click('.sv [data-comp="bjorn"]');
+  assert.strictEqual(await page.getAttribute('.sv [data-comp="bjorn"]', 'aria-pressed'), 'true');
+  assert.strictEqual(await tekst(page, '#afsted'), 'Afsted med Bastian Bjørn');
+  assert.strictEqual(await page.isDisabled('#afsted'), false);
+  await page.click('.sv [data-comp="mus"]');
+  assert.strictEqual(await page.getAttribute('.sv [data-comp="bjorn"]', 'aria-pressed'), 'false');
+  assert.strictEqual(await tekst(page, '#afsted'), 'Afsted med Mille Mus');
+  // "‹ Forside" fører direkte tilbage.
+  await page.click('#forside');
+  await page.waitForSelector('#stien');
+  assert.strictEqual(await page.isVisible('#stopbox'), false);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('"Afsted med <navn>" starter historien med aftenens helte og følgesvenden, som huskes i lk-prefs', async () => {
+  const gem = { 'lk-heroes': JSON.stringify({ heroes: to(), play: { h1: true }, world: {} }), 'lk-welcomed': '1', 'lk-prefs': '{"auto":false,"big":false,"ekstra":7}' };
+  const { context, page, fejl } = await nySide(gem, '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html?' + MAANED);
+  await page.waitForSelector('#stien');
+  await page.click('.helt[data-helt="h2"]');
+  await tilFoelgesvend(page, 'efteraar');
+  await page.click('.sv [data-comp="bjorn"]');
+  await page.click('#afsted');
+  assert.strictEqual(await tekst(page, '#stage h2'), 'Bladene falder');
+  assert.match(await tekst(page, '#stage .story'), /Bastian Bjørn brummer glad/);
+  assert.match(await tekst(page, '#stage .turn'), /Kaj/);
+  assert.deepStrictEqual(await prefs(page), { auto: false, big: false, bevaeg: true, ekstra: 7, comp: 'bjorn' });
+  await spilTilSlut(page);
+  assert.deepStrictEqual(await page.$$eval('#stage .heroes figcaption', l => l.map(f => f.textContent)), ['Kaj', 'Mo']);
+  assert.match(await tekst(page, '#stage .stats'), /Følgesvend: Bastian Bjørn/);
+  // Næste gang er Bastian Bjørn valgt på forhånd, også efter en genindlæsning.
+  await page.click('#back');
+  await page.waitForSelector('#stien');
+  await tilFoelgesvend(page, 'efteraar');
+  assert.strictEqual(await page.getAttribute('.sv [data-comp="bjorn"]', 'aria-pressed'), 'true');
+  assert.strictEqual(await tekst(page, '#afsted'), 'Afsted med Bastian Bjørn');
+  await page.reload();
+  await tilFoelgesvend(page, 'efteraar');
+  assert.strictEqual(await page.getAttribute('.sv [data-comp="bjorn"]', 'aria-pressed'), 'true');
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('uden valgte helte står der "Vælg mindst én helt på forsiden", og knappen er slået fra', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await page.waitForSelector('#stien');
+  await page.click('.helt[data-helt="h1"]');
+  await tilFoelgesvend(page, 'lantern');
+  assert.strictEqual(await tekst(page, '#ingen-helte'), 'Vælg mindst én helt på forsiden');
+  await page.click('.sv [data-comp="raev"]');
+  assert.strictEqual(await page.isDisabled('#afsted'), true);
+  assert.strictEqual(await page.$('#stage .story'), null);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('arket og valget af følgesvend virker for et kapitel fra stien (Stjernestien 2)', async () => {
   const { context, page, fejl } = await nySide(standard(), '2099-12-18T10:00:00');
   await page.goto(server.base + 'index.html?' + UGE);
-  await page.click('#ugens');
-  await page.waitForSelector('#go');
-  assert.strictEqual(await page.isChecked('input[name=story][value="sti2"]'), true);
-  assert.strictEqual(await page.isVisible('#forside'), true);
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  assert.deepStrictEqual(await historieIds(page), ['sti1', 'sti2'].concat(['lantern', 'maane', 'vind', 'fest']));
+  assert.deepStrictEqual(await kommendeIds(page), ['sti3']);
+  assert.strictEqual(await tekst(page, lys(page, { kommer: 'sti3' })), '3. Stjernestien 3 Tændes fredag 25. dec.');
+  await aabnHistorie(page, 'sti2');
+  const ark = await tekst(page, '#ark');
+  assert.match(ark, /Kapitel 2 af 3 i Stjernestien/);
+  assert.match(ark, /Stjernestien 2/);
+  assert.match(ark, /Kapitel 2 af testserien\./);
+  assert.ok(await page.$('#ark figure.scene-art svg[role="img"]'));
+  await page.click('#ark-start');
+  await vaelgOgAfsted(page, 'raev');
   assert.strictEqual(await tekst(page, '#stage h2'), 'Stien 2 begynder');
   assert.strictEqual(await tekst(page, '#epi'), 'Ugens eventyr · Stjernestien · kapitel 2 af 3');
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
 
-test('uden et udgivet kapitel viser kortet sagaens første del, familien ikke har gennemført, med "Start historien"', async () => {
+test('uden et udgivet kapitel står sagaen alene på stien, og den første del, der ikke er gennemført, kan startes', async () => {
   const { context, page, fejl } = await nySide(standard({ done_lantern: true }), '2026-11-01T12:00:00');
   await page.goto(server.base + 'index.html');
-  await page.waitForSelector('#ugens');
-  const kort = await tekst(page, '#stage .ugens');
-  assert.match(kort, /Månen der gemte sig/);
-  assert.match(kort, /Del 2 af 4/);
-  assert.strictEqual(await tekst(page, '#ugens'), 'Start historien');
-  await page.click('#ugens');
-  await page.waitForSelector('#go');
-  assert.strictEqual(await page.isChecked('input[name=story][value="maane"]'), true);
+  assert.deepStrictEqual(await historieIds(page), ['lantern', 'maane', 'vind', 'fest']);
+  assert.deepStrictEqual(await kommendeIds(page), []);
+  assert.match(await tekst(page, lys(page, 'lantern')), /Gennemført/);
+  assert.match(await tekst(page, lys(page, 'maane')), /Del 2 af 4/);
+  await tilFoelgesvend(page, 'maane');
+  assert.strictEqual(await tekst(page, '#stage .valgt-hist small'), 'Del 2 af 4');
+  assert.strictEqual(await tekst(page, '#stage .valgt-hist b'), 'Månen der gemte sig');
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
 
-test('"Alle historier" viser serierne nyeste først med kapitlerne i rækkefølge og derefter sagaen', async () => {
+test('stien viser serierne nyeste først med kapitlerne i rækkefølge og derefter sagaen', async () => {
   const { context, page, fejl } = await nySide(standard({ done_lantern: true, 'done_2026-11-pjuske-2': true }), '2026-12-05T12:00:00');
   await page.goto(server.base + 'index.html');
-  await page.waitForSelector('#stage .hist');
-  assert.deepStrictEqual(await page.$$eval('#stage .hist', l => l.map(b => b.getAttribute('data-story'))), [
+  assert.deepStrictEqual(await historieIds(page), [
     '2026-12-julestjernen-1', '2026-11-pjuske-1', '2026-11-pjuske-2', '2026-11-pjuske-3', '2026-11-pjuske-4', 'lantern', 'maane', 'vind', 'fest'
   ]);
-  assert.match(await tekst(page, '#stage .hist[data-story="2026-11-pjuske-3"]'), /Kapitel 3 af 4/);
-  assert.match(await tekst(page, '#stage .hist[data-story="vind"]'), /Del 3 af 4/);
-  assert.match(await tekst(page, '#stage .hist[data-story="lantern"]'), /Gennemført/);
-  assert.match(await tekst(page, '#stage .hist[data-story="2026-11-pjuske-2"]'), /Gennemført/);
-  assert.doesNotMatch(await tekst(page, '#stage .hist[data-story="maane"]'), /Gennemført/);
-  assert.match(await tekst(page, '#stage .liste'), /Pjuskes efterårsliste/);
-  assert.match(await tekst(page, '#stage .liste'), /Julestjernen/);
-  // Ugens eventyr er det nyeste kapitel: Julestjernen, kapitel 1.
-  assert.match(await tekst(page, '#stage .ugens'), /Kælkebakken/);
-  await page.click('#stage .hist[data-story="vind"]');
-  await page.waitForSelector('#go');
-  assert.strictEqual(await page.isChecked('input[name=story][value="vind"]'), true);
+  assert.deepStrictEqual(await kommendeIds(page), ['2026-12-julestjernen-2', '2026-12-julestjernen-3', '2026-12-julestjernen-4']);
+  assert.match(await tekst(page, lys(page, '2026-11-pjuske-3')), /3\. Den lange aften/);
+  assert.match(await tekst(page, lys(page, 'vind')), /Del 3 af 4/);
+  assert.match(await tekst(page, lys(page, 'lantern')), /Gennemført/);
+  assert.match(await tekst(page, lys(page, '2026-11-pjuske-2')), /Gennemført/);
+  assert.doesNotMatch(await tekst(page, lys(page, 'maane')), /Gennemført/);
+  assert.match(await tekst(page, lys(page, '2026-11-pjuske-3')), /Ude nu/);
+  assert.match(await tekst(page, lys(page, { kommer: '2026-12-julestjernen-2' })), /Tændes fredag 11\. dec\./);
+  const grupper = await page.$$eval('#stien .gruppe > h2', l => l.map(h => h.firstChild.textContent.trim()));
+  assert.deepStrictEqual(grupper, ['Julestjernen', 'Pjuskes efterårsliste', 'Den store fortælling']);
+  assert.match(await tekst(page, '#stien .gruppe:first-child > h2'), /En lanterne tændes hver fredag i december/);
+  await tilFoelgesvend(page, 'vind');
+  assert.strictEqual(await tekst(page, '#stage .valgt-hist b'), 'Vinden der var alene');
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
 
-test('en månedshistorie uden serie står også på listen', async () => {
+test('en månedshistorie uden serie står også på stien', async () => {
   const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
   await page.goto(server.base + 'index.html?' + MAANED);
-  await page.waitForSelector('#stage .hist');
-  const ids = await page.$$eval('#stage .hist', l => l.map(b => b.getAttribute('data-story')));
+  const ids = await historieIds(page);
   assert.deepStrictEqual(ids.slice().sort(), ['efteraar', 'fest', 'lantern', 'maane', 'vind']);
-  assert.match(await tekst(page, '#stage .hist[data-story="efteraar"]'), /oktober 2026/);
+  assert.match(await tekst(page, lys(page, 'efteraar')), /Bladenes fest Ude nu/);
+  await aabnHistorie(page, 'efteraar');
+  assert.match(await tekst(page, '#ark .ark-sted'), /oktober 2026/);
   assert.deepStrictEqual(fejl, []);
   await context.close();
-});
-
-test('"Jeres helte" åbner heltelisten, og uden helte åbner heltebyggeren', async () => {
-  let s = await nySide(standard());
-  await s.page.goto(server.base + 'index.html');
-  await s.page.click('#helte');
-  await s.page.waitForSelector('.hcard');
-  assert.ok(await s.page.$('#go'));
-  assert.deepStrictEqual(s.fejl, []);
-  await s.context.close();
-  s = await nySide({ 'lk-welcomed': '1' });
-  await s.page.goto(server.base + 'index.html');
-  await s.page.click('#helte');
-  await s.page.waitForSelector('#hn');
-  assert.strictEqual(await tekst(s.page, '#stage h2'), 'Ny helt');
-  assert.deepStrictEqual(s.fejl, []);
-  await s.context.close();
 });
 
 test('første gang vises velkomsten, og bagefter forsiden', async () => {
@@ -197,23 +400,26 @@ test('første gang vises velkomsten, og bagefter forsiden', async () => {
   await page.waitForSelector('#wgo');
   assert.strictEqual(await page.isVisible('#forside'), false);
   await page.click('#wgo');
-  await page.waitForSelector('#ugens');
+  await page.waitForSelector('#stien');
   assert.strictEqual(await gemt(page, 'lk-welcomed'), '1');
   await page.reload();
-  await page.waitForSelector('#ugens');
+  await page.waitForSelector('#stien');
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
 
-test('forsiden opdateres, når appen vågner på en ny dato', async () => {
+test('forsiden opdateres, når appen vågner på en ny dato: den slukkede lanterne tændes', async () => {
   const { context, page, fejl } = await nySide(standard(), '2099-12-17T23:59:00');
   await page.goto(server.base + 'index.html?' + UGE);
-  await page.waitForSelector('#ugens');
-  assert.match(await tekst(page, '#stage .ugens'), /Stjernestien 1/);
+  assert.deepStrictEqual(await historieIds(page), ['sti1', 'lantern', 'maane', 'vind', 'fest']);
+  assert.match(await tekst(page, lys(page, { kommer: 'sti2' })), /Stjernestien 2 Tændes fredag 18\. dec\./);
   await context.clock.setFixedTime(new Date('2099-12-18T07:30:00'));
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-  await page.waitForSelector('#stage .hist[data-story="sti2"]');
-  assert.match(await tekst(page, '#stage .ugens'), /Stjernestien 2/);
+  await page.waitForSelector(lys(page, 'sti2'));
+  assert.match(await tekst(page, lys(page, 'sti2')), /Stjernestien 2 Ude nu/);
+  assert.deepStrictEqual(await kommendeIds(page), ['sti3']);
+  await startHistorie(page, 'sti2');
+  assert.strictEqual(await tekst(page, '#stage h2'), 'Stien 2 begynder');
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
@@ -232,7 +438,7 @@ test('tandhjulet åbner indstillingerne, og "‹ Forside" fører tilbage', async
   // Bevægelse har en linje, der forklarer, hvad en bevægelse er.
   assert.match(await tekst(page, '#stage .indst-row:has(#bevaeg)'), /ét ben/);
   await page.click('#forside');
-  await page.waitForSelector('#ugens');
+  await page.waitForSelector('#stien');
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
@@ -321,8 +527,8 @@ test('"Nulstil skovens venner" spørger på siden selv; Fortryd beholder, Nulsti
   assert.strictEqual(lib.heroes.length, 1);
   assert.strictEqual(await page.isVisible('#nulstil-boks'), false);
   await page.click('#forside');
-  await page.waitForSelector('#stage .hist');
-  assert.doesNotMatch(await tekst(page, '#stage .hist[data-story="lantern"]'), /Gennemført/);
+  await page.waitForSelector('#stien .st[data-story="lantern"]');
+  assert.doesNotMatch(await tekst(page, '#stien .st[data-story="lantern"]'), /Gennemført/);
   assert.deepStrictEqual(dialoger, []);
   assert.deepStrictEqual(fejl, []);
   await context.close();
@@ -393,9 +599,11 @@ test('"Stop historien" fører til forsiden uden at gemme noget', async () => {
   await startFraForsiden(page, 'efteraar');
   const foer = await page.evaluate(() => { const o = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); o[k] = localStorage.getItem(k); } return o; });
   const skrevetFoer = (await page.evaluate(() => window.__skrevet)).length;
+  await page.click(HOP); // et valg er truffet, så appen spørger
   await page.click('#forside');
+  assert.strictEqual(await page.isVisible('#stopbox'), true);
   await page.click('#stop-ja');
-  await page.waitForSelector('#ugens');
+  await page.waitForSelector('#stien');
   assert.strictEqual(await page.isVisible('#stopbox'), false);
   assert.strictEqual(await page.isVisible('#forside'), false);
   assert.strictEqual(await page.$('#choices'), null);
@@ -417,30 +625,105 @@ test('"‹ Forside" på slutskærmen går direkte til forsiden, og historien er 
   await startFraForsiden(page, 'efteraar');
   await spilTilSlut(page);
   await page.click('#forside');
-  await page.waitForSelector('#ugens');
+  await page.waitForSelector('#stien');
   assert.strictEqual(await page.isVisible('#stopbox'), false);
-  assert.match(await tekst(page, '#stage .hist[data-story="efteraar"]'), /Gennemført/);
+  assert.match(await tekst(page, '#stien .st[data-story="efteraar"]'), /Gennemført/);
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
 
-test('"‹ Forside" i opsætningen og heltebyggeren fører direkte tilbage og gemmer ikke en halv rettelse', async () => {
+test('"‹ Forside" i heltelisten og heltebyggeren fører direkte tilbage og gemmer ikke en halv rettelse', async () => {
   const { context, page, fejl } = await nySide(standard());
   await page.goto(server.base + 'index.html');
-  await page.click('#helte');
-  await page.waitForSelector('#go');
+  await tilHelte(page);
+  await page.waitForSelector('.hcard');
   await page.click('#forside');
-  await page.waitForSelector('#ugens');
+  await page.waitForSelector('#stien');
   assert.strictEqual(await page.isVisible('#stopbox'), false);
   await page.click('#helte');
   await page.click('[data-edit="h1"]');
   await page.fill('#hn', 'Bodil');
   await page.click('#forside');
-  await page.waitForSelector('#ugens');
+  await page.waitForSelector('#stien');
   await page.click('#helte');
   await page.waitForSelector('.hcard');
   assert.strictEqual(await tekst(page, '.hcard .hn'), 'Kaj');
   assert.strictEqual(JSON.parse(await gemt(page, 'lk-heroes')).heroes[0].name, 'Kaj');
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+/* ---------- Fire rettelser ---------- */
+
+const TELEFON = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true };
+
+test('på historiens første scene, før der er valgt noget, går "‹ Forside" direkte til forsiden', async () => {
+  const { context, page, fejl, dialoger } = await nySide(standard(), '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html?' + MAANED);
+  await startFraForsiden(page, 'efteraar');
+  const skrevetFoer = (await page.evaluate(() => window.__skrevet)).length;
+  await page.click('#forside');
+  await page.waitForSelector('#stien');
+  assert.strictEqual(await page.isVisible('#stopbox'), false);
+  assert.strictEqual((await page.evaluate(() => window.__skrevet)).length, skrevetFoer);
+  // Efter et valg på første scene spørger den igen.
+  await startFraForsiden(page, 'efteraar');
+  await page.click(HOP);
+  await page.click('#forside');
+  assert.strictEqual(await page.isVisible('#stopbox'), true);
+  assert.deepStrictEqual(dialoger, []);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('"‹ Forside" sidder fast øverst, så den kan ses langt nede i en scene', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00', null, TELEFON);
+  await page.goto(server.base + 'index.html');
+  await startFraForsiden(page, '2026-11-pjuske-1');
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.waitForTimeout(100);
+  assert.ok(await page.evaluate(() => window.scrollY) > 400, 'scenen er lang nok til at rulle');
+  const top = await page.$eval('#forside', b => b.getBoundingClientRect().top);
+  assert.ok(top >= 0 && top < 40, 'top ' + top);
+  assert.strictEqual(await page.isVisible('#forside'), true);
+  // Den står øverst over teksten (ikke dækket af den).
+  const ovenpaa = await page.$eval('#forside', b => { const r = b.getBoundingClientRect(); const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !!e && !!e.closest('#forside'); });
+  assert.strictEqual(ovenpaa, true);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('scenens overskriftslinje står på én linje på en telefon', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00', null, TELEFON);
+  await page.goto(server.base + 'index.html');
+  await startFraForsiden(page, '2026-11-pjuske-1');
+  assert.strictEqual(await tekst(page, '#epi'), 'Ugens eventyr · Pjuskes efterårsliste · kapitel 1 af 4');
+  const linje = await page.evaluate(() => {
+    const kasse = e => e.getBoundingClientRect();
+    const bar = document.getElementById('bar'), f = kasse(document.getElementById('forside')), r = document.getElementById('barr');
+    const synlige = [...r.querySelectorAll('*')].filter(e => e.getClientRects().length && getComputedStyle(e).display !== 'none' && e.textContent.trim());
+    return { hoejde: kasse(bar).height, forside: f.height, tekst: r.innerText.replace(/\s+/g, ' ').trim(), afkortet: r.scrollWidth > r.clientWidth + 1,
+      enLinje: synlige.every(e => Math.abs(kasse(e).top + kasse(e).height / 2 - (f.top + f.height / 2)) < 12) };
+  });
+  assert.ok(linje.hoejde <= linje.forside + 4, JSON.stringify(linje));
+  assert.strictEqual(linje.enLinje, true, JSON.stringify(linje));
+  assert.strictEqual(linje.afkortet, false, JSON.stringify(linje));
+  assert.match(linje.tekst, /Kapitel 1 af 4/);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
+
+test('slutskærmens "Tilbage til historierne" fører til forsiden', async () => {
+  const { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html?' + MAANED);
+  await startFraForsiden(page, 'efteraar');
+  await spilTilSlut(page);
+  assert.strictEqual(await tekst(page, '#back'), 'Tilbage til historierne');
+  await page.click('#back');
+  await page.waitForSelector('#stien');
+  assert.strictEqual(await page.isVisible('#forside'), false);
+  assert.strictEqual(await page.isVisible('#indst'), true);
+  assert.match(await tekst(page, '#stien .st[data-story="efteraar"]'), /Gennemført/);
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
@@ -453,19 +736,22 @@ test('forhåndsvisningen starter stadig i historien, og "‹ Forside" fører til
   await page.goto(server.base + 'index.html?preview=juletraeet&' + MAANED);
   await page.waitForSelector('#stage h2');
   assert.strictEqual(await tekst(page, '#stage h2'), 'Et lille træ');
-  assert.strictEqual(await page.$('#ugens'), null);
+  assert.strictEqual(await page.$('#stien'), null);
+  await page.click(HOP_JUL); // et valg, så "‹ Forside" spørger først
   await page.click('#forside');
   await page.click('#stop-ja');
-  await page.waitForSelector('#ugens');
-  assert.ok((await page.$$eval('#stage .hist', l => l.map(b => b.getAttribute('data-story')))).includes('juletraeet'));
+  assert.ok((await historieIds(page)).includes('juletraeet'));
+  // Eksempelholdet (Asta og Bo) står som aftenens helte.
+  assert.deepStrictEqual(await page.$$eval('.helt[data-helt]', l => l.map(b => [b.textContent.trim(), b.getAttribute('aria-pressed')])), [['Asta', 'true'], ['Bo', 'true']]);
   await page.click('#indst');
   await page.click('#big');
   await page.click('#bevaeg');
   await page.click('#nulstil');
   await page.click('#nulstil-ja');
   await page.click('#forside');
-  await page.click('#stage .hist[data-story="juletraeet"]');
-  await page.click('#go');
+  await tilFoelgesvend(page, 'juletraeet');
+  assert.strictEqual(await page.getAttribute('.sv [data-comp="bjorn"]', 'aria-pressed'), 'true');
+  await page.click('#afsted');
   assert.strictEqual(await tekst(page, '#stage h2'), 'Et lille træ');
   assert.deepStrictEqual(await page.evaluate(() => window.__skrevet), []);
   assert.deepStrictEqual(fejl, []);

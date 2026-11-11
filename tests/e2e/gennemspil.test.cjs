@@ -5,7 +5,7 @@ const { chromium } = require('playwright');
 const fs = require('node:fs');
 const path = require('node:path');
 const { startServer } = require('../helpers/server.cjs');
-const { tilOpsaetning } = require('../helpers/forside.cjs');
+const { historieIds, startHistorie, tilFoelgesvend } = require('../helpers/forside.cjs');
 
 // Forløbet (overskrift og tekst for hver skærm) blev optaget fra den gamle index.html, før
 // historierne blev flyttet ud. LK_OPTAG=1 optager det igen.
@@ -56,10 +56,9 @@ async function nySide(lib, rnd) {
   return { context, page, fejl };
 }
 
+// Fra forsiden (eller heltelisten efter "Forbedre helte"): lanternen, "Start eventyret", Rikke Ræv og "Afsted".
 async function vaelgOgStart(page, id) {
-  await page.check('input[name=story][value="' + id + '"]');
-  if (!(await page.isChecked('input[name=comp][value="raev"]'))) await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  await startHistorie(page, id, 'raev');
 }
 
 // Hver scene har præcis ét billede øverst (før overskriften) og en stribe med seks lanterner.
@@ -118,9 +117,7 @@ for (const [navn, rnd, over, sidste] of KOERSLER) {
   test('gennemspilning af alle fire dele: ' + navn, async () => {
     const { context, page, fejl } = await nySide({ heroes: [helt(over)], play: { h1: true }, world: {} }, rnd);
     await page.goto(server.base + 'index.html');
-    await tilOpsaetning(page);
     for (const del of DELE) {
-      await page.waitForSelector('input[name=story][value="' + del + '"]');
       await vaelgOgStart(page, del);
       const log = [], billedFejl = [];
       await spilTilSlut(page, log, sidste, billedFejl);
@@ -155,8 +152,6 @@ test('del 1 kan spilles til slut med bevægelse slået til og "Vi klarede det!"'
   await page.click('#indst');
   assert.strictEqual(await page.getAttribute('#bevaeg', 'aria-pressed'), 'true');
   await page.click('#forside');
-  await tilOpsaetning(page);
-  await page.waitForSelector('input[name=story][value="lantern"]');
   await vaelgOgStart(page, 'lantern');
   let bevaegelser = 0;
   for (let i = 0; i < 300 && !(await page.$('.end')); i++) {
@@ -190,8 +185,6 @@ for (const [navn, motion, bevaeger] of [['bevæger sig', 'no-preference', true],
     }, JSON.stringify({ heroes: [helt()], play: { h1: true }, world: {} }));
     const page = await context.newPage();
     await page.goto(server.base + 'index.html');
-    await tilOpsaetning(page);
-    await page.waitForSelector('input[name=story]');
     await vaelgOgStart(page, 'lantern');
     await page.waitForSelector('#stage figure.scene-art svg');
     const antal = await page.evaluate(() => document.querySelector('#stage figure.scene-art').getAnimations({ subtree: true }).length);
@@ -204,13 +197,12 @@ test('gamle gemte data virker stadig', async () => {
   const world = { done_lantern: true, nusseVen: true, gnistNavne: ['Blinke'] };
   const { context, page, fejl } = await nySide({ heroes: [helt()], play: { h1: true }, world }, null);
   await page.goto(server.base + 'index.html');
-  await tilOpsaetning(page);
-  await page.waitForSelector('input[name=story][value="lantern"]');
-  const del1 = await page.textContent('label.comp:has(input[value="lantern"])');
+  await historieIds(page);
+  const del1 = await page.textContent('#stien .st[data-story="lantern"]');
   assert.match(del1, /Gennemført/);
-  assert.strictEqual(await page.isChecked('input[name=story][value="maane"]'), true);
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  // Næste del, der ikke er gennemført, er del 2.
+  assert.doesNotMatch(await page.textContent('#stien .st[data-story="maane"]'), /Gennemført/);
+  await vaelgOgStart(page, 'maane');
   const tekst = await page.textContent('#stage .story');
   assert.match(tekst, /Nusse/);
   assert.match(tekst, /Blinke/);
@@ -224,16 +216,14 @@ test('en historie, der ikke kan hentes, springes over', async () => {
   await context.clock.setFixedTime(new Date('2026-11-01T12:00:00'));
   await page.route('**/stories/vind/historie.js', r => r.fulfill({ status: 404, body: 'findes ikke' }));
   await page.goto(server.base + 'index.html');
-  await tilOpsaetning(page);
-  await page.waitForSelector('input[name=story]');
-  const ids = await page.$$eval('input[name=story]', l => l.map(i => i.value));
+  const ids = await historieIds(page);
   assert.deepStrictEqual(ids, ['lantern', 'maane', 'fest']);
   for (const id of ids) {
-    await page.check('input[name=story][value="' + id + '"]');
-    assert.strictEqual(await page.isChecked('input[name=story][value="' + id + '"]'), true);
+    await tilFoelgesvend(page, id);
+    assert.match(await page.textContent('#stage .valgt-hist'), /\S/);
+    await page.click('#forside');
   }
-  await page.check('input[name=comp][value="raev"]');
-  await page.click('#go');
+  await vaelgOgStart(page, 'fest');
   assert.match(await page.textContent('#stage h2'), /\S/);
   assert.deepStrictEqual(fejl, []);
   await context.close();
@@ -247,9 +237,7 @@ test('en historie, hvis kode fejler, springes over og logges', async () => {
   page.on('console', m => { if (m.type() === 'error') logget.push(m.text()); });
   await page.route('**/stories/vind/historie.js', r => r.fulfill({ status: 200, contentType: 'text/javascript', body: "LK.addStory(function (k) { throw new Error('ødelagt'); });" }));
   await page.goto(server.base + 'index.html');
-  await tilOpsaetning(page);
-  await page.waitForSelector('input[name=story]');
-  assert.deepStrictEqual(await page.$$eval('input[name=story]', l => l.map(i => i.value)), ['lantern', 'maane', 'fest']);
+  assert.deepStrictEqual(await historieIds(page), ['lantern', 'maane', 'fest']);
   assert.ok(logget.some(t => /ødelagt/.test(t)), logget.join('\n'));
   assert.deepStrictEqual(fejl, []);
   await context.close();
@@ -270,8 +258,6 @@ test('historierne kan spilles uden internet, når appen har været åbnet én ga
   await cdp.send('Network.clearBrowserCache');
   await context.setOffline(true);
   await page.reload();
-  await tilOpsaetning(page);
-  await page.waitForSelector('input[name=story]');
-  assert.deepStrictEqual(await page.$$eval('input[name=story]', l => l.map(i => i.value)), DELE);
+  assert.deepStrictEqual(await historieIds(page), DELE);
   await context.close();
 });
