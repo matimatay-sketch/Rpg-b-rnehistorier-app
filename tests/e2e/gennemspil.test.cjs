@@ -23,14 +23,18 @@ after(async () => {
 
 const DELE = ['lantern', 'maane', 'vind', 'fest'];
 
-function helt() {
+function helt(over) {
   const stats = { Mod: 1, List: 1, Venlighed: 1, Fantasi: 1, Humor: 1, Nysgerrighed: 1 };
-  return {
+  return Object.assign({
     id: 'h1', name: 'Asta', skin: '#F6D3B8', cloak: '#2F6A9E', hat: 'ingen', hatCol: '#2C7A4B', hair: 'kort', hairCol: '#2A1D14',
     eyes: 'prik', brows: 'rolig', mouth: 'smil', spots: 'ingen', gear: 'ingen', pat: 'ingen', acc: 'ingen', bgc: 'none',
     stats, pts: 0, lastMonth: 999999, bonusMonth: -1, stories: 0, magic: 'gnist', magic2: ''
-  };
+  }, over);
 }
+// En mester (5 i tre træk) på level 3 med to magier, så magi-, mester- og skjoldvalgene kommer i brug.
+const MESTER = { stats: { Mod: 5, List: 0, Venlighed: 5, Fantasi: 5, Humor: 0, Nysgerrighed: 0 }, stories: 4, magic: 'gnist', magic2: 'skjold' };
+// En helt uden mestertræk, men med to magier, så magierne (og bagefter skjoldet) bruges.
+const MAGIKER = { stats: { Mod: 3, List: 2, Venlighed: 2, Fantasi: 3, Humor: 2, Nysgerrighed: 2 }, stories: 4, magic: 'gnist', magic2: 'skjold' };
 
 // Ny browser-kontekst med gemte data og et fast Math.random. Service workeren er slået fra,
 // så den ikke gemmer filer mellem testene og ikke går uden om page.route.
@@ -55,8 +59,9 @@ async function vaelgOgStart(page, id) {
   await page.click('#go');
 }
 
-// Tryk altid på det første valg, der kan trykkes på, til slutskærmen.
-async function spilTilSlut(page, log) {
+// Tryk altid på det første (eller sidste) valg, der kan trykkes på, til slutskærmen.
+// Med sidste valg bruges Lysskjoldet også, når et kast mislykkes.
+async function spilTilSlut(page, log, sidste) {
   for (let i = 0; i < 300; i++) {
     log.push(await page.evaluate(() => {
       const t = s => { const e = document.querySelector('#stage ' + s); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; };
@@ -65,11 +70,17 @@ async function spilTilSlut(page, log) {
     if (await page.$('.end')) return;
     if (await page.$('#roll')) {
       await page.click('#roll');
-      await page.waitForFunction(() => { const b = document.getElementById('roll'); return b && b.textContent === 'Læs videre' && !b.disabled; });
+      for (;;) {
+        await page.waitForFunction(() => { const b = document.getElementById('roll'); return b && b.textContent === 'Læs videre' && !b.disabled; });
+        log.push('kast: ' + (await page.textContent('#res')) + ((await page.$('#shield')) ? ' (skjold)' : ''));
+        if (sidste && (await page.$('#shield'))) { await page.click('#shield'); continue; }
+        break;
+      }
       await page.click('#roll');
       continue;
     }
-    await page.locator('#choices .crow > .btn:not([disabled])').first().click();
+    const valg = page.locator('#choices .crow > .btn:not([disabled])');
+    await (sidste ? valg.last() : valg.first()).click();
   }
   throw new Error('Nåede ikke slutskærmen');
 }
@@ -78,15 +89,21 @@ async function gemt(page) {
   return page.evaluate(() => JSON.parse(localStorage.getItem('lk-heroes')));
 }
 
-for (const [navn, rnd] of [['alle kast lykkes', 0.99], ['alle kast fejler', 0]]) {
+const KOERSLER = [
+  ['alle kast lykkes', 0.99, {}, false],
+  ['alle kast fejler', 0, {}, false],
+  ['mester med magi vælger sidste valg', 0, MESTER, true],
+  ['magiker vælger sidste valg', 0, MAGIKER, true]
+];
+for (const [navn, rnd, over, sidste] of KOERSLER) {
   test('gennemspilning af alle fire dele: ' + navn, async () => {
-    const { context, page, fejl } = await nySide({ heroes: [helt()], play: { h1: true }, world: {} }, rnd);
+    const { context, page, fejl } = await nySide({ heroes: [helt(over)], play: { h1: true }, world: {} }, rnd);
     await page.goto(server.base + 'index.html');
     for (const del of DELE) {
       await page.waitForSelector('input[name=story][value="' + del + '"]');
       await vaelgOgStart(page, del);
       const log = [];
-      await spilTilSlut(page, log);
+      await spilTilSlut(page, log, sidste);
       optaget[navn + ' / ' + del] = log;
       if (!optag) assert.deepStrictEqual(log, forventet[navn + ' / ' + del], 'forløbet i ' + del + ' er ændret');
       assert.strictEqual((await page.textContent('.end')).trim(), 'Slut', del);
@@ -95,7 +112,7 @@ for (const [navn, rnd] of [['alle kast lykkes', 0.99], ['alle kast fejler', 0]])
     }
     const lib = await gemt(page);
     DELE.forEach(d => assert.strictEqual(lib.world['done_' + d], true, d));
-    assert.strictEqual(lib.heroes[0].stories, 4);
+    assert.strictEqual(lib.heroes[0].stories, (over.stories || 0) + 4);
     assert.deepStrictEqual(fejl, []);
     await context.close();
   });

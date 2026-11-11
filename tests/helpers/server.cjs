@@ -19,7 +19,11 @@ async function startServer() {
   const proc = spawn('python3', ['-m', 'http.server', String(port), '--bind', '127.0.0.1'], { cwd: rod, stdio: 'ignore' });
   const base = 'http://127.0.0.1:' + port + '/';
   for (let i = 0; i < 100; i++) {
-    try { const r = await fetch(base + 'index.html'); if (r.ok) return { base, stop: () => proc.kill() }; } catch (e) {}
+    try {
+      const r = await fetch(base + 'index.html');
+      await r.arrayBuffer(); // læs svaret færdigt, ellers klager fetch, når serveren stoppes
+      if (r.ok) return { base, stop: () => proc.kill() };
+    } catch (e) {}
     await new Promise(r => setTimeout(r, 100));
   }
   proc.kill();
