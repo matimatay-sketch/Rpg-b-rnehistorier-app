@@ -20,6 +20,7 @@ Lanterneskoven er et lille, børnevenligt rollespil i en historiebog: lidt som D
 - 👨‍👩‍👧 **Spil sammen:** op til fire helte i historien på samme tid, og de skiftes til at læse og vælge
 - 💬 **Spørg børnene:** et spørgsmål at snakke om under hver scene
 - 🎲 Terningkast med synlig chance (Nemt, Middel, Svært)
+- 🤸 **Bevægelser:** 1-2 gange i hver historie rejser børnene sig og gør det, heltene gør, fx går på line over stammen, og familien trykker "Vi klarede det!" eller "Vi vaklede". Knappen **Bevægelse** slår det fra, så bliver det almindelige terningkast
 - ⭐ **Mester-valg:** når et træk når 5, åbner der sig særlige valg i historien
 - 📈 **Levels** (hvert andet eventyr), og på level 3 kan helten vælge en ekstra magi
 - 🖼️ **Et billede til hver scene** i billedbogsstil, og lanternerne står lige under billedet
