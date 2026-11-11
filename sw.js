@@ -1,6 +1,6 @@
 // Lanterneskoven: gør spillet til en app, der også virker uden internet.
 // Hæv versionen, når index.html, js/, art/ eller en historie ændres, så gamle filer ryddes op.
-const VERSION = 'lk-v3';
+const VERSION = 'lk-v4';
 const SHELL = [
   './',
   './index.html',
@@ -10,10 +10,11 @@ const SHELL = [
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
   './icons/apple-touch-icon.png',
-  // Motorens små scripts (js/) og billeddelene (art/, når de findes).
+  // Motorens små scripts (js/) og billeddelene (art/).
   './js/katalog.js',
   './js/data.js',
   './js/kit.js',
+  './art/dele.js',
   // Historierne, så de også kan spilles uden internet.
   './stories/katalog.js',
   './stories/lantern/historie.js',

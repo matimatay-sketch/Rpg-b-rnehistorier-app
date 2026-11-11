@@ -59,14 +59,30 @@ async function vaelgOgStart(page, id) {
   await page.click('#go');
 }
 
+// Hver scene har præcis ét billede øverst (før overskriften) og en stribe med seks lanterner.
+// Giver en tom streng, når alt er i orden, ellers scenens titel og hvad der er galt.
+function tjekBillede() {
+  const h2 = document.querySelector('#stage h2');
+  const titel = h2 ? h2.textContent.trim() : '(ingen overskrift)';
+  const fig = document.querySelectorAll('#stage figure.scene-art');
+  const svg = document.querySelectorAll('#stage figure.scene-art svg[role="img"]');
+  if (fig.length !== 1 || svg.length !== 1) return titel + ': ' + fig.length + ' billeder, ' + svg.length + ' svg';
+  if (!h2 || !(fig[0].compareDocumentPosition(h2) & Node.DOCUMENT_POSITION_FOLLOWING)) return titel + ': billedet står ikke før overskriften';
+  if (!svg[0].getAttribute('aria-label')) return titel + ': billedet mangler alt-tekst';
+  if (document.querySelectorAll('#stage .lamps i').length !== 6) return titel + ': lanternestriben mangler';
+  return '';
+}
+
 // Tryk altid på det første (eller sidste) valg, der kan trykkes på, til slutskærmen.
 // Med sidste valg bruges Lysskjoldet også, når et kast mislykkes.
-async function spilTilSlut(page, log, sidste) {
+async function spilTilSlut(page, log, sidste, billedFejl) {
   for (let i = 0; i < 300; i++) {
     log.push(await page.evaluate(() => {
       const t = s => { const e = document.querySelector('#stage ' + s); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; };
       return t('h2') + ' | ' + t('.story') + ' | ' + t('.ask') + ' | ' + [...document.querySelectorAll('#choices .crow > .btn')].map(b => b.textContent + (b.disabled ? ' (låst)' : '')).join(' / ');
     }));
+    const b = await page.evaluate(tjekBillede);
+    if (b) billedFejl.push(b);
     if (await page.$('.end')) return;
     if (await page.$('#roll')) {
       await page.click('#roll');
@@ -102,9 +118,10 @@ for (const [navn, rnd, over, sidste] of KOERSLER) {
     for (const del of DELE) {
       await page.waitForSelector('input[name=story][value="' + del + '"]');
       await vaelgOgStart(page, del);
-      const log = [];
-      await spilTilSlut(page, log, sidste);
+      const log = [], billedFejl = [];
+      await spilTilSlut(page, log, sidste, billedFejl);
       optaget[navn + ' / ' + del] = log;
+      assert.deepStrictEqual(billedFejl, [], 'billeder i ' + del);
       if (!optag) assert.deepStrictEqual(log, forventet[navn + ' / ' + del], 'forløbet i ' + del + ' er ændret');
       assert.strictEqual((await page.textContent('.end')).trim(), 'Slut', del);
       if (del === 'lantern') assert.strictEqual((await gemt(page)).world.done_lantern, true);
@@ -114,6 +131,24 @@ for (const [navn, rnd, over, sidste] of KOERSLER) {
     DELE.forEach(d => assert.strictEqual(lib.world['done_' + d], true, d));
     assert.strictEqual(lib.heroes[0].stories, (over.stories || 0) + 4);
     assert.deepStrictEqual(fejl, []);
+    await context.close();
+  });
+}
+
+// Billedet bevæger sig (lanterner, stjerner, øjne), men står helt stille, når enheden beder om mindre bevægelse.
+for (const [navn, motion, bevaeger] of [['bevæger sig', 'no-preference', true], ['står stille med reduceret bevægelse', 'reduce', false]]) {
+  test('billedet ' + navn, async () => {
+    const context = await browser.newContext({ serviceWorkers: 'block', reducedMotion: motion });
+    await context.addInitScript(libJson => {
+      try { localStorage.setItem('lk-heroes', libJson); localStorage.setItem('lk-welcomed', '1'); } catch (e) {}
+    }, JSON.stringify({ heroes: [helt()], play: { h1: true }, world: {} }));
+    const page = await context.newPage();
+    await page.goto(server.base + 'index.html');
+    await page.waitForSelector('input[name=story]');
+    await vaelgOgStart(page, 'lantern');
+    await page.waitForSelector('#stage figure.scene-art svg');
+    const antal = await page.evaluate(() => document.querySelector('#stage figure.scene-art').getAnimations({ subtree: true }).length);
+    if (bevaeger) assert.ok(antal > 0, 'ingen animationer i billedet'); else assert.strictEqual(antal, 0);
     await context.close();
   });
 }

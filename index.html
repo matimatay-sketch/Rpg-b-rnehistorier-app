@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600;800&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <style>
-/* Layout: one reading column like an open picture book; banner of lantern forest on top, story card, then big choice buttons. */
+/* Layout: one reading column like an open picture book; banner of the forest on top, story card with the scene's picture, then big choice buttons. */
 :root {
   --bg: #EDF2EE;
   --surface: #FFFFFF;
@@ -60,10 +60,6 @@ button, input { font: inherit; color: inherit; }
 
 .banner { border-radius: 20px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
 .banner svg { display: block; width: 100%; height: auto; }
-.banner .lamp { fill: var(--lantern); opacity: .22; transition: opacity .8s; }
-.banner .lamp.on { opacity: 1; }
-.banner .halo { fill: var(--lantern); opacity: 0; transition: opacity .8s; }
-.banner .halo.on { opacity: .25; }
 .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--muted); }
 .bar .brand { color: var(--ink); font-weight: 800; font-size: 18px; }
 .spark { display: inline-flex; gap: 6px; align-items: center; }
@@ -72,6 +68,14 @@ button, input { font: inherit; color: inherit; }
 
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .card h2 { font-size: 28px; font-weight: 800; }
+/* Scenens billede fylder hele kortets bredde øverst; er skærmen lav, beskæres det i siderne af SVG'ens slice. */
+.scene-art { margin: -22px -20px 0; border-radius: 19px 19px 0 0; overflow: hidden; background: #1E2E52; }
+.scene-art svg { display: block; width: 100%; height: auto; max-height: 45vh; }
+/* Lanternerækken: en smal stribe under billedet, der lyser mere, jo længere man kommer. */
+.lamps { display: flex; justify-content: center; gap: 14px; margin-top: -4px; }
+.lamps i { width: 12px; height: 16px; border-radius: 4px 4px 6px 6px; background: var(--line); display: block; position: relative; }
+.lamps i::before { content: ""; position: absolute; left: 5px; top: -5px; width: 2px; height: 5px; background: var(--line); }
+.lamps i.on { background: var(--lantern); box-shadow: 0 0 10px var(--lantern); }
 .story p + p { margin-top: 12px; }
 .turn { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--lantern-ink); background: var(--lantern); border-radius: 999px; padding: 3px 14px 3px 6px; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; }
 .turn svg { display: block; }
@@ -92,7 +96,7 @@ button, input { font: inherit; color: inherit; }
 .die { width: 92px; height: 92px; border-radius: 22px; border: 3px solid var(--ink); background: var(--surface); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 52px; }
 .die.rolling { animation: wob .35s linear infinite; }
 @keyframes wob { 0% { transform: rotate(-8deg) } 50% { transform: rotate(8deg) } 100% { transform: rotate(-8deg) } }
-@media (prefers-reduced-motion: reduce) { .die.rolling { animation: none } .banner .lamp, .banner .halo { transition: none } }
+@media (prefers-reduced-motion: reduce) { .die.rolling { animation: none } }
 .sum { font-family: var(--font-display); font-weight: 600; font-size: 17px; }
 .sum.win { color: var(--good); } .sum.lose { color: var(--bad); }
 .feather { display: flex; align-items: center; gap: 8px; font-size: 16px; }
@@ -209,7 +213,6 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
       <g fill="var(--tree2)">
         <path d="M80 150 L110 70 L150 20 L190 75 L215 55 L260 130 L280 150Z"/><path d="M230 150 L265 95 L300 45 L335 100 L370 150Z"/><path d="M450 150 L485 90 L520 40 L555 95 L585 150Z"/>
       </g>
-      <g id="lamps"></g>
     </svg>
   </div>
 
@@ -222,12 +225,12 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 <script src="js/katalog.js"></script>
 <script src="js/data.js"></script>
 <script src="js/kit.js"></script>
+<script src="art/dele.js"></script>
 <script src="stories/katalog.js"></script>
 <script>
 (function () {
   var D = LK.data;
   var COMPS = D.comps, MAGICS = D.magics, STATS = D.stats, FRIEND_FLAGS = D.friendFlags;
-  var LAMPS = [[70,118],[175,98],[265,122],[372,106],[470,118],[566,104]];
   /* Historierne registrerer sig med LK.addStory (se LK.start nederst). STORIES har samme rækkefølge som kataloget. */
   var STORIES = [];
   function storyIndex(id) { for (var i = 0; i < STORIES.length; i++) if (STORIES[i].id === id) return i; return 0; }
@@ -347,16 +350,18 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 
   var $ = function (id) { return document.getElementById(id); };
 
-  var lampsG = $('lamps');
-  LAMPS.forEach(function (p) {
-    var ns = 'http://www.w3.org/2000/svg';
-    var h = document.createElementNS(ns, 'circle'); h.setAttribute('cx', p[0]); h.setAttribute('cy', p[1]); h.setAttribute('r', 22); h.setAttribute('class', 'halo');
-    var l = document.createElementNS(ns, 'rect'); l.setAttribute('x', p[0] - 6); l.setAttribute('y', p[1] - 9); l.setAttribute('width', 12); l.setAttribute('height', 18); l.setAttribute('rx', 4); l.setAttribute('class', 'lamp');
-    lampsG.appendChild(h); lampsG.appendChild(l);
-  });
-  function setLamps(n) {
-    var hs = lampsG.querySelectorAll('.halo'), ls = lampsG.querySelectorAll('.lamp');
-    for (var i = 0; i < ls.length; i++) { var on = i < n; ls[i].classList.toggle('on', on); hs[i].classList.toggle('on', on); }
+  /* Billederne bevæger sig med CSS fra art/dele.js; den sættes ind én gang. */
+  if (LK.art) { var artCss = document.createElement('style'); artCss.textContent = LK.art.css; document.head.appendChild(artCss); }
+  /* Lanternerækken under scenens billede: seks lanterner, n af dem tændt. */
+  function lampsHtml(n) {
+    var o = '';
+    for (var i = 0; i < 6; i++) o += '<i class="' + (i < n ? 'on' : '') + '"></i>';
+    return '<div class="lamps" aria-hidden="true">' + o + '</div>';
+  }
+  /* Scenens billede fra historiens billeder. Fejler et billede, vises scenen bare uden. */
+  function artHtml(id) {
+    if (!ART[id] || !LK.art) return '';
+    try { return '<figure class="scene-art">' + LK.art.scene(ART[id]) + '</figure>'; } catch (e) { console.error('Billedet til ' + id + ' kunne ikke tegnes:', e); return ''; }
   }
   function setSpark() {
     $('spark').innerHTML = [0, 1, 2, 3].map(function (i) { return '<i class="' + (state.gnists > i ? 'on' : '') + '"></i>'; }).join('');
@@ -595,7 +600,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   var SPK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
 
   /* Scener, magi- og mester-valg fyldes fra de registrerede historier. Scene-id'er er unikke på tværs af historierne. */
-  var S = {}, MAGIC_OPTS = {}, MAX_OPTS = {};
+  var S = {}, MAGIC_OPTS = {}, MAX_OPTS = {}, ART = {};
   function addStory(st) {
     var ids = Object.keys(st.scenes || {});
     var dobbelt = ids.filter(function (id) { return S[id]; });
@@ -604,6 +609,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     ids.forEach(function (id) { S[id] = st.scenes[id]; });
     Object.keys(st.magi || {}).forEach(function (id) { MAGIC_OPTS[id] = st.magi[id]; });
     Object.keys(st.mester || {}).forEach(function (id) { MAX_OPTS[id] = st.mester[id]; });
+    Object.keys(st.billeder || {}).forEach(function (id) { ART[id] = st.billeder[id]; });
     STORIES.push(st);
   }
   LK.addStory = function (factory) {
@@ -639,7 +645,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   var welcomed = false;
   try { welcomed = localStorage.getItem('lk-welcomed') === '1'; } catch (e) {}
   function renderWelcome(fromLink) {
-    stopSpeak(); setLamps(2); setSpark();
+    stopSpeak(); setSpark();
     $('epi').textContent = 'Velkommen';
     stage.innerHTML =
       '<h2>Velkommen til Lanterneskoven!</h2>' +
@@ -658,7 +664,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   function renderSetup() { if (setup.view === 'builder') renderEdit(); else renderLib(); }
 
   function renderLib() {
-    setLamps(1); setSpark();
+    setSpark();
     if (!setup.story) { var nx = STORIES.filter(function (x) { return !lib.world['done_' + x.id]; })[0]; setup.story = nx ? nx.id : 'lantern'; }
     $('epi').textContent = 'Vælg eventyr';
     var sel = lib.heroes.filter(function (h) { return lib.play[h.id]; }).length;
@@ -719,7 +725,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
   }
 
   function renderEdit() {
-    setLamps(1); setSpark();
+    setSpark();
     $('epi').textContent = 'Vælg eventyr';
     var h = setup.edit;
     stage.innerHTML =
@@ -845,7 +851,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     var id = state.scene, sc = S[id];
     stopSpeak();
     setSpark();
-    setLamps(sc.all ? 6 : sc.lit != null ? sc.lit : 1 + state.gnists * 2 + (state.visited.length > 0 ? 1 : 0));
+    var lit = sc.all ? 6 : sc.lit != null ? sc.lit : 1 + state.gnists * 2 + (state.visited.length > 0 ? 1 : 0);
     var paras = typeof sc.text === 'function' ? sc.text() : sc.text;
     if (state.magicNote) { paras = [state.magicNote].concat(paras); state.magicNote = ''; }
     if (state.compNote) paras = paras.concat([state.compNote]);
@@ -855,7 +861,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
     var askTxt = typeof sc.ask === 'function' ? sc.ask() : sc.ask;
     var gi = sc.gnist ? state.gnistList.filter(function (g) { return g.key === id; })[0] : null;
     var nameBox = gi ? '<div class="namebox"><label class="lab" for="gn"><i class="gdot" style="background:' + gi.col + '"></i>Giv den ' + gi.c + ' gnist et navn</label><input class="nm-in" id="gn" maxlength="14" placeholder="Fx ' + gi.ph + '" value="' + esc(gi.name) + '"></div>' : '';
-    var h = (sc.end ? '<div class="end" aria-hidden="true">Slut</div>' : '') +
+    var h = artHtml(id) + lampsHtml(lit) + (sc.end ? '<div class="end" aria-hidden="true">Slut</div>' : '') +
       '<h2>' + sc.title + '</h2>' + turnLine(isChoice) + toolsHtml() +
       '<div class="story">' + storyHtml(paras) + '</div>' + nameBox +
       '<div class="ask"><b>Spørg børnene:</b> ' + askTxt + '</div>';
