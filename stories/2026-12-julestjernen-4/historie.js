@@ -32,6 +32,15 @@ LK.addStory(function (k) {
     return o;
   }
 
+  // Den mindstes løfte er ikke en del af snemandens ansigt. Ansigtets dele er alle de andre fund.
+  var LOEFTE = 'Den mindstes løfte';
+  function ansigtNavne() {
+    return k.state.gnistList.filter(function (g) { return g.def !== LOEFTE; }).map(function (g) { return (g.name || '').trim() || g.def; });
+  }
+  function harLoefte() {
+    return k.state.gnistList.some(function (g) { return g.def === LOEFTE; });
+  }
+
   var scenes = {
     js4Start: {
       title: 'Julefest i aften',
@@ -118,10 +127,10 @@ LK.addStory(function (k) {
       next: 'js4Hub'
     },
     js4PjuskeFejl: {
-      title: 'Godnat igen',
-      text: ['KNAS! Et frossent blad knaser under en fod. Pjuske åbner ét øje. &laquo;Er det forår?&raquo; mumler han.',
-        '&laquo;Nej, det er jul,&raquo; hvisker I. &laquo;Godnat igen.&raquo; &laquo;Glædelig jul,&raquo; mumler Pjuske. Så ruller han sig sammen om sine kastanjer, som om de var en bamse, og sover videre. Dem kan I ikke tage nu. Nusse holder sig for munden for ikke at fnise.'],
-      ask: 'Hvordan tror I, det er at vågne midt i vinteren og falde i søvn igen?',
+      title: 'Snemaaand',
+      text: ['KNAS! Et frossent blad knaser under en fod. Alle står stille som snemænd. Pjuske sukker dybt i søvne med øjnene lukket og ruller om på den anden side, lige oven på sine kastanjer.',
+        'Så snorker han. Det lyder næsten som &laquo;snemaaand&hellip;&raquo;. Uffe hvisker: &laquo;Han har aldrig set sne. Han sover jo hver vinter. Måske drømmer han om den.&raquo; Kastanjerne ligger under Pjuske nu, så dem lader I ligge. Nusse holder sig for munden for ikke at fnise.'],
+      ask: 'Hvordan tror I, en snemand ser ud i et pindsvins drøm?',
       next: 'js4Hub'
     },
     js4Krage: {
@@ -177,12 +186,15 @@ LK.addStory(function (k) {
     js4Snemand: {
       title: 'Snemanden',
       text: function () {
-        var g = k.state.gnists;
-        var a = 'I lysningen står ræveungernes store snemand med pindearme, hat og halstørklæde. Hans næse lyser gyldent. Det er den sidste stjernestump. Ræveungerne står ved siden af ham og ser stolte ud.';
-        if (g >= 1) return [a, 'I lægger ' + k.joinNames(k.gnistNames()) + ' frem i sneen. Ræveungerne kigger på det, og så begynder de at bygge. Snemanden får et helt nyt ansigt. Ræveungerne kigger på ham med hovedet på skrå, og så griner de højt. &laquo;Nu ligner han vores morfar!&raquo;',
-          'Ræveungerne løfter forsigtigt stjernestumpen af og giver den til jer. &laquo;Han er endnu finere nu,&raquo; siger de. Nusse lægger stumpen i æsken. Alle fire er fundet!'];
-        return [a, 'I har ikke fundet noget nyt ansigt. Ræveungerne kigger på jer. Så siger I det, som det er: at stumpen er en del af julestjernen, og at den skal lyse for hele skoven i aften.',
-          'Ræveungerne kigger på hinanden. &laquo;Så skal den op i træet,&raquo; siger den største. De løfter stumpen af og trykker en lille snebold på i stedet. &laquo;En snenæse er også fin.&raquo; Nusse lægger stumpen i æsken. Alle fire er fundet!'];
+        var dele = ansigtNavne(), loefte = harLoefte();
+        var t = ['I lysningen står ræveungernes store snemand med pindearme, hat og halstørklæde. Hans næse lyser gyldent. Det er den sidste stjernestump. Ræveungerne står ved siden af ham og ser stolte ud.'];
+        if (dele.length) t.push('I lægger ' + k.joinNames(dele) + ' frem i sneen. Ræveungerne kigger på det, og så begynder de at bygge. Snemanden får et nyt ansigt. Ræveungerne kigger på ham med hovedet på skrå, og så griner de højt. &laquo;Nu ligner han vores morfar!&raquo;');
+        else t.push('I har ikke fundet noget nyt ansigt. Ræveungerne kigger på jer. Så siger I det, som det er: at stumpen er en del af julestjernen, og at den skal lyse for hele skoven i aften.');
+        var sne = ' Ræveungerne trykker en lille snebold på snemanden i stedet. &laquo;En snenæse er også fin.&raquo;';
+        if (loefte) t.push('Så træder den mindste ræveunge frem. &laquo;Jeg har lovet det,&raquo; siger hun og løfter selv stumpen forsigtigt af. &laquo;Den skal lyse for hele skoven.&raquo;' + (dele.length ? '' : sne) + ' Nusse lægger stumpen i æsken. Alle fire er fundet!');
+        else if (dele.length) t.push('Ræveungerne løfter forsigtigt stjernestumpen af og giver den til jer. &laquo;Han er endnu finere nu,&raquo; siger de. Nusse lægger stumpen i æsken. Alle fire er fundet!');
+        else t.push('Ræveungerne kigger på hinanden. &laquo;Så skal den op i træet,&raquo; siger den største. De løfter stumpen af.' + sne + ' Nusse lægger stumpen i æsken. Alle fire er fundet!');
+        return t;
       },
       ask: 'Hvordan tror I, ræveungerne har det nu?',
       choices: [{ label: 'Gå til Lanternetræet med alle fire stumper', to: 'js4Trae' }]
@@ -207,7 +219,9 @@ LK.addStory(function (k) {
       text: function () {
         var t = ['I lægger de fire stumper sammen. De klikker sammen med et lille &laquo;pling&raquo;, og julestjernen er hel igen. Uffe tager den forsigtigt i næbbet og flyver den op i toppen af træet.',
           'Stjernen lyser så stærkt, at sneen på alle grenene glitrer som guld. Lanterne efter lanterne tænder, og skovens dyr råber hurra. Nusse kigger op med tårer af glæde i øjnene. &laquo;Den har aldrig lyst så flot før.&raquo;'];
-        if (k.state.gnists > 0) t.push('Ovre i lysningen smiler snemanden med ' + k.joinNames(k.gnistNames()) + ', og den mindste ræveunge vinker til stjernen.');
+        var dele = ansigtNavne();
+        if (dele.length) t.push('Ovre i lysningen smiler snemanden med sit nye ansigt af ' + k.joinNames(dele) + '.');
+        if (harLoefte()) t.push('Forrest sidder den mindste ræveunge, som holdt sit løfte, og vinker til stjernen.');
         t.push('&laquo;Hu-hu! Glædelig jul!&raquo; siger Uffe. Og så nyser han. Men denne gang holder alle godt fast i stjernen.');
         return t;
       },
@@ -331,9 +345,9 @@ LK.addStory(function (k) {
     js4PjuskeOk: { sted: 'slukkettrae', himmel: 'skumring', alt: 'Pjuske sover videre, og Uffe holder to blanke kastanjer.',
       ting: [{ navn: 'bladbunke', x: 150, y: 240 }, { navn: 'gnist', x: 300, y: 130, taendt: true, farve: '#7A3B1E' }, SNE],
       figurer: [{ navn: 'pind', x: 150, y: 210, skala: 0.55, humoer: 'rolig' }, UF(300, 190, 'glad', 0.6)] },
-    js4PjuskeFejl: { sted: 'slukkettrae', himmel: 'skumring', alt: 'Pjuske kigger søvnigt op med ét øje, og Nusse holder sig for munden.',
+    js4PjuskeFejl: { sted: 'slukkettrae', himmel: 'skumring', alt: 'Pjuske sover videre med lukkede øjne oven på kastanjerne, og Nusse holder sig for munden.',
       ting: [{ navn: 'bladbunke', x: 150, y: 240 }, SNE],
-      figurer: [{ navn: 'pind', x: 150, y: 210, skala: 0.55, humoer: 'overrasket' }, NU(300, 196, 'overrasket', 0.65)] },
+      figurer: [{ navn: 'pind', x: 150, y: 210, skala: 0.55, humoer: 'rolig' }, NU(300, 196, 'overrasket', 0.65)] },
     js4Krage: { sted: 'lysning', himmel: 'skumring', alt: 'Kragen sidder på en lav gren med en klase røde bær.',
       ting: driver(60, 340).concat([{ navn: 'gnist', x: 205, y: 150, skala: 0.6, farve: 'roed' }, SNE]),
       figurer: [{ navn: 'krage', x: 160, y: 190, skala: 0.7, humoer: 'rolig' }, NU(300, 194, 'rolig', 0.7)] },
