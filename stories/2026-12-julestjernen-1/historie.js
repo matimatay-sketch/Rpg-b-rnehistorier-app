@@ -53,7 +53,7 @@ LK.addStory(function (k) {
       title: 'Hat-sju!',
       text: ['Nusse kigger lidt skævt på Uffe. &laquo;Jeg kørte stjernen hen til træet på min kælk. Så nøs Uffe. Meget højt.&raquo;',
         '&laquo;HAT-SJU!&raquo; siger Uffe, bare for at vise, hvordan det lød. &laquo;Undskyld. Det var sneen, der kildede mig i næbbet.&raquo; Nusse hoppede af forskrækkelse, kælken susede af sted, og stjernen sprang i fire gyldne stumper, der fløj ud i sneen.',
-        '&laquo;Én af dem fløj op på kælkebakken,&raquo; siger Nusse. &laquo;Vi tager én ad gangen.&raquo; Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held. Brug den, når I slår med terningen.&raquo;'],
+        '&laquo;Én af dem fløj op på kælkebakken,&raquo; siger Nusse. &laquo;Vi tager én ad gangen.&raquo; Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held, når noget bliver svært.&raquo;'],
       gainFeather: true,
       ask: 'Er I nogensinde kommet til at lave noget i stykker ved et uheld? Hvad gjorde I så?',
       choices: [{ label: 'Det var et uheld, Uffe. Afsted!', to: 'js1Hub' }]
@@ -136,8 +136,8 @@ LK.addStory(function (k) {
       ask: 'Hvordan holder man balancen, når man skal gå et smalt sted?',
       choices: [
         { label: 'Gå hen ad volden, ét skridt ad gangen', bevaeg: { goer: 'Læg et snørebånd eller en tæppekant på gulvet. Det er den smalle snevold. Gå hen ad den, ét skridt ad gangen, uden at træde ved siden af.', stat: 'Mod', target: 6, win: 'js1VoldOk', lose: 'js1VoldFejl' } },
-        { label: 'Bed Uffe flyve derhen og hente det', roll: { stat: 'Venlighed', target: 6, win: 'js1VoldOk', lose: 'js1VoldFejl' } },
-        { label: 'Kast en snebold, så halstørklædet falder ned', roll: { stat: 'Nysgerrighed', target: 6, win: 'js1VoldOk', lose: 'js1VoldFejl' } }
+        { label: 'Hold hinanden i hænderne, og gå ud ad volden sammen', roll: { stat: 'Venlighed', target: 6, win: 'js1VoldOk', lose: 'js1VoldFejl' } },
+        { label: 'Find de steder, hvor sneen er hård, og træd kun dér', roll: { stat: 'Nysgerrighed', target: 6, win: 'js1VoldOk', lose: 'js1VoldFejl' } }
       ]
     },
     js1VoldOk: {

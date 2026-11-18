@@ -37,18 +37,18 @@ LK.addStory(function (k) {
       title: 'Mørkt allerede',
       text: function () {
         var t = ['I november bliver det mørkt tidligt. I har lige fået eftermiddagsmad, og alligevel er himlen udenfor allerede blå og mørk. Uffe sidder i vindueskarmen og blinker med sine store øjne. Han er en ugle, så han elsker mørke.',
-          'Så banker det på ruden. Det er Pjuske, og han tripper af spænding. &laquo;I aften er det den lange aften!&raquo; siger han. &laquo;Jeg har aldrig set lysormene lyse, for jeg går altid i seng, før det bliver mørkt. Men de har gemt sig, fordi det er så koldt. Vil I hjælpe mig med at finde dem?&raquo;'];
+          'Så banker det på ruden. Det er Pjuske, og han tripper af spænding. &laquo;I aften er det den lange aften!&raquo; siger han. &laquo;Jeg har aldrig set lysormene lyse, for jeg går altid i seng, før det bliver mørkt. Men de har gemt sig, fordi det er så koldt. Vil I hjælpe mig med at finde dem?&raquo;', 'Under armen har han et stort, brunt egeblad. Det er hans efterårsliste med fire ting, han vil nå, før han går i hi.'];
         if (k.state.remembered.length) t.push('&laquo;Hu-hu! Det er ' + k.joinNames(k.state.remembered) + ',&raquo; siger Uffe. &laquo;De er gode til at finde ting i mørket.&raquo;');
         return t;
       },
       ask: 'Hvad kan man lave i de lange, mørke aftener, som man ikke kan om sommeren?',
-      choices: [{ label: 'Tag en lygte, og gå med Pjuske', to: 'pj3Hub' }, { label: 'Spørg Pjuske om hans liste', to: 'pj3Liste' }]
+      choices: [{ label: 'Tag en lygte, og gå med Pjuske', to: 'pj3Hub' }, { label: 'Spørg Pjuske, hvad der står på hans efterårsliste', to: 'pj3Liste' }]
     },
     pj3Liste: {
       title: 'Punkt nummer tre',
       text: ['Pjuske finder sit store egeblad frem. Uffe har skrevet fire ting på det: en blød seng, farvel til trækfuglene, lysormene i den lange aften, og at blive sunget godnat.',
         '&laquo;Min seng er klar, og gæssene er fløjet,&raquo; siger Pjuske. &laquo;Så i aften er det nummer tre. Lysormene lyser kun, når de er varme og glade.&raquo;',
-        'Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held. Brug den, når I slår med terningen.&raquo;'],
+        'Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held, når noget bliver svært.&raquo;'],
       gainFeather: true,
       ask: 'Hvad gør jer varme og glade indeni?',
       choices: [{ label: 'Lad os finde lysormene!', to: 'pj3Hub' }]
@@ -111,7 +111,7 @@ LK.addStory(function (k) {
       choices: [
         { label: 'Bær Lyn på hovedet, så han kan se det hele', bevaeg: { goer: 'Læg en bamse eller en bog på hovedet. Det er Lyn. Gå fra den ene ende af stuen til den anden uden at tabe den.', stat: 'Mod', target: 6, win: 'pj3BaekOk', lose: 'pj3BaekFejl' } },
         { label: 'Byg et højt tårn af sten, som Lyn kan sidde på', roll: { stat: 'List', target: 6, win: 'pj3BaekOk', lose: 'pj3BaekFejl' } },
-        { label: 'Fortæl Lyn om alt det, han kan se oppe fra bakken', roll: { stat: 'Fantasi', target: 6, win: 'pj3BaekOk', lose: 'pj3BaekFejl' } }
+        { label: 'Find på en høj udkigspost, som Lyn kan sidde i', roll: { stat: 'Fantasi', target: 6, win: 'pj3BaekOk', lose: 'pj3BaekFejl' } }
       ]
     },
     pj3BaekOk: {
@@ -166,7 +166,7 @@ LK.addStory(function (k) {
     },
     pj3KratOk: {
       title: 'Blinkelyset', gain: true, gnist: LYS('grønne', 'Blinkelyset', '#B8D86A', 'Blink'),
-      text: ['Blink, siger lygten. Blink, svarer lysormen. Blink. Blink. Og så er I ved siden af hinanden. Lysormen kravler op på jeres hånd og lyser grønt.',
+      text: ['Skridt for skridt kommer I tættere på. Blink, siger lysormen. Blink, svarer jeres lygte. Og så er I ved siden af hinanden. Lysormen kravler op på jeres hånd og lyser grønt.',
         '&laquo;Tak,&raquo; siger den. &laquo;Mørket var ikke så slemt, da I kom. Det var bare mørkt.&raquo;'],
       ask: 'Hvad er godt ved mørket?',
       next: 'pj3Hub'

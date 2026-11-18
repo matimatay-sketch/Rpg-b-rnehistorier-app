@@ -17,7 +17,7 @@ LK.addStory(function (k) {
     f1b: {
       title: 'Uffes festregel', lit: 2, gainFeather: true,
       text: ['&laquo;Den vigtigste regel til en fest,&raquo; siger Uffe, &laquo;er, at alle skal have lov at være med. Også dem, der er lidt bange.&raquo;',
-        'Han plukker en lysende fjer af sin vinge. &laquo;Tag den med. Den giver held til festen. Brug den, når I slår med terningen.&raquo;'],
+        'Han plukker en lysende fjer af sin vinge. &laquo;Tag den med. Den giver held til festen, når noget bliver svært.&raquo;'],
       ask: 'Hvordan kan man få en, der er genert, til at føle sig velkommen?',
       choices: [{ label: 'Tak, Uffe! Lad os holde fest', to: 'f_lys' }]
     },
@@ -29,7 +29,7 @@ LK.addStory(function (k) {
         function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'f_lysOk', lose: 'f_lysFejl', flag: 'tutVen', flagTxt: 'fordi Tuts svampe lyser op' } }; }
         // Bevægelse: samme valg som R, men familien bærer selv en lanterne.
         function B(stat, label, t, goer) { var c = R(stat, label, t), r = c.roll; return { label: label, bevaeg: { goer: goer, stat: r.stat, target: r.target, win: r.win, lose: r.lose, flag: r.flag, flagTxt: r.flagTxt } }; }
-        var c = [R('List', 'Byg en lang stang af grene med en krog i enden'), B('Mod', 'Gå først ind i den mørkeste del af skoven med en rygsæk fuld af lanterner', 7, 'Læg en bog eller en bamse på hovedet. Det er en lanterne. Gå langsomt hen over gulvet, uden at den falder af.'), R('Fantasi', 'Mal en stjernehimmel på lanternerne med fingrene')];
+        var c = [R('List', 'Byg en lang stang af grene med en krog i enden'), B('Mod', 'Bær en lanterne på hovedet ind i den mørkeste del af skoven', 7, 'Læg en bog eller en bamse på hovedet. Det er en lanterne. Gå langsomt hen over gulvet, uden at den falder af.'), R('Fantasi', 'Forestil jer, at lanternerne er sovende ildfluer, og væk dem blidt én ad gangen')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at tænde de højeste lanterner', to: 'f_lysGnist', use: n }); });
         c.push({ label: 'Bed Tuts lysende svampe stå som lamper langs stien', to: 'f_lysOk', lock: function () { return k.state.flags.tutVen ? null : 'Kræver at I har hjulpet Tut'; } });
         return c;
@@ -66,9 +66,9 @@ LK.addStory(function (k) {
         function R(stat, label, t) { return { label: label, roll: { stat: stat, target: t || 6, win: 'f_musikOk', lose: 'f_musikFejl', flag: 'nusseVen', flagTxt: 'fordi Nusse har lånt jer sin fløjte' } }; }
         // Bevægelse: samme valg som R, men familien er selv orkestret.
         function B(stat, label, goer) { var c = R(stat, label), r = c.roll; return { label: label, bevaeg: { goer: goer, stat: r.stat, target: r.target, win: r.win, lose: r.lose, flag: r.flag, flagTxt: r.flagTxt } }; }
-        var c = [B('Humor', 'Lav en vild lydorkester med frøer, krager og tudser', 'Den ene laver en sjov dyrelyd med en bevægelse til, som en frø, en krage eller en tudse. De andre gør præcis det samme som et spejl.'), R('Venlighed', 'Bed alle om at nynne en stille sang sammen'), R('Nysgerrighed', 'Find alle de ting i skoven, der kan lave lyde')];
+        var c = [B('Humor', 'Lav et vildt lydorkester med frøer, krager og tudser', 'Den ene laver en sjov dyrelyd med en bevægelse til, som en frø, en krage eller en tudse. De andre gør præcis det samme som et spejl.'), R('Venlighed', 'Bed alle om at nynne en stille sang sammen'), R('Nysgerrighed', 'Find alle de ting i skoven, der kan lave lyde')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at klinge som en lille klokke', to: 'f_musikGnist', use: n }); });
-        c.push({ label: 'Bed Månen lyse, så alle kan se at danse', to: 'f_musikOk', lock: function () { return k.state.flags.maaneVen ? null : 'Kræver at I har hjulpet Månen'; } });
+        c.push({ label: 'Bed Månen nynne den første tone, så alle tør synge med', to: 'f_musikOk', lock: function () { return k.state.flags.maaneVen ? null : 'Kræver at I har hjulpet Månen'; } });
         return c;
       }
     },

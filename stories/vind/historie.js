@@ -19,7 +19,7 @@ LK.addStory(function (k) {
     v1b: {
       title: 'Uffes hemmelighed', lit: 2, gainFeather: true,
       text: ['&laquo;Da jeg var lille, var Vinden min bedste ven,&raquo; siger Uffe. &laquo;Den bar mig på ryggen, når mine vinger var for små. Så blev jeg stor og fik travlt med lanterner, og så havde jeg ikke tid til Vinden mere.&raquo;',
-        'Han plukker en lille fjer af sin vinge, lettere og lysere end alle de andre. &laquo;Tag den med. Den giver held, og Vinden vil kende den. Brug den, når I slår med terningen.&raquo;'],
+        'Han plukker en lille fjer af sin vinge, lettere og lysere end alle de andre. &laquo;Tag den med. Den giver held, når noget bliver svært. Og Vinden vil kende den.&raquo;'],
       ask: 'Har I en ven, I har haft for lidt tid til? Hvad kunne I gøre?',
       choices: [{ label: 'Tak, Uffe! Lad os finde Vinden', to: 'v_skov' }]
     },
@@ -118,7 +118,7 @@ LK.addStory(function (k) {
       ask: 'Hvad siger man til én, der har lavet noget galt og er ked af det?',
       dyn: function () {
         function R(stat, label, key, t) { return { label: label, key: key, roll: { stat: stat, target: t || 6, win: 'v_endHjem', lose: 'v_vindFejl', flag: 'tutVen', flagTxt: 'fordi Tut har lært jer at grine sammen' } }; }
-        var c = [R('Venlighed', 'Sig, at I tilgiver, og at I gerne vil lege', 'vv1'), R('Humor', 'Lav en drage af jeres arme, og lad som om I flyver', 'vv2'), R('Fantasi', 'Fortæl, hvordan Vinden kunne bære lys i stedet for at slukke det', 'vv3'), R('Mod', 'Løb ud i blæsten og tag fat i Vinden', 'vv4', 7)];
+        var c = [R('Venlighed', 'Sig, at I tilgiver, og at I gerne vil lege', 'vv1'), R('Humor', 'Lav en drage af jeres arme, og lad som om I flyver', 'vv2'), R('Fantasi', 'Fortæl, hvordan Vinden kunne bære lys i stedet for at slukke det', 'vv3'), R('Mod', 'Gå helt hen til Vinden, selvom det blæser', 'vv4', 7)];
         c.push({ label: 'Lad alle venner række hånden ud til Vinden', to: 'v_endVenner', lock: function () { return k.friendCount() >= 2 ? null : 'Kræver to venner, I har hjulpet'; } });
         c.push({ label: 'Lad gnisterne lege med Vinden', to: 'v_endGnister', lock: function () { return k.availG().length > 0 ? null : 'Kræver en gnist, der ikke er brugt'; } });
         c.push({ label: 'Sæt jer stille ved siden af Vinden og lyt', to: 'v_endLyt' });

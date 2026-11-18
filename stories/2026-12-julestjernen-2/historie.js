@@ -46,7 +46,7 @@ LK.addStory(function (k) {
       title: 'Tuts nye skøjter',
       text: ['&laquo;Da Uffe nøs, og stjernen sprang i stykker, fløj ét stykke helt ned til søen,&raquo; fortæller Nusse. &laquo;Det landede på Tuts hat. Han tror, det er julepynt.&raquo;',
         '&laquo;Og Tut har fået skøjter,&raquo; siger Uffe. &laquo;Han har lært at køre. Men han har glemt at lære at stoppe.&raquo; Nusse ser alvorlig ud. &laquo;Vi bliver inde på bredden. Man kan ikke se, hvor tyk isen er.&raquo;',
-        'Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held. Brug den, når I slår med terningen.&raquo;'],
+        'Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held, når noget bliver svært.&raquo;'],
       gainFeather: true,
       ask: 'Hvad er det første, man skal lære, når man prøver noget nyt?',
       choices: [{ label: 'Vi bliver på bredden. Afsted!', to: 'js2Hub' }]
@@ -104,8 +104,8 @@ LK.addStory(function (k) {
       ask: 'Hvordan holder I balancen, når I står på ét ben?',
       choices: [
         { label: 'Stå på ét ben, ligesom kragen', bevaeg: { goer: 'Stå på ét ben, ligesom kragen, og tæl sammen til ti. Prøv at stå helt stille.', stat: 'Mod', target: 6, win: 'js2KrageOk', lose: 'js2KrageFejl' } },
-        { label: 'Spørg kragen pænt om tricket', roll: { stat: 'Venlighed', target: 6, win: 'js2KrageOk', lose: 'js2KrageFejl' } },
-        { label: 'Lav den sjoveste krage-stilling', roll: { stat: 'Humor', target: 6, win: 'js2KrageOk', lose: 'js2KrageFejl' } }
+        { label: 'Hold hinanden i hånden, og stå på ét ben sammen', roll: { stat: 'Venlighed', target: 6, win: 'js2KrageOk', lose: 'js2KrageFejl' } },
+        { label: 'Stå på ét ben i den sjoveste krage-stilling', roll: { stat: 'Humor', target: 6, win: 'js2KrageOk', lose: 'js2KrageFejl' } }
       ]
     },
     js2KrageOk: {
@@ -155,7 +155,7 @@ LK.addStory(function (k) {
       choices: [
         { label: 'Kig længe og stille ud over isen', roll: { stat: 'Nysgerrighed', target: 6, win: 'js2IsOk', lose: 'js2IsFejl' } },
         { label: 'Hold vanterne op som en skygge for øjnene', roll: { stat: 'List', target: 6, win: 'js2IsOk', lose: 'js2IsFejl' } },
-        { label: 'Spørg en and, der står på bredden', roll: { stat: 'Venlighed', target: 6, win: 'js2IsOk', lose: 'js2IsFejl' } }
+        { label: 'Kig sammen, og sig til, når nogen ser noget', roll: { stat: 'Venlighed', target: 6, win: 'js2IsOk', lose: 'js2IsFejl' } }
       ]
     },
     js2IsOk: {

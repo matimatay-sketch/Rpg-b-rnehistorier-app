@@ -43,18 +43,18 @@ LK.addStory(function (k) {
       title: 'Frost på ruden',
       text: function () {
         var t = ['I nat kom den første frost til Lanterneskoven. Ruden er fuld af små, hvide isblomster, og græsset udenfor er stift og glitrer i solen. Uffe sidder på vindueskarmen og har pustet fjerene op, så han ligner en lille, rund pude.',
-          'Så banker det på ruden. Tik, tik. Udenfor står et lille pindsvin med frost på næsetippen. &laquo;Hej. Jeg hedder Pjuske,&raquo; siger det. &laquo;Når frosten kommer, skal pindsvin snart sove hele vinteren. Men min seng blæste væk i nat. Vil I hjælpe mig?&raquo;'];
+          'Så banker det på ruden. Tik, tik. Udenfor står et lille pindsvin med frost på næsetippen. &laquo;Hej. Jeg hedder Pjuske,&raquo; siger det. &laquo;Når frosten kommer, skal pindsvin snart sove hele vinteren. Men min seng blæste væk i nat. Vil I hjælpe mig?&raquo;', 'Under armen har Pjuske et stort, brunt egeblad med små, krøllede bogstaver på.'];
         if (k.state.remembered.length) t.push('Uffe blinker til Pjuske. &laquo;Dem her kan du stole på. ' + k.joinNames(k.state.remembered) + ' har hjulpet hele skoven før.&raquo;');
         return t;
       },
       ask: 'Hvordan tror I, det føles at skulle sove en hel vinter?',
-      choices: [{ label: 'Tag varmt tøj på, og gå med Pjuske', to: 'pj1Hub' }, { label: 'Spørg Pjuske, hvad det store blad er', to: 'pj1Liste' }]
+      choices: [{ label: 'Tag varmt tøj på, og gå med Pjuske', to: 'pj1Hub' }, { label: 'Spørg Pjuske, hvad der står på egebladet', to: 'pj1Liste' }]
     },
     pj1Liste: {
       title: 'Pjuskes liste',
       text: ['Pjuske holder et stort, brunt egeblad. Der er skrevet på det med små, krøllede bogstaver. &laquo;Uffe har skrevet min efterårsliste,&raquo; siger han stolt. &laquo;Det er fire ting, jeg vil nå, før jeg går i hi.&raquo;',
         'Uffe læser højt: &laquo;Et: Find den blødeste seng i skoven. To: Sig farvel til trækfuglene. Tre: Se lysormene lyse i den lange aften. Fire: Bliv sunget godnat af alle vennerne.&raquo;',
-        '&laquo;I dag er det nummer et,&raquo; siger Pjuske og gaber. Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held. Brug den, når I slår med terningen.&raquo;'],
+        '&laquo;I dag er det nummer et,&raquo; siger Pjuske og gaber. Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held, når noget bliver svært.&raquo;'],
       gainFeather: true,
       ask: 'Hvad ville I skrive på jeres egen efterårsliste?',
       choices: [{ label: 'Nummer et! Afsted!', to: 'pj1Hub' }]
@@ -93,7 +93,7 @@ LK.addStory(function (k) {
     },
     pj1BladeOk: {
       title: 'Det røde blad', gain: true, gnist: FUND('røde', 'Det røde blad', '#D9772E', 'Knas'),
-      text: ['Solen kigger frem mellem træerne, og frosten smelter til små, glitrende dråber. Det røde blad er blødt som et tæppe, og det er stort nok til at dække et helt pindsvin.',
+      text: ['Frosten slipper bladene og smelter til små, glitrende dråber. Og inde under granen ligger det røde blad. Det er blødt som et tæppe, og det er stort nok til at dække et helt pindsvin.',
         '&laquo;Det første!&raquo; siger Pjuske og lægger det på hovedet som en hat. &laquo;Hu-hu, det klæder dig,&raquo; siger Uffe.'],
       ask: 'Hvis I skulle have en hat af et blad, hvilken farve skulle det så være?',
       next: 'pj1Hub'
@@ -170,7 +170,7 @@ LK.addStory(function (k) {
       choices: [
         { label: 'Træk forsigtigt i den store mospude', roll: { stat: 'Mod', target: 6, win: 'pj1MusOk', lose: 'pj1MusFejl' } },
         { label: 'Fold mosset sammen som et lille tæppe', roll: { stat: 'List', target: 6, win: 'pj1MusOk', lose: 'pj1MusFejl' } },
-        { label: 'Kild døren, så den griner og bliver større', roll: { stat: 'Humor', target: 6, win: 'pj1MusOk', lose: 'pj1MusFejl' } }
+        { label: 'Fortæl en vits, så musene griner og skubber med indefra', roll: { stat: 'Humor', target: 6, win: 'pj1MusOk', lose: 'pj1MusFejl' } }
       ]
     },
     pj1MusOk: {

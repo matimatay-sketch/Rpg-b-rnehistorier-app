@@ -57,7 +57,7 @@ LK.addStory(function (k) {
       title: 'Den lysende næse',
       text: ['&laquo;I aftes gik jeg forbi lysningen,&raquo; fortæller Nusse. &laquo;Dér står ræveungernes snemand. Og hans næse lyser! Ræveungerne fandt stumpen i sneen og troede, det var verdens bedste næse.&raquo;',
         '&laquo;Vi kan ikke bare tage den,&raquo; siger Uffe. &laquo;Så bliver de kede af det.&raquo; Nusse nikker. &laquo;Vi må finde et nyt ansigt til snemanden, der er endnu finere.&raquo;',
-        'Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held. Brug den, når I slår med terningen.&raquo;'],
+        'Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held, når noget bliver svært.&raquo;'],
       gainFeather: true,
       ask: 'Hvordan kan man bede om noget tilbage, uden at nogen bliver kede af det?',
       choices: [{ label: 'Lad os finde det fineste ansigt!', to: 'js4Hub' }]

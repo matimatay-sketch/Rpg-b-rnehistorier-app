@@ -37,18 +37,18 @@ LK.addStory(function (k) {
       title: 'Gak-gak!',
       text: function () {
         var t = ['Højt oppe over Lanterneskoven lyder det: &laquo;Gak-gak! Gak-gak!&raquo; En stor flok gæs flyver hen over trætoppene i et langt V. Pjuske kommer trippende ned ad stien så hurtigt, hans små ben kan bære ham.',
-          '&laquo;Det er trækfuglene!&raquo; puster han. &laquo;Når det bliver koldt, flyver de sydpå, hvor det er varmt. De tager af sted i aften, når solen går ned. Jeg vil så gerne sige ordentligt farvel, før jeg selv skal sove hele vinteren. Vil I hjælpe mig?&raquo;'];
+          '&laquo;Det er trækfuglene!&raquo; puster han. &laquo;Når det bliver koldt, flyver de sydpå, hvor det er varmt. De tager af sted i aften, når solen går ned. Jeg vil så gerne sige ordentligt farvel, før jeg selv skal sove hele vinteren. Vil I hjælpe mig?&raquo;', 'Under armen har han et stort, brunt egeblad. Det er hans efterårsliste med fire ting, han vil nå, før han går i hi.'];
         if (k.state.remembered.length) t.push('Uffe lander på en gren ved siden af. &laquo;Hu-hu! Det er ' + k.joinNames(k.state.remembered) + '. Så skal det nok gå.&raquo;');
         return t;
       },
       ask: 'Hvordan siger I farvel til nogen, I holder af?',
-      choices: [{ label: 'Gå med Pjuske og Uffe', to: 'pj2Hub' }, { label: 'Spørg Pjuske om hans liste', to: 'pj2Liste' }]
+      choices: [{ label: 'Gå med Pjuske og Uffe', to: 'pj2Hub' }, { label: 'Spørg Pjuske, hvad der står på hans efterårsliste', to: 'pj2Liste' }]
     },
     pj2Liste: {
       title: 'Punkt nummer to',
       text: ['Pjuske finder sit store egeblad frem. Uffe har skrevet fire ting på det: en blød seng, farvel til trækfuglene, lysormene i den lange aften, og at blive sunget godnat.',
         '&laquo;Min seng er klar under den store rod,&raquo; siger Pjuske. &laquo;Så i dag er det nummer to. Jeg vil give gæssene en hilsen fra hele skoven med på rejsen.&raquo;',
-        'Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held. Brug den, når I slår med terningen.&raquo;'],
+        'Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held, når noget bliver svært.&raquo;'],
       gainFeather: true,
       ask: 'Hvis I skulle sende en hilsen langt væk, hvad skulle den så være?',
       choices: [{ label: 'Lad os samle hilsner!', to: 'pj2Hub' }]
