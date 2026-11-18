@@ -37,18 +37,18 @@ LK.addStory(function (k) {
       title: 'Den sidste aften',
       text: function () {
         var t = ['Det er en stille, kold aften i Lanterneskoven. Næsten alle bladene er faldet, og luften dufter af vinter. Uffe sidder i vindueskarmen med en tændt lanterne ved siden af sig.',
-          'Så banker det på ruden. Det er Pjuske, og han gaber så stort, at man kan se alle hans små tænder. &laquo;I aften skal jeg gå i hi,&raquo; siger han. &laquo;Men jeg vil ikke bare putte mig. Jeg vil have en rigtig godnat. Vil I hjælpe mig?&raquo;'];
+          'Så banker det på ruden. Det er Pjuske, og han gaber så stort, at man kan se alle hans små tænder. &laquo;I aften skal jeg gå i hi,&raquo; siger han. &laquo;Men jeg vil ikke bare putte mig. Jeg vil have en rigtig godnat. Vil I hjælpe mig?&raquo;', 'Under armen har han sit krøllede egeblad. Det er hans efterårsliste med fire ting, han ville nå, før han går i hi.'];
         if (k.state.remembered.length) t.push('Uffe nikker. &laquo;Hu-hu! Det er ' + k.joinNames(k.state.remembered) + '. Ingen er bedre til en godnat end dem.&raquo;');
         return t;
       },
       ask: 'Hvad skal der til, for at I får en rigtig god godnat?',
-      choices: [{ label: 'Tænd lanternerne, og gå med Pjuske', to: 'pj4Hub' }, { label: 'Spørg Pjuske om hans liste', to: 'pj4Liste' }]
+      choices: [{ label: 'Tænd lanternerne, og gå med Pjuske', to: 'pj4Hub' }, { label: 'Spørg Pjuske, hvad der står på hans efterårsliste', to: 'pj4Liste' }]
     },
     pj4Liste: {
       title: 'Det sidste punkt',
       text: ['Pjuske finder sit store egeblad frem. Det er lidt krøllet nu. Der står fire ting: en blød seng, farvel til trækfuglene, lysormene i den lange aften, og at blive sunget godnat af alle vennerne.',
         '&laquo;De tre første har jeg nået,&raquo; siger Pjuske stolt. &laquo;Nu mangler kun den sidste. Så kan jeg sove hele vinteren og drømme om det hele.&raquo;',
-        'Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held. Brug den, når I slår med terningen.&raquo;'],
+        'Uffe plukker en lille fjer af sin vinge. &laquo;Tag den med. Den giver held, når noget bliver svært.&raquo;'],
       gainFeather: true,
       ask: 'Hvad tror I, Pjuske kommer til at drømme om hele vinteren?',
       choices: [{ label: 'Så laver vi den bedste godnat!', to: 'pj4Hub' }]
@@ -155,15 +155,20 @@ LK.addStory(function (k) {
         'Pjuske sætter sig ved siden af den. &laquo;Jeg kommer jo igen til foråret,&raquo; siger han. Men ræveungen ser stadig trist ud.'],
       ask: 'Hvordan kan man trøste en, der skal undvære en ven i lang tid?',
       choices: [
-        { label: 'Fortæl ræveungen om alt det sjove, man kan i sneen', roll: { stat: 'Fantasi', target: 6, win: 'pj4RaevOk', lose: 'pj4RaevFejl' } },
+        { label: 'Fortæl ræveungen om alt det sjove, man kan i sneen', key: 'pj4RaevSne', roll: { stat: 'Fantasi', target: 6, win: 'pj4RaevOk', lose: 'pj4RaevFejl' } },
         { label: 'Giv ræveungen en vigtig opgave', roll: { stat: 'Venlighed', target: 6, win: 'pj4RaevOk', lose: 'pj4RaevFejl' } },
-        { label: 'Lav en sjov leg, som ræveungen kan lege alene', roll: { stat: 'Humor', target: 6, win: 'pj4RaevOk', lose: 'pj4RaevFejl' } }
+        { label: 'Lav en sjov leg, som ræveungen kan lege alene', key: 'pj4RaevLeg', roll: { stat: 'Humor', target: 6, win: 'pj4RaevOk', lose: 'pj4RaevFejl' } }
       ]
     },
     pj4RaevOk: {
       title: 'Rævens løfte', gain: true, gnist: GODNAT('orange', 'Rævens løfte', '#D9772E', 'Vagt'),
-      text: ['&laquo;Du kan være Pjuskes vagt,&raquo; foreslår I. &laquo;Du kan kigge forbi hans seng hver dag og se, at alt er godt.&raquo; Ræveungen spidser ørerne. &laquo;En rigtig vagt?&raquo;',
-        '&laquo;Den bedste vagt i skoven,&raquo; siger Pjuske. Ræveungen sætter sig ret op med halen pænt om poterne. &laquo;Jeg lover det,&raquo; siger den. &laquo;Og når du vågner, er jeg den første, der siger godmorgen.&raquo;'],
+      text: function () {
+        /* Begyndelsen passer til det valg, børnene tog (key sættes, når valget tages). */
+        var vagt = '&laquo;Du kan være Pjuskes vagt,&raquo; foreslår I. &laquo;Du kan kigge forbi hans seng hver dag og se, at alt er godt.&raquo; Ræveungen spidser ørerne. &laquo;En rigtig vagt?&raquo;';
+        if (k.state.wrong.pj4RaevSne) vagt = 'I fortæller om kælketure, snebolde og alle de sjove spor, man kan finde i sneen. Ræveungen begynder at smile. ' + vagt;
+        else if (k.state.wrong.pj4RaevLeg) vagt = 'I finder på en leg, hvor ræveungen er en ridder, der passer på et slot. Og slottet er Pjuskes seng! ' + vagt;
+        return [vagt, '&laquo;Den bedste vagt i skoven,&raquo; siger Pjuske. Ræveungen sætter sig ret op med halen pænt om poterne. &laquo;Jeg lover det,&raquo; siger den. &laquo;Og når du vågner, er jeg den første, der siger godmorgen.&raquo;'];
+      },
       ask: 'Hvem passer på jer, når I sover?',
       next: 'pj4Hub'
     },

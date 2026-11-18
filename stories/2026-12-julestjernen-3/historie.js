@@ -45,7 +45,7 @@ LK.addStory(function (k) {
     js3Kort: {
       title: 'Molls julekort',
       text: ['På kortet er der tegnet et snefnug. Nusse læser højt: &laquo;Kære Nusse. Et lille stykke stjerne faldt ned gennem mit tag. Nu er det min lampe. I må gerne få det, men først skal I hjælpe mig med mine julekort. Og så skal I gætte min julegåde. Kærlig hilsen Moll.&raquo;',
-        '&laquo;Moll er god til gåder,&raquo; siger Uffe. Så plukker han en lille fjer af sin vinge. &laquo;Tag den med. Den giver held. Brug den, når I slår med terningen.&raquo;'],
+        '&laquo;Moll er god til gåder,&raquo; siger Uffe. Så plukker han en lille fjer af sin vinge. &laquo;Tag den med. Den giver held, når noget bliver svært.&raquo;'],
       gainFeather: true,
       ask: 'Hvem ville I skrive et julekort til, og hvad skulle der stå?',
       choices: [{ label: 'Afsted til Moll!', to: 'js3Hub' }]

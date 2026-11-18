@@ -18,7 +18,7 @@ LK.addStory(function (k) {
     m1b: {
       title: 'Uffes gæt', lit: 2, gainFeather: true,
       text: ['&laquo;Jeg tror, månen er ked af det,&raquo; hvisker Uffe. &laquo;Siden I tændte lanternerne, kigger ingen op på den mere.&raquo;',
-        'Han plukker en sølvfjer af sin vinge. &laquo;Tag den med. Den lyser i mørket, og den giver held. Brug den, når I slår med terningen.&raquo;'],
+        'Han plukker en sølvfjer af sin vinge. &laquo;Tag den med. Den lyser i mørket, og den giver held, når noget bliver svært.&raquo;'],
       ask: 'Har I nogensinde følt jer glemt? Hvad hjælper, når man har det sådan?',
       choices: [{ label: 'Tak, Uffe! Lad os finde månen', to: 'm_taage' }]
     },
@@ -30,7 +30,7 @@ LK.addStory(function (k) {
         function R(stat, label) { return { label: label, roll: { stat: stat, target: 6, win: 'm_taageOk', lose: 'm_taageFejl', flag: 'tutVen', flagTxt: 'fordi Tuts svampe lyser vejen' } }; }
         // Bevægelse: samme valg som R, men familien går selv igennem tågen.
         function B(stat, label, goer) { var c = R(stat, label), r = c.roll; return { label: label, bevaeg: { goer: goer, stat: r.stat, target: r.target, win: r.win, lose: r.lose, flag: r.flag, flagTxt: r.flagTxt } }; }
-        var c = [R('Nysgerrighed', 'Kig efter små spor på jorden'), R('List', 'Lyt efter lyden af vand og følg den'), B('Venlighed', 'Hold hinanden i hænderne og gå sammen', 'Tag hinanden i hænderne. List helt lydløst fra den ene ende af stuen til den anden, så tågen ikke hører jer.')];
+        var c = [R('Nysgerrighed', 'Kig efter små spor på jorden'), R('List', 'Lyt efter lyden af vand og følg den'), B('Venlighed', 'Hold hinanden i hænderne og gå sammen', 'Tag hinanden i hænderne. Gå langsomt fra den ene ende af stuen til den anden uden at give slip.')];
         k.availG().forEach(function (n) { c.push({ label: 'Bed ' + n + ' om at lyse vejen', to: 'm_taageGnist', use: n }); });
         c.push({ label: 'Tegn en lysende sti i tågen med fantasien', to: 'm_taageOk', lock: function () { return k.lockTxt('Fantasi', 3); } });
         return c;
@@ -78,7 +78,7 @@ LK.addStory(function (k) {
     m_sumpOk: {
       title: 'Over sumpen', lit: 4,
       text: function () {
-        var t = ['Frøerne holder op med at kvække og begynder at nynne sammen med jer. Larmen bliver til en melodi, og I går let hen over sumpen.'];
+        var t = ['Én tue ad gangen kommer I over sumpen uden at blive våde. Bag jer holder frøerne op med at kvække og begynder at nynne. Larmen bliver til en melodi.'];
         if (k.state.flags.mollLoefte) t.push('Under jer rasler Moll i sin tunnel og sender et lille &laquo;Hej!&raquo; op gennem jorden.');
         return t;
       },

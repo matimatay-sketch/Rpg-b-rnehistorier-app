@@ -30,7 +30,7 @@ LK.addStory(function (k) {
     s1b: {
       title: 'Vinden tog gnisterne',
       text: ['&laquo;Vinden tog lanternernes gnister,&raquo; hvisker Uffe. &laquo;De spredte sig over hele skoven. Hvis vi finder bare to gnister, kan vi tænde Lanternetræet.&raquo;',
-        'Uffe plukker en lille gylden fjer af sin vinge. &laquo;Tag den med. Den giver held. Brug den, når I slår med terningen.&raquo;'],
+        'Uffe plukker en lille gylden fjer af sin vinge. &laquo;Tag den med. Den giver held, når noget bliver svært.&raquo;'],
       gainFeather: true,
       ask: 'Hvornår vil I bruge fjeren? Den kan kun bruges én gang.',
       choices: [{ label: 'Tak, Uffe! Afsted!', to: 'hub' }]
@@ -109,7 +109,7 @@ LK.addStory(function (k) {
         { label: 'En bog', to: 'gaadeOk', key: 'bog' },
         { label: 'En trold', to: 'gaade', key: 'trold', wrong: 'Moll klukker: &laquo;Næsten! Men trolde har mund.&raquo;' },
         { label: 'En sky', to: 'gaade', key: 'sky', wrong: 'Moll ryster på hovedet: &laquo;Skyer fortæller ikke historier. Prøv igen!&raquo;' },
-        { label: 'Kig dig omkring i Molls hule og stil spørgsmål', key: 'kig', roll: { stat: 'Nysgerrighed', target: 6, win: 'gaadeKig', lose: 'gaadeHint' } }
+        { label: 'Kig jer omkring i Molls hule, og stil spørgsmål', key: 'kig', roll: { stat: 'Nysgerrighed', target: 6, win: 'gaadeKig', lose: 'gaadeHint' } }
       ]
     },
     gaadeKig: {
