@@ -3,7 +3,7 @@ LK.addStory(function (k) {
   var PATHS = [
     { id: 'bro', label: 'Følg lyden af rislende vand' },
     { id: 'torn', label: 'Gå ind mellem de tætte torne' },
-    { id: 'gaade', label: 'Find den gamle rod med det lille hul' }
+    { id: 'gaade', label: 'Gå hen til jordbunken, hvor nogen mumler under jorden' }
   ];
 
   var MESTER_TXT = {
@@ -102,7 +102,7 @@ LK.addStory(function (k) {
     },
     gaade: {
       title: 'Muldvarpens gåde', path: 'gaade',
-      text: ['Under en gammel rod bor Muldvarpen Moll. Hun stikker snuden op og kniber øjnene sammen. &laquo;En gnist? Jo, jeg har en. Men først en gåde:&raquo;',
+      text: ['Jordbunken rører sig, og mumlen bliver højere. Så stikker muldvarpen Moll snuden op og kniber øjnene sammen. &laquo;En gnist? Jo, jeg har en. Men først en gåde:&raquo;',
         '&laquo;Jeg har ingen mund, men jeg kan fortælle historier. Hvad er jeg?&raquo;'],
       ask: 'Tænk sammen, før I svarer. Hvad har I i hænderne lige nu?',
       choices: [
