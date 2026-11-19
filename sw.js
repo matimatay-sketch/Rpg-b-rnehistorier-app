@@ -1,6 +1,6 @@
 // Lanterneskoven: gør spillet til en app, der også virker uden internet.
 // Hæv versionen, når index.html, js/, art/ eller en historie ændres, så gamle filer ryddes op.
-const VERSION = 'lk-v20';
+const VERSION = 'lk-v21';
 const SHELL = [
   './',
   './index.html',

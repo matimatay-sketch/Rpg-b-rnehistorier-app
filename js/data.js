@@ -17,7 +17,8 @@ self.LK.data = {
     { id: 'dyr', name: 'Dyresprog', stat: 'Venlighed', desc: 'Tal med dyr. Det giver nye muligheder, hvor dyrene kan hjælpe.' },
     { id: 'syn', name: 'Skjulte syn', stat: 'Nysgerrighed', desc: 'Se det skjulte. Det åbner skjulte veje og afslører ting, som andre overser.' },
     { id: 'latter', name: 'Latterstøv', stat: 'Humor', desc: 'Strø glitrende støv, så alle får lyst til at grine. Det hjælper ved dem, der er bange, sure eller kede af det.' },
-    { id: 'skjold', name: 'Lysskjold', stat: 'Mod', desc: 'Et lysende skjold over holdet. Det giver et ekstra forsøg, når et terningkast mislykkes.' }
+    { id: 'skjold', name: 'Lysskjold', stat: 'Mod', desc: 'Et lysende skjold over holdet. Det giver et ekstra forsøg, når et terningkast mislykkes.' },
+    { id: 'skift', name: 'Skiftemagi', stat: 'List', level: 7, desc: 'Bliv et øjeblik til et dyr, der passer til opgaven: en mus, der smutter igennem, en fugl, der flyver op, eller en frø, der hopper over. Låses op på level 7.' }
   ],
   friendFlags: ['nusseVen', 'nusseHonning', 'mollLoefte', 'tutVen', 'maaneVen', 'vindVen']
 };

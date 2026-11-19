@@ -33,7 +33,7 @@ Opskriften på selve arbejdet står i `.claude/skills/ny-historie/SKILL.md`. Læ
 - **Passer til årstiden.** En historie til december handler om sne og jul, en til april om forår og så videre.
 - **Brug de eksisterende træk, magier og følgesvende** fra `js/data.js`. Opfind ingen nye.
   - Træk: Mod, List, Venlighed, Fantasi, Humor, Nysgerrighed.
-  - Magier: Gnistmagi (`gnist`), Dyresprog (`dyr`), Skjulte syn (`syn`), Latterstøv (`latter`) og Lysskjold (`skjold`, virker af sig selv ved terningkast).
+  - Magier: Gnistmagi (`gnist`), Dyresprog (`dyr`), Skjulte syn (`syn`), Latterstøv (`latter`), Skiftemagi (`skift`, låses op på level 7) og Lysskjold (`skjold`, virker af sig selv ved terningkast).
 - **En god slutning, hvor børnene er lykkedes med noget.** Alle slutninger er glade. Også den slutning, man når med færrest gnister, skal føles som en sejr.
 - **Længde: 15-30 scener**, cirka som en af de fire dele (Del 1 har 22 scener). Et gennemspil tager 10-20 minutter.
 
@@ -56,7 +56,7 @@ Se `stories/lantern/historie.js` for et helt eksempel.
 - **Gåde.** Forkerte svar med `key` og `wrong: '<venlig besked>'` bliver på scenen. Et terningkast kan give et hint (`...Hint` med `next` tilbage til gåden).
 - **Spørg børnene.** Se ovenfor. Spørgsmålet må være en funktion, hvis det afhænger af tilstanden.
 - **Følgesvendenes replikker** kommer af sig selv: ved start, ved hver anden udfordring, i Fejl- og Hint-scener og til sidst. Skriv dem ikke selv i teksten.
-- **Magi** (`magi`): nøglet efter scene-id og magiens id, fx `magi.bro.dyr = { l: 'Spørg en bæver ...', to: 'broOk' }`. Giv magi-valg i de scener, hvor der slås med terningen, og i finalen. Magi springer terningen over og fører til den gode udgang. `show` og `eff` er valgfrie.
+- **Magi** (`magi`): nøglet efter scene-id og magiens id, fx `magi.bro.dyr = { l: 'Spørg en bæver ...', to: 'broOk' }`. Giv magi-valg i de scener, hvor der slås med terningen, og i finalen. Hver af de scener har også et valg til Skiftemagi (`skift`), hvor helten et øjeblik bliver til et dyr, der passer til opgaven, fx `magi.bro.skift = { l: 'Bliv til en frø, og hop fra sten til sten over bækken', to: 'broOk' }`. Tjekket melder en fejl, hvis det mangler. Magi springer terningen over og fører til den gode udgang. `show` og `eff` er valgfrie.
 - **Mester** (`mester`): nøglet efter scene-id, en liste med `{ stat, l, to, n }`. Vises kun for en helt med 5 i trækket. `n(navn)` giver en sætning om, hvad helten gør. Finalen har et mester-valg for alle seks træk, der fører til en mester-slutning.
 - **Uffes fjer.** En scene med `gainFeather: true` giver Uffes fjer, som giver +1 til ét terningkast.
 - **Flag.** En scene med `flag: '<navn>'` husker noget i dette eventyr, fx at man blev våd, så finalen kan nævne det.

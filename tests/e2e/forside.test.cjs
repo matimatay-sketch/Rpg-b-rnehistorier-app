@@ -943,3 +943,36 @@ test('heltebyggeren: træsværdet er låst til level 5 og kan vælges derefter',
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
+
+test('Skiftemagi er låst til level 7, og en helt på level 7 kan bruge den ved bækken', async () => {
+  // Level 6 (10 eventyr): Skiftemagi står med en lås.
+  let { context, page, fejl } = await nySide({ 'lk-heroes': JSON.stringify({ heroes: [helt({ stories: 10 })], play: { h1: true }, world: {} }), 'lk-welcomed': '1' }, '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await tilHelte(page);
+  await page.click('[data-edit="h1"]');
+  await page.click('[data-cat="magi"]');
+  assert.match(await tekst(page, '#ptsline'), /Næste belønning: Skiftemagi på level 7/);
+  assert.match(await tekst(page, '.chip.laast:has-text("Skiftemagi")'), /level 7/);
+  assert.strictEqual(await page.$('[data-k="magic"][data-v="skift"]'), null);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+
+  // Level 7 (12 eventyr): Skiftemagi kan vælges og bruges ved bækken i Del 1.
+  ({ context, page, fejl } = await nySide({ 'lk-heroes': JSON.stringify({ heroes: [helt({ stories: 12 })], play: { h1: true }, world: {} }), 'lk-welcomed': '1' }, '2026-11-11T10:00:00'));
+  await page.goto(server.base + 'index.html');
+  await tilHelte(page);
+  await page.click('[data-edit="h1"]');
+  await page.click('[data-cat="magi"]');
+  await page.click('[data-k="magic"][data-v="skift"]');
+  await page.click('#save');
+  assert.strictEqual(JSON.parse(await gemt(page, 'lk-heroes')).heroes[0].magic, 'skift');
+  await startHistorie(page, 'lantern');
+  assert.match(await tekst(page, '.magibar'), /Kaj Skiftemagi 1\/1/);
+  await page.click('#choices .btn:has-text("Følg med Uffe ind i skoven")');
+  await page.click('#choices .btn:has-text("Følg lyden af rislende vand")');
+  await page.click('#choices .btn:has-text("Kaj: Bliv til en frø, og hop fra sten til sten over bækken")');
+  await page.waitForSelector('#stage h2:has-text("Den blå gnist")');
+  assert.match(await tekst(page, '#stage .story'), /Kaj brugte sin skiftemagi og blev et øjeblik til et lille dyr/);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});

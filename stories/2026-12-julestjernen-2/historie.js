@@ -242,25 +242,29 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der gør sneen klæbrig som snebolde', to: 'js2BredOk' },
       dyr: { l: 'Spørg en ræv, om den vil hjælpe med at grave sne sammen', to: 'js2BredOk' },
       syn: { l: 'Se, hvor sneen er våd og god at bygge med', to: 'js2BredOk' },
-      latter: { l: 'Strø latterstøv, så sneen griner og klumper sig sammen', to: 'js2BredOk' }
+      latter: { l: 'Strø latterstøv, så sneen griner og klumper sig sammen', to: 'js2BredOk' },
+      skift: { l: 'Bliv til ræve, og skrab sneen sammen med poterne', to: 'js2BredOk' }
     },
     js2Krage: {
       gnist: { l: 'Skab en gnist, der holder jer helt stille', to: 'js2KrageOk' },
       dyr: { l: 'Spørg kragen på kragesprog om tricket', to: 'js2KrageOk' },
       syn: { l: 'Se, hvordan kragen holder balancen', to: 'js2KrageOk' },
-      latter: { l: 'Strø latterstøv, så kragen griner tricket ud', to: 'js2KrageOk' }
+      latter: { l: 'Strø latterstøv, så kragen griner tricket ud', to: 'js2KrageOk' },
+      skift: { l: 'Bliv til en krage, og lær tricket fra en anden krage', to: 'js2KrageOk' }
     },
     js2Mus: {
       gnist: { l: 'Skab en gnist, der svæver i takt til valsen', to: 'js2MusOk' },
       dyr: { l: 'Syng med på musesprog', to: 'js2MusOk' },
       syn: { l: 'Se noderne, musene har ridset i båden', to: 'js2MusOk' },
-      latter: { l: 'Strø latterstøv, så musene fniser valsen frem', to: 'js2MusOk' }
+      latter: { l: 'Strø latterstøv, så musene fniser valsen frem', to: 'js2MusOk' },
+      skift: { l: 'Bliv til en mus, og dans valsen sammen med musene', to: 'js2MusOk' }
     },
     js2Is: {
       gnist: { l: 'Skab en gnist, der lyser op over den ru plet', to: 'js2IsOk' },
       dyr: { l: 'Spørg en and på bredden, hvor den bremser', to: 'js2IsOk' },
       syn: { l: 'Se forskellen på den glatte og den ru is', to: 'js2IsOk' },
-      latter: { l: 'Strø latterstøv, så isen griner og rynker sig', to: 'js2IsOk' }
+      latter: { l: 'Strø latterstøv, så isen griner og rynker sig', to: 'js2IsOk' },
+      skift: { l: 'Bliv til en and, og vis, hvordan man bremser på isen', to: 'js2IsOk' }
     },
     js2Hub: {
       syn: { l: 'Se, hvordan isen ser ud derude', to: 'js2Is', show: function () { return k.state.visited.indexOf('is') < 0 && !!k.lockTxt('Nysgerrighed', 2); } }
@@ -268,7 +272,8 @@ LK.addStory(function (k) {
     js2Bredden: {
       gnist: { l: 'Skab en ekstra hjælper til Tut', to: 'js2Bredden', eff: function (h) { k.state.gnists++; k.state.gnistList.push({ key: 'magi_' + h.id + '_' + k.state.gnists, c: 'magiske', def: k.gen(h.name) + ' snepude', col: '#F2C94C', ph: 'Pude', name: '' }); } },
       dyr: { l: 'Bed skovens dyr om at hjælpe', to: 'js2EndVenner' },
-      latter: { l: 'Strø latterstøv, så Tut bliver glad og søvnig', to: 'js2EndVise' }
+      latter: { l: 'Strø latterstøv, så Tut bliver glad og søvnig', to: 'js2EndVise' },
+      skift: { l: 'Bliv til en frø, og kald skovens dyr ned til Tut', to: 'js2EndVenner' }
     }
   };
 

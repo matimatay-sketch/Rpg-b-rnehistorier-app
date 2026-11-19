@@ -257,25 +257,29 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der tegner en gås i luften', to: 'pj2MollKig' },
       dyr: { l: 'Spørg en and ved søen, hvem der siger gak-gak', to: 'pj2MollKig' },
       syn: { l: 'Se svaret, der gemmer sig i Molls brev', to: 'pj2MollKig' },
-      latter: { l: 'Strø latterstøv, så Moll kommer til at grine svaret ud', to: 'pj2MollOk' }
+      latter: { l: 'Strø latterstøv, så Moll kommer til at grine svaret ud', to: 'pj2MollOk' },
+      skift: { l: 'Bliv til en and, og hør, hvem der siger gak-gak', to: 'pj2MollKig' }
     },
     pj2Tut: {
       gnist: { l: 'Skab en varm gnist, der får hikken til at smelte', to: 'pj2TutOk' },
       dyr: { l: 'Spørg en gammel frø om et godt råd mod hikke', to: 'pj2TutOk' },
       syn: { l: 'Se, hvor hikken gemmer sig, og kild den væk', to: 'pj2TutOk' },
-      latter: { l: 'Strø latterstøv, så Tut griner hikken ud', to: 'pj2TutOk' }
+      latter: { l: 'Strø latterstøv, så Tut griner hikken ud', to: 'pj2TutOk' },
+      skift: { l: 'Bliv til en frø, og vis Tut, hvordan frøer slipper af med hikke', to: 'pj2TutOk' }
     },
     pj2Vind: {
       gnist: { l: 'Skab en gnist, der viser Vinden vejen mod syd', to: 'pj2VindOk' },
       dyr: { l: 'Bed gæssene selv fortælle Vinden, at de kommer igen', to: 'pj2VindOk' },
       syn: { l: 'Se forårets blade, der allerede venter i knopperne', to: 'pj2VindOk' },
-      latter: { l: 'Strø latterstøv, så Vinden griner og glemmer at være ked af det', to: 'pj2VindOk' }
+      latter: { l: 'Strø latterstøv, så Vinden griner og glemmer at være ked af det', to: 'pj2VindOk' },
+      skift: { l: 'Bliv til en gås, og fortæl Vinden, at gæssene kommer igen', to: 'pj2VindOk' }
     },
     pj2Krage: {
       gnist: { l: 'Skab en gnist, der glimter som Kras fineste skat', to: 'pj2KrageOk' },
       dyr: { l: 'Tal med Kra på kragesprog', to: 'pj2KrageOk' },
       syn: { l: 'Se den blanke knap, der gemmer sig nederst i bunken', to: 'pj2KrageOk' },
-      latter: { l: 'Strø latterstøv, så Kra kommer til at grine', to: 'pj2KrageOk' }
+      latter: { l: 'Strø latterstøv, så Kra kommer til at grine', to: 'pj2KrageOk' },
+      skift: { l: 'Bliv til en krage, og spørg Kra som en af hendes egne', to: 'pj2KrageOk' }
     },
     pj2Hub: {
       syn: { l: 'Se kragen, der sidder alene på en gren', to: 'pj2Krage', show: function () { return k.state.visited.indexOf('krage') < 0 && !!k.lockTxt('Venlighed', 2); } }
@@ -283,7 +287,8 @@ LK.addStory(function (k) {
     pj2Soe: {
       gnist: { l: 'Skab en ekstra hilsen til gæssene', to: 'pj2Soe', eff: function (h) { k.state.gnists++; k.state.gnistList.push({ key: 'magi_' + h.id + '_' + k.state.gnists, c: 'magiske', def: k.gen(h.name) + ' hilsen', col: '#F2C94C', ph: 'Hilsen', name: '' }); } },
       dyr: { l: 'Bed skovens dyr om at komme og vinke', to: 'pj2EndVenner' },
-      latter: { l: 'Strø latterstøv, så alle siger farvel på gåsesprog', to: 'pj2EndGak' }
+      latter: { l: 'Strø latterstøv, så alle siger farvel på gåsesprog', to: 'pj2EndGak' },
+      skift: { l: 'Bliv til en gås, og kald skovens dyr ned til søen for at vinke', to: 'pj2EndVenner' }
     }
   };
 

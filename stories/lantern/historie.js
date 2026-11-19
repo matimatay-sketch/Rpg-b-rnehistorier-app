@@ -239,25 +239,29 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der tegner en bro af lysprikker i luften', to: 'broOk' },
       dyr: { l: 'Spørg en bæver, om den vil lægge et træ som bro', to: 'broOk' },
       syn: { l: 'Se, hvilke sten der ligger lige under vandet', to: 'broOk' },
-      latter: { l: 'Strø latterstøv, så fiskene hopper og viser vejen', to: 'broOk' }
+      latter: { l: 'Strø latterstøv, så fiskene hopper og viser vejen', to: 'broOk' },
+      skift: { l: 'Bliv til en frø, og hop fra sten til sten over bækken', to: 'broOk' }
     },
     torn: {
       gnist: { l: 'Skab en gnist, så Nusse ikke er bange for mørket', to: 'tornOk' },
       dyr: { l: 'Tal med fuglene, så de skubber tornene til side', to: 'tornOk' },
       syn: { l: 'Se, hvordan grenen sidder, og find den lette måde at løsne den på', to: 'tornOk' },
-      latter: { l: 'Strø latterstøv, så Nusse får lyst til at smile og række ud', to: 'tornOk' }
+      latter: { l: 'Strø latterstøv, så Nusse får lyst til at smile og række ud', to: 'tornOk' },
+      skift: { l: 'Bliv til en lille fugl, og hjælp Nusse ud mellem grenene', to: 'tornOk' }
     },
     gaade: {
       gnist: { l: 'Skab en gnist, så I kan se alle bøgerne i Molls hule', to: 'gaadeKig' },
       dyr: { l: 'Spørg Molls tusindben, hvad hun elsker allermest', to: 'gaadeKig' },
       syn: { l: 'Se på bogryggene, der gemmer sig i mørket', to: 'gaadeKig' },
-      latter: { l: 'Strø latterstøv, så Moll kommer til at grine svaret ud', to: 'gaadeOk' }
+      latter: { l: 'Strø latterstøv, så Moll kommer til at grine svaret ud', to: 'gaadeOk' },
+      skift: { l: 'Bliv til en muldvarp, og kig i Molls bøger', to: 'gaadeKig' }
     },
     svamp: {
       gnist: { l: 'Skab en gnist, der danser rundt og får Tut til at kigge op', to: 'svampOk' },
       dyr: { l: 'Spørg den lille flue, hvad Tut savner', to: 'svampOk' },
       syn: { l: 'Se, at Tut gemmer et lille legetøj under hatten', to: 'svampOk' },
-      latter: { l: 'Strø latterstøv på Tuts hat', to: 'svampOk' }
+      latter: { l: 'Strø latterstøv på Tuts hat', to: 'svampOk' },
+      skift: { l: 'Bliv til en tudse, og sæt dig hos Tut', to: 'svampOk' }
     },
     hub: {
       syn: { l: 'Se den skjulte sti mellem træerne', to: 'svamp', show: function () { return k.state.visited.indexOf('svamp') < 0 && !!k.lockTxt('Nysgerrighed', 2); } }
@@ -265,7 +269,8 @@ LK.addStory(function (k) {
     tree: {
       gnist: { l: 'Lav en ekstra gnist til træet', to: 'tree', eff: function (h) { k.state.gnists++; k.state.gnistList.push({ key: 'magi_' + h.id + '_' + k.state.gnists, c: 'magiske', def: k.gen(h.name) + ' gnist', col: '#F2C94C', ph: 'Stjerne', name: '' }); } },
       dyr: { l: 'Bed skovens dyr om at hjælpe', to: 'endFriends' },
-      latter: { l: 'Strø latterstøv, så træet må grine', to: 'endSang' }
+      latter: { l: 'Strø latterstøv, så træet må grine', to: 'endSang' },
+      skift: { l: 'Bliv til en lille ugle, og kald skovens dyr til træet', to: 'endFriends' }
     }
   };
 

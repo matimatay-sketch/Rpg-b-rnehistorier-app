@@ -174,19 +174,22 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der lyser en rolig sti', to: 'v_skovGnist', eff: function (h) { k.state.lastUse = k.gen(h.name) + ' gnist'; } },
       dyr: { l: 'Bed fuglene vise, hvor vinden er blidest', to: 'v_skovOk' },
       syn: { l: 'Se mønstret i bladenes dans og find hullet', to: 'v_skovOk' },
-      latter: { l: 'Strø latterstøv, så bladene falder ned i et stort fnis', to: 'v_skovOk' }
+      latter: { l: 'Strø latterstøv, så bladene falder ned i et stort fnis', to: 'v_skovOk' },
+      skift: { l: 'Bliv til blade, og dans med i stedet for at blive blæst omkuld', to: 'v_skovOk' }
     },
     v_bjerg: {
       gnist: { l: 'Skab en gnist, der lyser op i blæsten', to: 'v_bjergGnist', eff: function (h) { k.state.lastUse = k.gen(h.name) + ' gnist'; } },
       dyr: { l: 'Bed bjerggeden vise den lune sti', to: 'v_bjergOk' },
       syn: { l: 'Se den skjulte sti i læ bag klipperne', to: 'v_bjergOk' },
-      latter: { l: 'Strø latterstøv, så blæsten bliver kildet og holder pause', to: 'v_bjergOk' }
+      latter: { l: 'Strø latterstøv, så blæsten bliver kildet og holder pause', to: 'v_bjergOk' },
+      skift: { l: 'Bliv til bjerggeder, og find den lune sti', to: 'v_bjergOk' }
     },
     v_vind: {
       gnist: { l: 'Skab en ny gnist, der leger med Vinden', to: 'v_endGnister', eff: function (h) { k.state.gnisterIn.push(k.gen(h.name) + ' gnist'); } },
       dyr: { l: 'Bed fuglene lære Vinden at lege', to: 'v_endHjem' },
       syn: { l: 'Se, at Vinden egentlig bare er lille og bange', to: 'v_endHjem' },
-      latter: { l: 'Strø latterstøv, så Vinden får sit første grin', to: 'v_endHjem' }
+      latter: { l: 'Strø latterstøv, så Vinden får sit første grin', to: 'v_endHjem' },
+      skift: { l: 'Bliv til fugle, og leg med Vinden i luften', to: 'v_endHjem' }
     }
   };
 

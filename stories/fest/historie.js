@@ -204,25 +204,29 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der tænder de højeste lanterner', to: 'f_lysGnist', eff: function (h) { k.state.lastUse = k.gen(h.name) + ' gnist'; } },
       dyr: { l: 'Bed ugler og flagermus hjælpe med de højeste grene', to: 'f_lysOk' },
       syn: { l: 'Se, hvilke lanterner der er ødelagte, og ret dem først', to: 'f_lysOk' },
-      latter: { l: 'Strø latterstøv, så alle får lyst til at hjælpe', to: 'f_lysOk' }
+      latter: { l: 'Strø latterstøv, så alle får lyst til at hjælpe', to: 'f_lysOk' },
+      skift: { l: 'Bliv til ugler, og flyv op til de højeste lanterner', to: 'f_lysOk' }
     },
     f_musik: {
       gnist: { l: 'Skab en gnist, der klinger som en lille klokke', to: 'f_musikGnist', eff: function (h) { k.state.lastUse = k.gen(h.name) + ' gnist'; } },
       dyr: { l: 'Bed krager og frøer om at synge sammen', to: 'f_musikOk' },
       syn: { l: 'Se, hvilke ting i skoven der kan klinge', to: 'f_musikOk' },
-      latter: { l: 'Strø latterstøv, så alle får lyst til at synge', to: 'f_musikOk' }
+      latter: { l: 'Strø latterstøv, så alle får lyst til at synge', to: 'f_musikOk' },
+      skift: { l: 'Bliv til krager og frøer, og syng med', to: 'f_musikOk' }
     },
     f_gaester: {
       gnist: { l: 'Skab en gnist, der følger de bange gæster hele vejen', to: 'f_gaesterOk' },
       dyr: { l: 'Tal blidt med de bange dyr på deres eget sprog', to: 'f_gaesterOk' },
       syn: { l: 'Se, hvad hver enkelt gæst er mest bange for', to: 'f_gaesterOk' },
-      latter: { l: 'Strø latterstøv, så de bange gæster får lyst til at komme', to: 'f_gaesterOk' }
+      latter: { l: 'Strø latterstøv, så de bange gæster får lyst til at komme', to: 'f_gaesterOk' },
+      skift: { l: 'Bliv til de samme dyr som de bange gæster, og gå med dem', to: 'f_gaesterOk' }
     },
     f_fest: {
       gnist: { l: 'Skab en gnist, der danser ved siden af Vinden', to: 'f_endLys', eff: function (h) { k.state.gnisterIn.push(k.gen(h.name) + ' gnist'); } },
       dyr: { l: 'Bed alle dyrene sige noget pænt til Vinden', to: 'f_endTilgiv' },
       syn: { l: 'Se, at hele skoven faktisk allerede har tilgivet Vinden', to: 'f_endTilgiv' },
-      latter: { l: 'Strø latterstøv, så alle begynder at danse', to: 'f_endDans' }
+      latter: { l: 'Strø latterstøv, så alle begynder at danse', to: 'f_endDans' },
+      skift: { l: 'Bliv til en lille vind, og vis alle, at Vinden bare vil lege med', to: 'f_endTilgiv' }
     }
   };
 

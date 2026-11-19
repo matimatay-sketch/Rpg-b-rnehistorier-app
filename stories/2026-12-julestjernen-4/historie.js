@@ -264,32 +264,37 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der svæver op og henter koglen', to: 'js4KogleOk' },
       dyr: { l: 'Spørg egernet på egernsprog', to: 'js4KogleOk' },
       syn: { l: 'Se en lige så fin kogle, der allerede ligger i sneen', to: 'js4KogleOk' },
-      latter: { l: 'Strø latterstøv, så egernet griner og taber koglen', to: 'js4KogleOk' }
+      latter: { l: 'Strø latterstøv, så egernet griner og taber koglen', to: 'js4KogleOk' },
+      skift: { l: 'Bliv til et egern, og spørg egernet om koglen', to: 'js4KogleOk' }
     },
     js4Pjuske: {
       gnist: { l: 'Skab en gnist, der lyser en lydløs sti op', to: 'js4PjuskeOk' },
       dyr: { l: 'Spørg en mus, om den vil hente kastanjerne stille for jer', to: 'js4PjuskeOk' },
       syn: { l: 'Se de bløde pletter i sneen, hvor man kan gå uden en lyd', to: 'js4PjuskeOk' },
-      latter: { l: 'Strø latterstøv, så Pjuske smiler i søvne og sover endnu dybere', to: 'js4PjuskeOk' }
+      latter: { l: 'Strø latterstøv, så Pjuske smiler i søvne og sover endnu dybere', to: 'js4PjuskeOk' },
+      skift: { l: 'Bliv til en lille mus, og hent kastanjerne helt stille', to: 'js4PjuskeOk' }
     },
     js4Krage: {
       gnist: { l: 'Skab en gnist, som kragen kan få i bytte', to: 'js4KrageOk' },
       dyr: { l: 'Byt med kragen på kragesprog', to: 'js4KrageOk' },
       syn: { l: 'Se, at kragen har to klaser bær', to: 'js4KrageOk' },
-      latter: { l: 'Strø latterstøv, så kragen griner og taber bærrene', to: 'js4KrageOk' }
+      latter: { l: 'Strø latterstøv, så kragen griner og taber bærrene', to: 'js4KrageOk' },
+      skift: { l: 'Bliv til en krage, og byt med kragen', to: 'js4KrageOk' }
     },
     js4Lille: {
       gnist: { l: 'Skab en lille gnist, der danser for ræveungen', to: 'js4LilleOk' },
       dyr: { l: 'Tal med ræveungen på rævesprog', to: 'js4LilleOk' },
       syn: { l: 'Se, hvad ræveungen allerhelst vil have', to: 'js4LilleOk' },
-      latter: { l: 'Strø latterstøv, så ræveungen kommer til at smile', to: 'js4LilleOk' }
+      latter: { l: 'Strø latterstøv, så ræveungen kommer til at smile', to: 'js4LilleOk' },
+      skift: { l: 'Bliv til en ræveunge, og sæt dig hos den mindste', to: 'js4LilleOk' }
     },
     js4Hub: {
       syn: { l: 'Se den mindste ræveunge, der sidder alene', to: 'js4Lille', show: function () { return k.state.visited.indexOf('lille') < 0 && !!k.lockTxt('Venlighed', 2); } }
     },
     js4Trae: {
       dyr: { l: 'Bed skovens dyr om at hjælpe', to: 'js4EndVenner' },
-      latter: { l: 'Strø latterstøv, så hele skoven synger', to: 'js4EndSang' }
+      latter: { l: 'Strø latterstøv, så hele skoven synger', to: 'js4EndSang' },
+      skift: { l: 'Bliv til en fugl, og kald skovens dyr sammen ved træet', to: 'js4EndVenner' }
     }
   };
 
