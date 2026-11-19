@@ -264,25 +264,29 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en varm gnist, der smelter frosten på bladene', to: 'pj1BladeOk' },
       dyr: { l: 'Spørg et egern, hvor der ligger tørre blade', to: 'pj1BladeOk' },
       syn: { l: 'Se det røde blad, der gemmer sig under granen', to: 'pj1BladeOk' },
-      latter: { l: 'Strø latterstøv, så solen griner og varmer lysningen', to: 'pj1BladeOk' }
+      latter: { l: 'Strø latterstøv, så solen griner og varmer lysningen', to: 'pj1BladeOk' },
+      skift: { l: 'Bliv til et egern, og find de tørre blade under granen', to: 'pj1BladeOk' }
     },
     pj1Bjorn: {
       gnist: { l: 'Skab en gnist, der lyser en lydløs sti op', to: 'pj1BjornOk' },
       dyr: { l: 'Spørg en mus, om den vil hente bladene stille for jer', to: 'pj1BjornOk' },
       syn: { l: 'Se de bløde pletter i mosset, hvor man kan gå uden en lyd', to: 'pj1BjornOk' },
-      latter: { l: 'Strø latterstøv, så Brumme smiler i søvne og sover endnu dybere', to: 'pj1BjornOk' }
+      latter: { l: 'Strø latterstøv, så Brumme smiler i søvne og sover endnu dybere', to: 'pj1BjornOk' },
+      skift: { l: 'Bliv til en lille mus, og list lydløst forbi Brumme', to: 'pj1BjornOk' }
     },
     pj1Moll: {
       gnist: { l: 'Skab en gnist, der tegner en isblomst i luften', to: 'pj1MollKig' },
       dyr: { l: 'Spørg Molls edderkop, hvem der malede ruden i nat', to: 'pj1MollKig' },
       syn: { l: 'Se svaret, der gemmer sig i Molls strikketøj', to: 'pj1MollKig' },
-      latter: { l: 'Strø latterstøv, så Moll kommer til at grine svaret ud', to: 'pj1MollOk' }
+      latter: { l: 'Strø latterstøv, så Moll kommer til at grine svaret ud', to: 'pj1MollOk' },
+      skift: { l: 'Bliv til en edderkop, og spørg Molls edderkop, hvem der malede ruden', to: 'pj1MollKig' }
     },
     pj1Mus: {
       gnist: { l: 'Skab en gnist, der gør mosset glat som sæbe', to: 'pj1MusOk' },
       dyr: { l: 'Spørg musene, hvordan de selv fik mosset ind', to: 'pj1MusOk' },
       syn: { l: 'Se den lille bagdør, som musene har glemt', to: 'pj1MusOk' },
-      latter: { l: 'Strø latterstøv, så døren griner og bliver bred', to: 'pj1MusOk' }
+      latter: { l: 'Strø latterstøv, så døren griner og bliver bred', to: 'pj1MusOk' },
+      skift: { l: 'Bliv til en mus, og smut ind ad musenes egen dør', to: 'pj1MusOk' }
     },
     pj1Hub: {
       syn: { l: 'Se de bittesmå spor, der fører ned til bækken', to: 'pj1Mus', show: function () { return k.state.visited.indexOf('mus') < 0 && !!k.lockTxt('Nysgerrighed', 2); } }
@@ -290,7 +294,8 @@ LK.addStory(function (k) {
     pj1Rod: {
       gnist: { l: 'Skab en ekstra blød ting til sengen', to: 'pj1Rod', eff: function (h) { k.state.gnists++; k.state.gnistList.push({ key: 'magi_' + h.id + '_' + k.state.gnists, c: 'magiske', def: k.gen(h.name) + ' dyne', col: '#F2C94C', ph: 'Dyne', name: '' }); } },
       dyr: { l: 'Bed skovens dyr om at hjælpe', to: 'pj1EndVenner' },
-      latter: { l: 'Strø latterstøv, så Uffe vil prøve sengen', to: 'pj1EndFjer' }
+      latter: { l: 'Strø latterstøv, så Uffe vil prøve sengen', to: 'pj1EndFjer' },
+      skift: { l: 'Bliv til et pindsvin, og kald skovens dyr sammen til sengen', to: 'pj1EndVenner' }
     }
   };
 

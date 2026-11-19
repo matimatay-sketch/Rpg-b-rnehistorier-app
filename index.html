@@ -411,7 +411,8 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
   function magicOf(h) { return magicById(h.magic); }
   function heroMagics(h) {
     var a = [], m1 = magicOf(h), m2 = (heroLevel(h) >= SECOND_MAGIC_LEVEL && h.magic2 && h.magic2 !== h.magic) ? magicById(h.magic2) : null;
-    if (m1) a.push(m1); if (m2) a.push(m2); return a;
+    if (m1) a.push(m1); if (m2) a.push(m2);
+    return a.filter(function (m) { return !m.level || heroLevel(h) >= m.level; });
   }
   function magicUses(h, m) { return m ? 1 + ((h.stats && h.stats[m.stat] >= 3) ? 1 : 0) : 0; }
   function magicLeft(h, m) { return magicUses(h, m) - (state.magicUsed[h.id + ':' + m.id] || 0); }
@@ -420,7 +421,8 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
     gnist: function (n) { return n + ' skabte en lille ny gnist med sin gnistmagi.'; },
     dyr: function (n) { return n + ' talte dyrenes sprog, og de hjalp gerne.'; },
     syn: function (n) { return n + ' så det skjulte med sit magiske syn.'; },
-    latter: function (n) { return n + ' strøede latterstøv, og pludselig fik alle lyst til at grine.'; }
+    latter: function (n) { return n + ' strøede latterstøv, og pludselig fik alle lyst til at grine.'; },
+    skift: function (n) { return n + ' brugte sin skiftemagi og blev et øjeblik til et lille dyr. Bagefter var ' + n + ' sig selv igen.'; }
   };
   function shieldHero() {
     for (var i = 0; i < state.players.length; i++) {
@@ -547,8 +549,10 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
   var ACCS = [['ingen', 'Ingenting', ''], ['stav', 'Stav', 'Mod'], ['skjold', 'Skjold', 'Mod'], ['rygsaek', 'Rygsæk', 'List'], ['kikkert', 'Kikkert', 'List'], ['lanterne', 'Lanterne', 'Venlighed'], ['blomst', 'Blomst', 'Venlighed'], ['trylle', 'Tryllestav', 'Fantasi'], ['naese', 'Rød næse', 'Humor'], ['lup', 'Lup', 'Nysgerrighed'], ['svaerd', 'Træsværd', 'Mod']];
   var SKULDER = [['ingen', 'Ingen'], ['ugle', 'Uffe']];
   /* Belønninger, der låses op, når helten stiger i level (level 3 giver en ekstra magi, se SECOND_MAGIC_LEVEL). */
+  /* Magier med et level i js/data.js (Skiftemagi på level 7) låses op på samme måde. */
   var LAAS = { lanternehat: 2, ugle: 4, svaerd: 5, glimmer: 6, lyskrone: 8 };
   var LAAS_NAVN = { 2: 'Lanternehat', 4: 'Uffe på skulderen', 5: 'Træsværd', 6: 'Glimmerkappe', 8: 'Lysende krone' };
+  MAGICS.forEach(function (m) { if (m.level) { LAAS[m.id] = m.level; LAAS_NAVN[m.level] = m.name; } });
   function laast(v, h) { return !!LAAS[v] && heroLevel(h) < LAAS[v]; }
   function naesteBeloenning(h) { var lv = heroLevel(h), n = 0; Object.keys(LAAS_NAVN).forEach(function (k) { k = +k; if (k > lv && (!n || k < n)) n = k; }); return n; }
   var GROUPS = {
@@ -1349,7 +1353,9 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
     var g = state.gotNow || [];
     var up = (state.levelNow || []).map(function (u) {
       return '<div class="rew up">⭐ <b>Level op!</b> ' + esc(u.n) + ' er nu level ' + u.lv + '.' + (u.lv === SECOND_MAGIC_LEVEL ? ' Nu kan ' + esc(u.n) + ' vælge en ekstra magi under Forbedre helte.' : '') +
-        (LAAS_NAVN[u.lv] ? ' 🎁 ' + esc(u.n) + ' har fået <b>' + LAAS_NAVN[u.lv] + '</b>. Find det under Forbedre helte.' : '') + '</div>';
+        (LAAS_NAVN[u.lv] ? (MAGICS.some(function (m) { return m.level === u.lv; })
+          ? ' ✨ Nu kan ' + esc(u.n) + ' vælge <b>' + LAAS_NAVN[u.lv] + '</b> som magi under Forbedre helte.'
+          : ' 🎁 ' + esc(u.n) + ' har fået <b>' + LAAS_NAVN[u.lv] + '</b>. Find det under Forbedre helte.') : '') + '</div>';
     }).join('');
     if (g.length) return up + '<div class="rew"><b>Belønning:</b> ' + g.map(esc).join(', ') + ' fik 1 point. Brug det under Forbedre helte.</div>';
     return up + '<div class="rew">Månedens bonuspoint er allerede givet. Næste måned får heltene nye point.</div>';

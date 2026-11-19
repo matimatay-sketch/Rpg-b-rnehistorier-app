@@ -248,25 +248,29 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der viser lysormen, hvor smuk den er', to: 'pj3SvampOk' },
       dyr: { l: 'Tal med lysormen på lysormesprog', to: 'pj3SvampOk' },
       syn: { l: 'Se det lille lys, der allerede gemmer sig i lysormen', to: 'pj3SvampOk' },
-      latter: { l: 'Strø latterstøv, så lysormen fniser sig lysende', to: 'pj3SvampOk' }
+      latter: { l: 'Strø latterstøv, så lysormen fniser sig lysende', to: 'pj3SvampOk' },
+      skift: { l: 'Bliv til en lysorm, og vis lysormen, hvordan man lyser', to: 'pj3SvampOk' }
     },
     pj3Baek: {
       gnist: { l: 'Skab en varm gnist, så Lyn holder op med at fryse', to: 'pj3BaekOk' },
       dyr: { l: 'Bed en ugle om at flyve Lyn en tur over skoven', to: 'pj3BaekOk' },
       syn: { l: 'Se den høje sten, hvor Lyn kan sidde sikkert', to: 'pj3BaekOk' },
-      latter: { l: 'Strø latterstøv, så Lyn griner sig varm', to: 'pj3BaekOk' }
+      latter: { l: 'Strø latterstøv, så Lyn griner sig varm', to: 'pj3BaekOk' },
+      skift: { l: 'Bliv til en ugle, og flyv Lyn en tur over skoven', to: 'pj3BaekOk' }
     },
     pj3Moll: {
       gnist: { l: 'Skab en lille gnist, der vækker lysormene som en solopgang', to: 'pj3MollOk' },
       dyr: { l: 'Hvisk til lysormene på lysormesprog', to: 'pj3MollOk' },
       syn: { l: 'Se, hvilken lysorm der næsten er vågen', to: 'pj3MollOk' },
-      latter: { l: 'Strø latterstøv, så lysormene fniser i søvne og vågner', to: 'pj3MollOk' }
+      latter: { l: 'Strø latterstøv, så lysormene fniser i søvne og vågner', to: 'pj3MollOk' },
+      skift: { l: 'Bliv til en lysorm, og væk de andre med et lille blink', to: 'pj3MollOk' }
     },
     pj3Krat: {
       gnist: { l: 'Skab en gnist, der lyser hele krattet op', to: 'pj3KratOk' },
       dyr: { l: 'Spørg en pindsvinefætter, der kender krattet', to: 'pj3KratOk' },
       syn: { l: 'Se den skjulte sti ind til lysormen', to: 'pj3KratOk' },
-      latter: { l: 'Strø latterstøv, så lysormen griner og lyser op', to: 'pj3KratOk' }
+      latter: { l: 'Strø latterstøv, så lysormen griner og lyser op', to: 'pj3KratOk' },
+      skift: { l: 'Bliv til et pindsvin, og kryb ind i krattet', to: 'pj3KratOk' }
     },
     pj3Hub: {
       syn: { l: 'Se det svage blink inde i krattet', to: 'pj3Krat', show: function () { return k.state.visited.indexOf('krat') < 0 && !!k.lockTxt('Mod', 2); } }
@@ -274,7 +278,8 @@ LK.addStory(function (k) {
     pj3Bakke: {
       gnist: { l: 'Skab en ekstra lysorm af gnister', to: 'pj3Bakke', eff: function (h) { k.state.gnists++; k.state.gnistList.push({ key: 'magi_' + h.id + '_' + k.state.gnists, c: 'magiske', def: k.gen(h.name) + ' lysorm', col: '#F2C94C', ph: 'Gnistorm', name: '' }); } },
       dyr: { l: 'Bed skovens dyr om at komme med lys', to: 'pj3EndVenner' },
-      syn: { l: 'Se stjernerne bag skyerne', to: 'pj3EndStjerner' }
+      syn: { l: 'Se stjernerne bag skyerne', to: 'pj3EndStjerner' },
+      skift: { l: 'Bliv til en lysorm, og kald skovens dyr op på bakken med lys', to: 'pj3EndVenner' }
     }
   };
 

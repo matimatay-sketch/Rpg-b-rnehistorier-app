@@ -263,25 +263,29 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der holder stakken sammen som lim', to: 'js3MusOk' },
       dyr: { l: 'Spørg musene, om de vil hente kortene ét ad gangen', to: 'js3MusOk' },
       syn: { l: 'Se den jævne sti, hvor man ikke snubler', to: 'js3MusOk' },
-      latter: { l: 'Strø latterstøv, så stakken griner og holder sig stille', to: 'js3MusOk' }
+      latter: { l: 'Strø latterstøv, så stakken griner og holder sig stille', to: 'js3MusOk' },
+      skift: { l: 'Bliv til mus, og bær kortene ét ad gangen', to: 'js3MusOk' }
     },
     js3Krage: {
       gnist: { l: 'Skab en gnist, der kilder kragen blidt vågen', to: 'js3KrageOk' },
       dyr: { l: 'Kald på kragen på kragesprog', to: 'js3KrageOk' },
       syn: { l: 'Se, at kragen kun lader som om, den sover', to: 'js3KrageOk' },
-      latter: { l: 'Strø latterstøv, så kragen vågner af grin', to: 'js3KrageOk' }
+      latter: { l: 'Strø latterstøv, så kragen vågner af grin', to: 'js3KrageOk' },
+      skift: { l: 'Bliv til en krage, og væk kragen med et venligt krah', to: 'js3KrageOk' }
     },
     js3Raev: {
       gnist: { l: 'Skab gnister, der tegner bogstaverne i luften', to: 'js3RaevOk' },
       dyr: { l: 'Læs kortet højt på rævesprog', to: 'js3RaevOk' },
       syn: { l: 'Se den lille tegning, Moll har gemt på kortet', to: 'js3RaevOk' },
-      latter: { l: 'Strø latterstøv, så ræveungerne fniser og lytter', to: 'js3RaevOk' }
+      latter: { l: 'Strø latterstøv, så ræveungerne fniser og lytter', to: 'js3RaevOk' },
+      skift: { l: 'Bliv til en ræveunge, og læs kortet højt for de andre', to: 'js3RaevOk' }
     },
     js3Bjorn: {
       gnist: { l: 'Skab en gnist, der lyser en lydløs sti op', to: 'js3BjornOk' },
       dyr: { l: 'Hvisk på bjørnesprog, at det kun er et julekort', to: 'js3BjornOk' },
       syn: { l: 'Se de bløde pletter, hvor man kan gå uden en lyd', to: 'js3BjornOk' },
-      latter: { l: 'Strø latterstøv, så Brumme smiler i søvne', to: 'js3BjornOk' }
+      latter: { l: 'Strø latterstøv, så Brumme smiler i søvne', to: 'js3BjornOk' },
+      skift: { l: 'Bliv til en lille mus, og list lydløst forbi Brumme', to: 'js3BjornOk' }
     },
     js3Hub: {
       syn: { l: 'Se, hvem det krøllede kort er til', to: 'js3Bjorn', show: function () { return k.state.visited.indexOf('bjorn') < 0 && !!k.lockTxt('Nysgerrighed', 2); } }
@@ -290,11 +294,13 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der tegner et snefnug i luften', to: 'js3GaadeKig' },
       dyr: { l: 'Spørg Molls edderkop, hvad den så falde ned i dag', to: 'js3GaadeKig' },
       syn: { l: 'Se svaret, der gemmer sig i Molls julekort', to: 'js3GaadeKig' },
-      latter: { l: 'Strø latterstøv, så Moll kommer til at grine svaret ud', to: 'js3EndGaade' }
+      latter: { l: 'Strø latterstøv, så Moll kommer til at grine svaret ud', to: 'js3EndGaade' },
+      skift: { l: 'Bliv til en edderkop, og spørg Molls edderkop, hvad der faldt i dag', to: 'js3GaadeKig' }
     },
     js3Hule: {
       dyr: { l: 'Bed skovens dyr om at komme og gætte med', to: 'js3EndVenner' },
-      latter: { l: 'Strø latterstøv, så Uffe får lyst til at gætte', to: 'js3EndUffe' }
+      latter: { l: 'Strø latterstøv, så Uffe får lyst til at gætte', to: 'js3EndUffe' },
+      skift: { l: 'Bliv til en mus, og kald skovens dyr ind for at gætte med', to: 'js3EndVenner' }
     }
   };
 

@@ -70,7 +70,7 @@ Hvert kapitel er en **hel historie** i sin egen mappe: `stories/<ÅÅÅÅ-MM>-<s
 // Månedens historier, <måned år>: <serietitel>, kapitel <n> af <N>: <kapiteltitel>. Historiefil: registrerer sig med LK.addStory og får kit-hjælperne som k.
 LK.addStory(function (k) {
   var scenes = { /* 15-30 scener, alle id'er med et fælles præfiks for kapitlet, fx js1Start, js1Hub */ };
-  var magi = { /* scene-id -> { gnist, dyr, syn, latter } */ };
+  var magi = { /* scene-id -> { gnist, dyr, syn, latter, skift } */ };
   var mester = { /* scene-id -> [{ stat, l, to, n }] */ };
   var billeder = { /* scene-id -> { sted, himmel, alt, ting, figurer } */ };
   return {

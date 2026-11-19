@@ -166,19 +166,22 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der lyser vejen', to: 'm_taageGnist', eff: function (h) { k.state.lastUse = k.gen(h.name) + ' gnist'; } },
       dyr: { l: 'Spørg uglerne og flagermusene om vej', to: 'm_taageOk' },
       syn: { l: 'Se de usynlige fodspor i tågen', to: 'm_taageOk' },
-      latter: { l: 'Strø latterstøv, så tågen kildes og letter', to: 'm_taageOk' }
+      latter: { l: 'Strø latterstøv, så tågen kildes og letter', to: 'm_taageOk' },
+      skift: { l: 'Bliv til flagermus, og find vej gennem tågen', to: 'm_taageOk' }
     },
     m_sump: {
       gnist: { l: 'Skab en gnist, der lyser stenene op', to: 'm_sumpGnist', eff: function (h) { k.state.lastUse = k.gen(h.name) + ' gnist'; } },
       dyr: { l: 'Tal frøsprog og bed dem være stille', to: 'm_sumpOk' },
       syn: { l: 'Se, hvilke tuer der kan bære jer', to: 'm_sumpOk' },
-      latter: { l: 'Strø latterstøv, så frøerne glemmer at kvække', to: 'm_sumpOk' }
+      latter: { l: 'Strø latterstøv, så frøerne glemmer at kvække', to: 'm_sumpOk' },
+      skift: { l: 'Bliv til frøer, og hop fra tue til tue', to: 'm_sumpOk' }
     },
     m_maane: {
       gnist: { l: 'Skab en ny gnist, der lyser sammen med månen', to: 'm_endGnister', eff: function (h) { k.state.gnisterIn.push(k.gen(h.name) + ' gnist'); } },
       dyr: { l: 'Bed natsommerfuglene om at kigge op på månen', to: 'm_endHjem' },
       syn: { l: 'Se, hvad månen drømmer om', to: 'm_endHjem' },
-      latter: { l: 'Strø latterstøv, så månen får sit første grin', to: 'm_endHjem' }
+      latter: { l: 'Strø latterstøv, så månen får sit første grin', to: 'm_endHjem' },
+      skift: { l: 'Bliv til natsommerfugle, og flyv op og hent Månen hjem', to: 'm_endHjem' }
     }
   };
 

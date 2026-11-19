@@ -250,25 +250,29 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en varm gnist, der smelter sneen på den tunge gren', to: 'js1GranOk' },
       dyr: { l: 'Spørg egernet, om det vil skubbe grenene ud til jer', to: 'js1GranOk' },
       syn: { l: 'Se de grene, der ligger løst helt ude i kanten', to: 'js1GranOk' },
-      latter: { l: 'Strø latterstøv, så granen griner og holder på sin sne', to: 'js1GranOk' }
+      latter: { l: 'Strø latterstøv, så granen griner og holder på sin sne', to: 'js1GranOk' },
+      skift: { l: 'Bliv til et egern, og skub grenene ud til jer', to: 'js1GranOk' }
     },
     js1Mus: {
       gnist: { l: 'Skab en gnist, der smelter sneen foran døren', to: 'js1MusOk' },
       dyr: { l: 'Spørg musene, hvor sneen er blødest at grave i', to: 'js1MusOk' },
       syn: { l: 'Se musenes bagdør, som sneen har glemt', to: 'js1MusOk' },
-      latter: { l: 'Strø latterstøv, så sneen griner og triller væk', to: 'js1MusOk' }
+      latter: { l: 'Strø latterstøv, så sneen griner og triller væk', to: 'js1MusOk' },
+      skift: { l: 'Bliv til en mus, og grav jer ind gennem den bløde sne', to: 'js1MusOk' }
     },
     js1Vold: {
       gnist: { l: 'Skab små gnister, der lyser op, hvor volden er fast', to: 'js1VoldOk' },
       dyr: { l: 'Spørg en krage, om den vil hente halstørklædet', to: 'js1VoldOk' },
       syn: { l: 'Se den skjulte kant, hvor sneen er hård', to: 'js1VoldOk' },
-      latter: { l: 'Strø latterstøv, så busken griner og ryster halstørklædet løs', to: 'js1VoldOk' }
+      latter: { l: 'Strø latterstøv, så busken griner og ryster halstørklædet løs', to: 'js1VoldOk' },
+      skift: { l: 'Bliv til en krage, og hent halstørklædet med næbbet', to: 'js1VoldOk' }
     },
     js1Raev: {
       gnist: { l: 'Skab en gnist, der danser rundt om ræveungens næse', to: 'js1RaevOk' },
       dyr: { l: 'Fortæl ræveungen en rævevits på rævesprog', to: 'js1RaevOk' },
       syn: { l: 'Se den hemmelige sti mellem stenene', to: 'js1RaevOk' },
-      latter: { l: 'Strø latterstøv over ræveungen', to: 'js1RaevOk' }
+      latter: { l: 'Strø latterstøv over ræveungen', to: 'js1RaevOk' },
+      skift: { l: 'Bliv til en ræveunge, og find den hemmelige sti mellem stenene', to: 'js1RaevOk' }
     },
     js1Hub: {
       syn: { l: 'Se de små fodspor, der fniser rundt om bakken', to: 'js1Raev', show: function () { return k.state.visited.indexOf('raev') < 0 && !!k.lockTxt('Nysgerrighed', 2); } }
@@ -276,7 +280,8 @@ LK.addStory(function (k) {
     js1Bakke: {
       gnist: { l: 'Skab en ekstra hjælper til turen op', to: 'js1Bakke', eff: function (h) { k.state.gnists++; k.state.gnistList.push({ key: 'magi_' + h.id + '_' + k.state.gnists, c: 'magiske', def: k.gen(h.name) + ' trappe', col: '#F2C94C', ph: 'Trin', name: '' }); } },
       dyr: { l: 'Bed skovens dyr om at hjælpe', to: 'js1EndVenner' },
-      latter: { l: 'Strø latterstøv, så Uffe får lyst til at flyve', to: 'js1EndNys' }
+      latter: { l: 'Strø latterstøv, så Uffe får lyst til at flyve', to: 'js1EndNys' },
+      skift: { l: 'Bliv til et egern, og kald skovens dyr til at hjælpe op ad bakken', to: 'js1EndVenner' }
     }
   };
 

@@ -143,6 +143,12 @@ function tjekHistorie(story, kit, saet, ctx, valg, fejl) {
     });
     saet(null);
   };
+  // En scene med flere magi-valg (et terningkast eller en finale) skal også have et valg til Skiftemagi (`skift`),
+  // så en helt på level 7 med Skiftemagi altid kan bruge den. En scene med kun ét valg (fx en skjult sti) behøver det ikke.
+  Object.keys(story.magi || {}).forEach(id => {
+    const valg = Object.keys(story.magi[id] || {}).filter(m => story.magi[id][m]);
+    if (valg.length >= 2 && valg.indexOf('skift') < 0) meld(id, 'Magien mangler et valg til Skiftemagi (skift)');
+  });
   Object.keys(story.magi || {}).forEach(id => {
     Object.keys(story.magi[id] || {}).forEach(m => {
       const o = story.magi[id][m];

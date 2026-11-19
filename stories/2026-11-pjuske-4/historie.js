@@ -249,25 +249,29 @@ LK.addStory(function (k) {
       gnist: { l: 'Skab en gnist, der lyser tågen væk fra stien', to: 'pj4TaageOk' },
       dyr: { l: 'Spørg en flagermus, der kan finde vej i tåge', to: 'pj4TaageOk' },
       syn: { l: 'Se stien tydeligt, selvom tågen er tæt', to: 'pj4TaageOk' },
-      latter: { l: 'Strø latterstøv, så tågen fniser og letter', to: 'pj4TaageOk' }
+      latter: { l: 'Strø latterstøv, så tågen fniser og letter', to: 'pj4TaageOk' },
+      skift: { l: 'Bliv til en flagermus, og find vej gennem tågen', to: 'pj4TaageOk' }
     },
     pj4Moll: {
       gnist: { l: 'Skab en gnist, der synger det sidste vers', to: 'pj4MollOk' },
       dyr: { l: 'Spørg en solsort, hvordan en godnatsang slutter', to: 'pj4MollOk' },
       syn: { l: 'Se det sidste vers, der gemmer sig i Molls sangbog', to: 'pj4MollOk' },
-      latter: { l: 'Strø latterstøv, så verset kommer af sig selv', to: 'pj4MollOk' }
+      latter: { l: 'Strø latterstøv, så verset kommer af sig selv', to: 'pj4MollOk' },
+      skift: { l: 'Bliv til en solsort, og syng det sidste vers', to: 'pj4MollOk' }
     },
     pj4Mus: {
       gnist: { l: 'Skab en gnist, der kalder fnuggene hjem', to: 'pj4MusOk' },
       dyr: { l: 'Bed en lille fugl om at samle fnuggene', to: 'pj4MusOk' },
       syn: { l: 'Se, hvor vinden har lagt alle fnuggene', to: 'pj4MusOk' },
-      latter: { l: 'Strø latterstøv, så fnuggene danser tilbage', to: 'pj4MusOk' }
+      latter: { l: 'Strø latterstøv, så fnuggene danser tilbage', to: 'pj4MusOk' },
+      skift: { l: 'Bliv til en fugl, og saml fnuggene i næbbet', to: 'pj4MusOk' }
     },
     pj4Raev: {
       gnist: { l: 'Skab en gnist, som ræveungen kan lege med hele vinteren', to: 'pj4RaevOk' },
       dyr: { l: 'Tal med ræveungen på rævesprog', to: 'pj4RaevOk' },
       syn: { l: 'Se, hvad ræveungen allerhelst vil', to: 'pj4RaevOk' },
-      latter: { l: 'Strø latterstøv, så ræveungen griner igen', to: 'pj4RaevOk' }
+      latter: { l: 'Strø latterstøv, så ræveungen griner igen', to: 'pj4RaevOk' },
+      skift: { l: 'Bliv til en ræveunge, og leg med ræveungen', to: 'pj4RaevOk' }
     },
     pj4Hub: {
       syn: { l: 'Se ræveungen, der sidder under busken', to: 'pj4Raev', show: function () { return k.state.visited.indexOf('raev') < 0 && !!k.lockTxt('Venlighed', 2); } }
@@ -275,7 +279,8 @@ LK.addStory(function (k) {
     pj4Rod: {
       gnist: { l: 'Skab en ekstra ting til godnatten', to: 'pj4Rod', eff: function (h) { k.state.gnists++; k.state.gnistList.push({ key: 'magi_' + h.id + '_' + k.state.gnists, c: 'magiske', def: k.gen(h.name) + ' godnat', col: '#F2C94C', ph: 'Drøm', name: '' }); } },
       dyr: { l: 'Bed skovens dyr om at komme og synge', to: 'pj4EndVenner' },
-      latter: { l: 'Strø latterstøv, så alle hvisker og fniser godnat', to: 'pj4EndHvisk' }
+      latter: { l: 'Strø latterstøv, så alle hvisker og fniser godnat', to: 'pj4EndHvisk' },
+      skift: { l: 'Bliv til en solsort, og kald skovens dyr sammen til godnatsangen', to: 'pj4EndVenner' }
     }
   };
 

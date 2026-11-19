@@ -52,6 +52,10 @@ test('mester-valg med en n(), der kaster, er en fejl', () => {
   assert.match(f[0].besked, /^Fejl i koden: .*mester-valget "Mod"/);
 });
 test('magi og mester-valg, der bruger helten som motoren, er i orden', () => assert.deepEqual(tjek(['tests/fixtures/magi-eff.js']), []));
+test('en scene med flere magi-valg uden Skiftemagi er en fejl', () => {
+  const f = tjek(['tests/fixtures/magi-uden-skift.js']);
+  assert.deepEqual(f.map(x => [x.scene, x.besked]), [['mu_a', 'Magien mangler et valg til Skiftemagi (skift)']]);
+});
 
 // Hver post i kataloget skal passe med historien i sin fil.
 const katalogFejl = () => tjekKatalog('tests/fixtures/katalog-tjek/katalog.js');
