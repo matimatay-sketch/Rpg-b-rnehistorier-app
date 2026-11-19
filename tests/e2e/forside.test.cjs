@@ -913,3 +913,33 @@ test('forhåndsvisningen starter stadig i historien, og "‹ Forside" fører til
   assert.deepStrictEqual(fejl, []);
   await context.close();
 });
+
+test('heltebyggeren: træsværdet er låst til level 5 og kan vælges derefter', async () => {
+  // Level 1 (0 eventyr): træsværdet og Uffe på skulderen er låst.
+  let { context, page, fejl } = await nySide(standard(), '2026-11-11T10:00:00');
+  await page.goto(server.base + 'index.html');
+  await tilHelte(page);
+  await page.click('[data-edit="h1"]');
+  await page.click('[data-cat="toej"]');
+  assert.match(await tekst(page, '.chip.laast:has-text("Træsværd")'), /level 5/);
+  assert.strictEqual(await page.$('[data-k="acc"][data-v="svaerd"]'), null);
+  assert.strictEqual(await page.$('[data-k="skulder"][data-v="ugle"]'), null);
+  assert.match(await tekst(page, '#ptsline'), /Næste belønning: Lanternehat på level 2/);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+
+  // Level 5 (8 eventyr): træsværdet kan vælges og bliver gemt.
+  ({ context, page, fejl } = await nySide({ 'lk-heroes': JSON.stringify({ heroes: [helt({ stories: 8 })], play: { h1: true }, world: {} }), 'lk-welcomed': '1' }, '2026-11-11T10:00:00'));
+  await page.goto(server.base + 'index.html');
+  await tilHelte(page);
+  await page.click('[data-edit="h1"]');
+  await page.click('[data-cat="toej"]');
+  await page.click('[data-k="acc"][data-v="svaerd"]');
+  await page.click('[data-k="skulder"][data-v="ugle"]');
+  assert.deepStrictEqual(await page.$$eval('.chip.laast', l => l.map(b => b.textContent)), ['🔒 Glimmerkappe · level 6']);
+  await page.click('#save');
+  const h = JSON.parse(await gemt(page, 'lk-heroes')).heroes[0];
+  assert.deepStrictEqual([h.acc, h.skulder], ['svaerd', 'ugle']);
+  assert.deepStrictEqual(fejl, []);
+  await context.close();
+});
