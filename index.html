@@ -128,6 +128,7 @@ label.lab { font-family: var(--font-display); font-weight: 600; font-size: 16px;
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { font-family: var(--font-display); font-weight: 600; font-size: 14px; border: 2px solid var(--line); background: var(--bg); border-radius: 999px; padding: 4px 12px; min-height: 36px; cursor: pointer; }
 .chip[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+.chip.laast { cursor: default; opacity: .6; border-style: dashed; }
 .chip.rm { color: var(--bad); }
 .sw { width: 32px; height: 32px; border-radius: 50%; border: 3px solid var(--line); cursor: pointer; padding: 0; }
 .sw[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 2px var(--surface); }
@@ -536,19 +537,25 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
   var HAIRC = ['#2A1D14', '#6B4226', '#C9892B', '#E8D08A', '#C44A3A', '#8E8EA0', '#4AA3D8', '#E56FA5', '#6CC17A', '#7B4FB3'];
   var BGC = ['none', '#FFE9A8', '#CDE8D6', '#D4E3F7', '#F6D3E0', '#E2D6F2'];
   var HAIRS = [['ingen', 'Skaldet'], ['kort', 'Kort'], ['lang', 'Langt'], ['krol', 'Krøller'], ['totter', 'Totter'], ['knold', 'Knold'], ['hane', 'Hane'], ['bob', 'Pagehår'], ['pjusk', 'Pjusket']];
-  var HATS = [['ingen', 'Ingen'], ['spids', 'Troldehat'], ['haette', 'Hætte'], ['krone', 'Krone'], ['hjelm', 'Hjelm'], ['kasket', 'Kasket'], ['hue', 'Hue'], ['kat', 'Kattører'], ['kanin', 'Kaninører'], ['krans', 'Blomsterkrans']];
+  var HATS = [['ingen', 'Ingen'], ['spids', 'Troldehat'], ['haette', 'Hætte'], ['krone', 'Krone'], ['hjelm', 'Hjelm'], ['kasket', 'Kasket'], ['hue', 'Hue'], ['kat', 'Kattører'], ['kanin', 'Kaninører'], ['krans', 'Blomsterkrans'], ['lanternehat', 'Lanternehat'], ['lyskrone', 'Lysende krone']];
   var EYES = [['prik', 'Prikker'], ['stor', 'Store'], ['glad', 'Glade'], ['sovn', 'Søvnige'], ['blink', 'Blink']];
   var BROWS = [['ingen', 'Ingen'], ['rolig', 'Rolige'], ['glad', 'Hævede'], ['sur', 'Sure'], ['wow', 'Overraskede']];
   var MOUTHS = [['smil', 'Smil'], ['grin', 'Bredt grin'], ['lille', 'Lille'], ['rolig', 'Rolig'], ['tunge', 'Tunge'], ['aaben', 'Åben'], ['skaev', 'Skævt']];
   var SPOTS = [['ingen', 'Ingen'], ['fregner', 'Fregner'], ['rod', 'Rødmen'], ['begge', 'Begge dele']];
   var GEAR = [['ingen', 'Ingen'], ['briller', 'Briller'], ['sol', 'Solbriller'], ['overskaeg', 'Overskæg'], ['skaeg', 'Skæg']];
-  var PATS = [['ingen', 'Ensfarvet'], ['striber', 'Striber'], ['prikker', 'Prikker'], ['stjerner', 'Stjerner']];
-  var ACCS = [['ingen', 'Ingenting', ''], ['stav', 'Stav', 'Mod'], ['skjold', 'Skjold', 'Mod'], ['rygsaek', 'Rygsæk', 'List'], ['kikkert', 'Kikkert', 'List'], ['lanterne', 'Lanterne', 'Venlighed'], ['blomst', 'Blomst', 'Venlighed'], ['trylle', 'Tryllestav', 'Fantasi'], ['naese', 'Rød næse', 'Humor'], ['lup', 'Lup', 'Nysgerrighed']];
+  var PATS = [['ingen', 'Ensfarvet'], ['striber', 'Striber'], ['prikker', 'Prikker'], ['stjerner', 'Stjerner'], ['glimmer', 'Glimmerkappe']];
+  var ACCS = [['ingen', 'Ingenting', ''], ['stav', 'Stav', 'Mod'], ['skjold', 'Skjold', 'Mod'], ['rygsaek', 'Rygsæk', 'List'], ['kikkert', 'Kikkert', 'List'], ['lanterne', 'Lanterne', 'Venlighed'], ['blomst', 'Blomst', 'Venlighed'], ['trylle', 'Tryllestav', 'Fantasi'], ['naese', 'Rød næse', 'Humor'], ['lup', 'Lup', 'Nysgerrighed'], ['svaerd', 'Træsværd', 'Mod']];
+  var SKULDER = [['ingen', 'Ingen'], ['ugle', 'Uffe']];
+  /* Belønninger, der låses op, når helten stiger i level (level 3 giver en ekstra magi, se SECOND_MAGIC_LEVEL). */
+  var LAAS = { lanternehat: 2, ugle: 4, svaerd: 5, glimmer: 6, lyskrone: 8 };
+  var LAAS_NAVN = { 2: 'Lanternehat', 4: 'Uffe på skulderen', 5: 'Træsværd', 6: 'Glimmerkappe', 8: 'Lysende krone' };
+  function laast(v, h) { return !!LAAS[v] && heroLevel(h) < LAAS[v]; }
+  function naesteBeloenning(h) { var lv = heroLevel(h), n = 0; Object.keys(LAAS_NAVN).forEach(function (k) { k = +k; if (k > lv && (!n || k < n)) n = k; }); return n; }
   var GROUPS = {
     ansigt: [['Ansigtsfarve', 'sw', 'skin', SKIN], ['Øjne', 'ch', 'eyes', EYES], ['Øjenbryn', 'ch', 'brows', BROWS], ['Mund', 'ch', 'mouth', MOUTHS], ['Pletter', 'ch', 'spots', SPOTS], ['Briller og skæg', 'ch', 'gear', GEAR]],
     haar: [['Frisure', 'ch', 'hair', HAIRS], ['Hårfarve', 'sw', 'hairCol', HAIRC]],
     hat: [['Hat', 'ch', 'hat', HATS], ['Hatfarve', 'sw', 'hatCol', CLOAK]],
-    toej: [['Kappe', 'sw', 'cloak', CLOAK], ['Mønster', 'ch', 'pat', PATS], ['Ting (+1 på ét slags terningkast)', 'acc', 'acc', ACCS]],
+    toej: [['Kappe', 'sw', 'cloak', CLOAK], ['Mønster', 'ch', 'pat', PATS], ['Ting (+1 på ét slags terningkast)', 'acc', 'acc', ACCS], ['Skulderven', 'ch', 'skulder', SKULDER]],
     stil: [['Baggrund', 'sw', 'bgc', BGC]]
   };
   var CATS = [['kraefter', 'Kræfter'], ['magi', 'Magi'], ['ansigt', 'Ansigt'], ['haar', 'Hår'], ['hat', 'Hat'], ['toej', 'Tøj'], ['stil', 'Stil']];
@@ -557,7 +564,7 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
   function pick(arr) { var v = arr[Math.floor(Math.random() * arr.length)]; return Array.isArray(v) ? v[0] : v; }
   function newHero(i) {
     return { name: '', skin: SKIN[[1, 3, 2, 4][i % 4]], cloak: CLOAK[i % CLOAK.length], hat: 'ingen', hatCol: CLOAK[(i + 2) % CLOAK.length], hair: 'kort', hairCol: HAIRC[i % HAIRC.length],
-      eyes: 'prik', brows: 'rolig', mouth: 'smil', spots: 'ingen', gear: 'ingen', pat: 'ingen', acc: ACCS[(i % 3) * 2 + 1][0], bgc: BGC[(i + 1) % BGC.length] };
+      eyes: 'prik', brows: 'rolig', mouth: 'smil', spots: 'ingen', gear: 'ingen', pat: 'ingen', acc: ACCS[(i % 3) * 2 + 1][0], skulder: 'ingen', bgc: BGC[(i + 1) % BGC.length] };
   }
   function zeroStats() { var o = {}; STATS.forEach(function (t) { o[t[0]] = 0; }); return o; }
   function monthIdx() { var d = new Date(); return d.getFullYear() * 12 + d.getMonth(); }
@@ -591,99 +598,136 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
     saveLib();
   })();
   function randomize(h) {
-    h.skin = pick(SKIN); h.cloak = pick(CLOAK); h.hat = pick(HATS); h.hatCol = pick(CLOAK); h.hair = pick(HAIRS); h.hairCol = pick(HAIRC);
-    h.eyes = pick(EYES); h.brows = pick(BROWS); h.mouth = pick(MOUTHS); h.spots = pick(SPOTS); h.gear = pick(GEAR); h.pat = pick(PATS); h.acc = pick(ACCS); h.bgc = pick(BGC);
+    /* Kun det, helten har låst op. */
+    function aaben(arr) { return arr.filter(function (x) { return !laast(x[0], h); }); }
+    h.skin = pick(SKIN); h.cloak = pick(CLOAK); h.hat = pick(aaben(HATS)); h.hatCol = pick(CLOAK); h.hair = pick(HAIRS); h.hairCol = pick(HAIRC);
+    h.eyes = pick(EYES); h.brows = pick(BROWS); h.mouth = pick(MOUTHS); h.spots = pick(SPOTS); h.gear = pick(GEAR); h.pat = pick(aaben(PATS)); h.acc = pick(aaben(ACCS)); h.skulder = pick(aaben(SKULDER)); h.bgc = pick(BGC);
   }
   var AUID = 0;
+  /* Helten tegnes med hele kroppen (viewBox 120 x 140): hovedet øverst, kappen, arme med hænder og ben.
+     Hovedet tegnes i sine gamle koordinater (midt i 60,62) og skaleres ned med HOVED, så hår, hatte og ansigt passer som før.
+     Tingene sidder i hænderne: venstre hånd (set forfra) i HV, højre hånd i HH. */
+  var HOVED = 'translate(60 46) scale(.78) translate(-60 -62)', HV = [27, 101], HH = [93, 101];
   function avatar(h, px) {
     var o = '#22302B', sw = ' stroke="' + o + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"', st = ' stroke="' + o + '" stroke-width="3" stroke-linecap="round" fill="none"';
-    var CP = 'M26 140 Q28 92 60 90 Q92 92 94 140Z', cid = 'cp' + (++AUID), s = '';
+    var CP = 'M60 63 Q82 63 85 82 L89 117 Q60 123 31 117 L35 82 Q38 63 60 63Z', cid = 'cp' + (++AUID), s = '', bag = '', hd = '';
     var hat = h.hat || 'ingen', hair = h.hair || 'kort', hc = h.hairCol || '#2A1D14', tc = h.hatCol || h.cloak, skin = h.skin, acc = h.acc || 'ingen';
-    var eyes = h.eyes || 'prik', brows = h.brows || 'rolig', mouth = h.mouth || h.face || 'smil', spots = h.spots || 'ingen', gear = h.gear || 'ingen', pat = h.pat || 'ingen';
-    var coverHats = ['spids', 'haette', 'hjelm', 'hue', 'kasket'];
+    var eyes = h.eyes || 'prik', brows = h.brows || 'rolig', mouth = h.mouth || h.face || 'smil', spots = h.spots || 'ingen', gear = h.gear || 'ingen', pat = h.pat || 'ingen', ven = h.skulder || 'ingen';
+    var coverHats = ['spids', 'haette', 'hjelm', 'hue', 'kasket', 'lanternehat'];
     function circ(x, y, r, f, extra) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"' + (extra || '') + '/>'; }
-    if (h.bgc && h.bgc !== 'none') s += '<rect x="2" y="2" width="116" height="136" rx="18" fill="' + h.bgc + '"/>';
-    /* things behind the body */
-    if (acc === 'stav') s += '<line x1="102" y1="38" x2="102" y2="138" stroke="#8B5E34" stroke-width="5" stroke-linecap="round"/>' + circ(102, 32, 8, '#E3A21A', sw);
-    if (acc === 'rygsaek') s += '<rect x="20" y="96" width="22" height="34" rx="8" fill="#8B5E34"' + sw + '/>';
-    if (hair === 'lang') s += '<path d="M29 56 L29 104 Q38 110 44 98 L44 60Z M91 56 L91 104 Q82 110 76 98 L76 60Z" fill="' + hc + '"' + sw + '/>';
-    if (hair === 'bob') s += '<path d="M28 58 Q26 100 44 98 L44 60Z M92 58 Q94 100 76 98 L76 60Z" fill="' + hc + '"' + sw + '/>';
-    if (hair === 'totter') s += '<path d="M31 52 Q12 60 17 90 Q27 98 32 84Z M89 52 Q108 60 103 90 Q93 98 88 84Z" fill="' + hc + '"' + sw + '/>';
-    if (hair === 'knold') s += circ(60, 28, 12, hc, sw);
-    if (hat === 'kat') s += '<path d="M33 46 L34 18 L53 36Z M87 46 L86 18 L67 36Z" fill="' + tc + '"' + sw + '/><path d="M38 38 L38 26 L47 35Z M82 38 L82 26 L73 35Z" fill="#F4A6B8"/>';
-    if (hat === 'kanin') s += '<ellipse cx="45" cy="20" rx="8" ry="21" fill="' + tc + '"' + sw + '/><ellipse cx="75" cy="20" rx="8" ry="21" fill="' + tc + '"' + sw + '/><ellipse cx="45" cy="22" rx="3.5" ry="13" fill="#F4A6B8"/><ellipse cx="75" cy="22" rx="3.5" ry="13" fill="#F4A6B8"/>';
-    /* body */
-    s += '<path d="' + CP + '" fill="' + h.cloak + '"' + sw + '/>';
-    if (pat !== 'ingen') {
-      s += '<clipPath id="' + cid + '"><path d="' + CP + '"/></clipPath><g clip-path="url(#' + cid + ')" fill="#fff" opacity=".35">';
-      if (pat === 'striber') [32, 46, 60, 74, 88].forEach(function (x) { s += '<rect x="' + x + '" y="88" width="6" height="54"/>'; });
-      if (pat === 'prikker') [[38, 104], [60, 100], [82, 104], [48, 120], [72, 120], [32, 132], [60, 134], [88, 132]].forEach(function (c) { s += '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="3.5"/>'; });
-      if (pat === 'stjerner') [[40, 106], [78, 104], [60, 122], [34, 130], [88, 128]].forEach(function (c) { s += '<path d="M' + c[0] + ' ' + (c[1] - 6) + ' L' + (c[0] + 2) + ' ' + (c[1] - 2) + ' L' + (c[0] + 6) + ' ' + c[1] + ' L' + (c[0] + 2) + ' ' + (c[1] + 2) + ' L' + c[0] + ' ' + (c[1] + 6) + ' L' + (c[0] - 2) + ' ' + (c[1] + 2) + ' L' + (c[0] - 6) + ' ' + c[1] + ' L' + (c[0] - 2) + ' ' + (c[1] - 2) + 'Z"/>'; });
-      s += '</g>';
+    function arm(x1, x2, y2) { /* ærme fra skulderen ned til hånden, i kappens farve med kant */
+      var d = 'M' + x1 + ' 72 Q' + (x1 + (x2 - x1) * 0.2) + ' 92 ' + x2 + ' ' + y2;
+      return '<path d="' + d + '" fill="none" stroke="' + o + '" stroke-width="13" stroke-linecap="round"/><path d="' + d + '" fill="none" stroke="' + h.cloak + '" stroke-width="9" stroke-linecap="round"/>';
     }
-    s += '<path d="M48 95 Q60 106 72 95" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"/>';
-    if (acc === 'rygsaek') s += '<path d="M47 98 L54 138" stroke="#8B5E34" stroke-width="5" stroke-linecap="round"/>';
-    /* head */
-    s += circ(32, 64, 5, skin, sw) + circ(88, 64, 5, skin, sw) + circ(60, 62, 28, skin, sw);
-    /* front hair */
+    if (h.bgc && h.bgc !== 'none') s += '<rect x="2" y="2" width="116" height="136" rx="18" fill="' + h.bgc + '"/>';
+
+    /* ---- hovedet: det, der sidder bag kroppen (bag), og selve hovedet (hd) ---- */
+    if (hair === 'lang') bag += '<path d="M29 56 L29 104 Q38 110 44 98 L44 60Z M91 56 L91 104 Q82 110 76 98 L76 60Z" fill="' + hc + '"' + sw + '/>';
+    if (hair === 'bob') bag += '<path d="M28 58 Q26 100 44 98 L44 60Z M92 58 Q94 100 76 98 L76 60Z" fill="' + hc + '"' + sw + '/>';
+    if (hair === 'totter') bag += '<path d="M31 52 Q12 60 17 90 Q27 98 32 84Z M89 52 Q108 60 103 90 Q93 98 88 84Z" fill="' + hc + '"' + sw + '/>';
+    if (hair === 'knold') bag += circ(60, 28, 12, hc, sw);
+    if (hat === 'kat') bag += '<path d="M33 46 L34 18 L53 36Z M87 46 L86 18 L67 36Z" fill="' + tc + '"' + sw + '/><path d="M38 38 L38 26 L47 35Z M82 38 L82 26 L73 35Z" fill="#F4A6B8"/>';
+    if (hat === 'kanin') bag += '<ellipse cx="45" cy="20" rx="8" ry="21" fill="' + tc + '"' + sw + '/><ellipse cx="75" cy="20" rx="8" ry="21" fill="' + tc + '"' + sw + '/><ellipse cx="45" cy="22" rx="3.5" ry="13" fill="#F4A6B8"/><ellipse cx="75" cy="22" rx="3.5" ry="13" fill="#F4A6B8"/>';
+    if (hat === 'lyskrone') bag += circ(60, 30, 30, '#FFE08A', ' opacity=".45"') + circ(60, 30, 20, '#FFF3C4', ' opacity=".5"');
+    hd += circ(32, 64, 5, skin, sw) + circ(88, 64, 5, skin, sw) + circ(60, 62, 28, skin, sw);
     var showHair = coverHats.indexOf(hat) < 0;
     if (showHair) {
-      if (hair === 'kort' || hair === 'knold' || hair === 'totter') s += '<path d="M32 60 Q32 30 60 30 Q88 30 88 60 Q80 46 60 46 Q40 46 32 60Z" fill="' + hc + '"' + sw + '/>';
-      if (hair === 'lang') s += '<path d="M31 62 Q31 30 60 30 Q89 30 89 62 Q78 44 60 44 Q42 44 31 62Z" fill="' + hc + '"' + sw + '/>';
-      if (hair === 'bob') s += '<path d="M30 64 Q29 30 60 30 Q91 30 90 64 Q88 50 60 50 Q32 50 30 64Z" fill="' + hc + '"' + sw + '/>';
-      if (hair === 'krol') [[36, 50], [46, 38], [60, 34], [74, 38], [84, 50]].forEach(function (c) { s += circ(c[0], c[1], 11, hc, sw); });
-      if (hair === 'hane') s += '<path d="M50 38 L55 12 L60 30 L65 8 L70 30 L74 14 L72 40Z" fill="' + hc + '"' + sw + '/>';
-      if (hair === 'pjusk') s += '<path d="M32 58 L30 40 L42 44 L44 28 L54 38 L60 24 L66 38 L76 28 L78 44 L90 40 L88 58 Q80 46 60 46 Q40 46 32 58Z" fill="' + hc + '"' + sw + '/>';
+      if (hair === 'kort' || hair === 'knold' || hair === 'totter') hd += '<path d="M32 60 Q32 30 60 30 Q88 30 88 60 Q80 46 60 46 Q40 46 32 60Z" fill="' + hc + '"' + sw + '/>';
+      if (hair === 'lang') hd += '<path d="M31 62 Q31 30 60 30 Q89 30 89 62 Q78 44 60 44 Q42 44 31 62Z" fill="' + hc + '"' + sw + '/>';
+      if (hair === 'bob') hd += '<path d="M30 64 Q29 30 60 30 Q91 30 90 64 Q88 50 60 50 Q32 50 30 64Z" fill="' + hc + '"' + sw + '/>';
+      if (hair === 'krol') [[36, 50], [46, 38], [60, 34], [74, 38], [84, 50]].forEach(function (c) { hd += circ(c[0], c[1], 11, hc, sw); });
+      if (hair === 'hane') hd += '<path d="M50 38 L55 12 L60 30 L65 8 L70 30 L74 14 L72 40Z" fill="' + hc + '"' + sw + '/>';
+      if (hair === 'pjusk') hd += '<path d="M32 58 L30 40 L42 44 L44 28 L54 38 L60 24 L66 38 L76 28 L78 44 L90 40 L88 58 Q80 46 60 46 Q40 46 32 58Z" fill="' + hc + '"' + sw + '/>';
     }
-    if (hair === 'totter' && showHair) s += circ(31, 54, 3.5, '#E3A21A', sw) + circ(89, 54, 3.5, '#E3A21A', sw);
-    /* cheeks and spots */
-    if (spots === 'rod' || spots === 'begge') s += circ(41, 72, 5, '#E8707A', ' opacity=".4"') + circ(79, 72, 5, '#E8707A', ' opacity=".4"');
-    if (spots === 'fregner' || spots === 'begge') [[45, 69], [50, 72], [55, 69], [65, 69], [70, 72], [75, 69]].forEach(function (c) { s += circ(c[0], c[1], 1.5, '#8B5E34'); });
-    /* beard goes under the mouth */
-    if (gear === 'skaeg') s += '<path d="M32 66 Q34 100 60 102 Q86 100 88 66 Q80 84 60 84 Q40 84 32 66Z" fill="' + hc + '"' + sw + '/>';
-    /* eyes */
-    if (eyes === 'prik') s += circ(50, 62, 3.2, o) + circ(70, 62, 3.2, o);
-    if (eyes === 'stor') s += circ(50, 62, 6, '#fff', sw) + circ(70, 62, 6, '#fff', sw) + circ(51, 63, 2.8, o) + circ(71, 63, 2.8, o);
-    if (eyes === 'glad') s += '<path d="M44 65 Q50 57 56 65 M64 65 Q70 57 76 65"' + st + '/>';
-    if (eyes === 'sovn') s += '<path d="M44 62 Q50 67 56 62 M64 62 Q70 67 76 62"' + st + '/>';
-    if (eyes === 'blink') s += circ(50, 62, 3.2, o) + '<path d="M65 62 L75 62"' + st + '/>';
-    /* brows */
-    if (brows === 'rolig') s += '<path d="M44 53 L56 53 M64 53 L76 53"' + st.replace('stroke-width="3"', 'stroke-width="2.5"') + '/>';
-    if (brows === 'glad') s += '<path d="M44 54 Q50 49 56 54 M64 54 Q70 49 76 54"' + st.replace('stroke-width="3"', 'stroke-width="2.5"') + '/>';
-    if (brows === 'sur') s += '<path d="M43 51 L56 56 M77 51 L64 56"' + st + '/>';
-    if (brows === 'wow') s += '<path d="M44 50 Q50 44 56 50 M64 50 Q70 44 76 50"' + st.replace('stroke-width="3"', 'stroke-width="2.5"') + '/>';
-    /* mouth */
-    if (mouth === 'smil') s += '<path d="M49 74 Q60 85 71 74"' + st + '/>';
-    if (mouth === 'grin') s += '<path d="M47 72 Q60 92 73 72Z" fill="#fff"' + sw + '/>';
-    if (mouth === 'lille') s += '<path d="M54 77 Q60 81 66 77"' + st + '/>';
-    if (mouth === 'rolig') s += '<path d="M52 78 L68 78"' + st + '/>';
-    if (mouth === 'tunge') s += '<path d="M56 79 Q60 91 64 79Z" fill="#E8707A"' + sw + '/><path d="M49 73 Q60 84 71 73"' + st + '/>';
-    if (mouth === 'aaben') s += '<ellipse cx="60" cy="79" rx="5.5" ry="6.5" fill="' + o + '"/>';
-    if (mouth === 'skaev') s += '<path d="M50 78 Q62 79 71 70"' + st + '/>';
-    /* glasses, moustache */
-    if (gear === 'briller') s += circ(50, 62, 9, '#fff', ' fill-opacity=".25" stroke="' + o + '" stroke-width="2.5"') + circ(70, 62, 9, '#fff', ' fill-opacity=".25" stroke="' + o + '" stroke-width="2.5"') + '<path d="M59 62 L61 62"' + st.replace('stroke-width="3"', 'stroke-width="2.5"') + '/>';
-    if (gear === 'sol') s += '<rect x="40" y="55" width="19" height="13" rx="5" fill="' + o + '"/><rect x="61" y="55" width="19" height="13" rx="5" fill="' + o + '"/><path d="M59 60 L61 60"' + st.replace('stroke-width="3"', 'stroke-width="2.5"') + '/>';
-    if (gear === 'overskaeg') s += '<path d="M46 73 Q53 66 60 71 Q67 66 74 73 Q67 74 60 73 Q53 74 46 73Z" fill="' + hc + '"' + sw + '/>';
-    /* hats */
-    if (hat === 'spids') s += '<path d="M31 52 L63 2 L89 52Z" fill="' + tc + '"' + sw + '/><ellipse cx="60" cy="51" rx="35" ry="7" fill="' + tc + '"' + sw + '/>' + circ(63, 26, 4, '#E3A21A');
-    if (hat === 'haette') s += '<path d="M30 66 Q28 24 60 24 Q92 24 90 66 Q84 44 60 44 Q36 44 30 66Z" fill="' + tc + '"' + sw + '/>';
-    if (hat === 'krone') s += '<path d="M38 42 L38 24 L49 34 L60 18 L71 34 L82 24 L82 42Z" fill="#E3A21A"' + sw + '/>';
-    if (hat === 'hjelm') s += '<path d="M31 62 Q30 28 60 28 Q90 28 89 62 L78 62 L78 50 Q60 44 42 50 L42 62Z" fill="#9AA8A2"' + sw + '/>';
-    if (hat === 'kasket') s += '<path d="M31 56 Q32 28 60 28 Q88 28 89 56Z" fill="' + tc + '"' + sw + '/><path d="M56 52 Q90 46 108 58 Q84 62 56 58Z" fill="' + tc + '"' + sw + '/>';
-    if (hat === 'hue') s += '<path d="M31 54 Q30 24 60 24 Q90 24 89 54Z" fill="' + tc + '"' + sw + '/><rect x="29" y="46" width="62" height="10" rx="5" fill="' + tc + '"' + sw + '/><rect x="29" y="46" width="62" height="10" rx="5" fill="#fff" opacity=".3"/>' + circ(60, 21, 6, '#fff', sw);
-    if (hat === 'krans') [[35, 46, '#E56FA5'], [45, 37, '#F2C94C'], [60, 33, '#fff'], [75, 37, '#E56FA5'], [85, 46, '#F2C94C']].forEach(function (c) { s += circ(c[0], c[1], 6.5, c[2], ' stroke="' + o + '" stroke-width="1.5"') + circ(c[0], c[1], 2, '#E3A21A'); });
-    if (acc === 'naese') s += circ(60, 71, 5.5, '#E24A4A', sw) + circ(58, 69, 1.5, '#fff');
-    /* things in front of the body */
-    if (acc === 'skjold') s += '<path d="M6 98 L34 98 L34 118 Q34 134 20 140 Q6 134 6 118Z" fill="' + tc + '"' + sw + '/>' + circ(20, 116, 6, '#E3A21A', sw);
-    if (acc === 'kikkert') s += '<g transform="rotate(-28 100 112)"><rect x="82" y="105" width="36" height="14" rx="4" fill="#8B5E34"' + sw + '/><rect x="108" y="103" width="12" height="18" rx="3" fill="#C9A227"' + sw + '/></g>';
-    if (acc === 'lanterne') s += '<path d="M14 112 Q20 100 26 112" fill="none"' + sw + '/><rect x="10" y="112" width="20" height="24" rx="5" fill="#E3A21A"' + sw + '/>';
-    if (acc === 'trylle') s += '<line x1="102" y1="112" x2="112" y2="76" stroke="#6B4A9E" stroke-width="4" stroke-linecap="round"/><path d="M113 58 L116 68 L126 70 L118 76 L120 86 L113 80 L106 86 L108 76 L100 70 L110 68Z" fill="#F2C94C"' + sw + ' transform="translate(-6 -6) scale(.9)"/>';
-    if (acc === 'lup') s += '<line x1="100" y1="132" x2="106" y2="112" stroke="#8B5E34" stroke-width="5" stroke-linecap="round"/>' + circ(110, 100, 11, '#fff', ' fill-opacity=".45" stroke="' + o + '" stroke-width="3"');
+    if (hair === 'totter' && showHair) hd += circ(31, 54, 3.5, '#E3A21A', sw) + circ(89, 54, 3.5, '#E3A21A', sw);
+    if (spots === 'rod' || spots === 'begge') hd += circ(41, 72, 5, '#E8707A', ' opacity=".4"') + circ(79, 72, 5, '#E8707A', ' opacity=".4"');
+    if (spots === 'fregner' || spots === 'begge') [[45, 69], [50, 72], [55, 69], [65, 69], [70, 72], [75, 69]].forEach(function (c) { hd += circ(c[0], c[1], 1.5, '#8B5E34'); });
+    if (gear === 'skaeg') hd += '<path d="M32 66 Q34 100 60 102 Q86 100 88 66 Q80 84 60 84 Q40 84 32 66Z" fill="' + hc + '"' + sw + '/>';
+    if (eyes === 'prik') hd += circ(50, 62, 3.2, o) + circ(70, 62, 3.2, o);
+    if (eyes === 'stor') hd += circ(50, 62, 6, '#fff', sw) + circ(70, 62, 6, '#fff', sw) + circ(51, 63, 2.8, o) + circ(71, 63, 2.8, o);
+    if (eyes === 'glad') hd += '<path d="M44 65 Q50 57 56 65 M64 65 Q70 57 76 65"' + st + '/>';
+    if (eyes === 'sovn') hd += '<path d="M44 62 Q50 67 56 62 M64 62 Q70 67 76 62"' + st + '/>';
+    if (eyes === 'blink') hd += circ(50, 62, 3.2, o) + '<path d="M65 62 L75 62"' + st + '/>';
+    var st2 = st.replace('stroke-width="3"', 'stroke-width="2.5"');
+    if (brows === 'rolig') hd += '<path d="M44 53 L56 53 M64 53 L76 53"' + st2 + '/>';
+    if (brows === 'glad') hd += '<path d="M44 54 Q50 49 56 54 M64 54 Q70 49 76 54"' + st2 + '/>';
+    if (brows === 'sur') hd += '<path d="M43 51 L56 56 M77 51 L64 56"' + st + '/>';
+    if (brows === 'wow') hd += '<path d="M44 50 Q50 44 56 50 M64 50 Q70 44 76 50"' + st2 + '/>';
+    if (mouth === 'smil') hd += '<path d="M49 74 Q60 85 71 74"' + st + '/>';
+    if (mouth === 'grin') hd += '<path d="M47 72 Q60 92 73 72Z" fill="#fff"' + sw + '/>';
+    if (mouth === 'lille') hd += '<path d="M54 77 Q60 81 66 77"' + st + '/>';
+    if (mouth === 'rolig') hd += '<path d="M52 78 L68 78"' + st + '/>';
+    if (mouth === 'tunge') hd += '<path d="M56 79 Q60 91 64 79Z" fill="#E8707A"' + sw + '/><path d="M49 73 Q60 84 71 73"' + st + '/>';
+    if (mouth === 'aaben') hd += '<ellipse cx="60" cy="79" rx="5.5" ry="6.5" fill="' + o + '"/>';
+    if (mouth === 'skaev') hd += '<path d="M50 78 Q62 79 71 70"' + st + '/>';
+    if (gear === 'briller') hd += circ(50, 62, 9, '#fff', ' fill-opacity=".25" stroke="' + o + '" stroke-width="2.5"') + circ(70, 62, 9, '#fff', ' fill-opacity=".25" stroke="' + o + '" stroke-width="2.5"') + '<path d="M59 62 L61 62"' + st2 + '/>';
+    if (gear === 'sol') hd += '<rect x="40" y="55" width="19" height="13" rx="5" fill="' + o + '"/><rect x="61" y="55" width="19" height="13" rx="5" fill="' + o + '"/><path d="M59 60 L61 60"' + st2 + '/>';
+    if (gear === 'overskaeg') hd += '<path d="M46 73 Q53 66 60 71 Q67 66 74 73 Q67 74 60 73 Q53 74 46 73Z" fill="' + hc + '"' + sw + '/>';
+    if (hat === 'spids') hd += '<path d="M31 52 L63 2 L89 52Z" fill="' + tc + '"' + sw + '/><ellipse cx="60" cy="51" rx="35" ry="7" fill="' + tc + '"' + sw + '/>' + circ(63, 26, 4, '#E3A21A');
+    if (hat === 'haette') hd += '<path d="M30 66 Q28 24 60 24 Q92 24 90 66 Q84 44 60 44 Q36 44 30 66Z" fill="' + tc + '"' + sw + '/>';
+    if (hat === 'krone') hd += '<path d="M38 42 L38 24 L49 34 L60 18 L71 34 L82 24 L82 42Z" fill="#E3A21A"' + sw + '/>';
+    if (hat === 'lyskrone') hd += '<path d="M36 44 L36 20 L48 32 L60 12 L72 32 L84 20 L84 44Z" fill="#F2C94C"' + sw + '/>' +
+      circ(48, 38, 3.5, '#E56FA5', sw) + circ(60, 36, 4, '#4AA3D8', sw) + circ(72, 38, 3.5, '#6CC17A', sw) + circ(36, 18, 3, '#FFF3C4', sw) + circ(60, 10, 3.5, '#FFF3C4', sw) + circ(84, 18, 3, '#FFF3C4', sw);
+    if (hat === 'hjelm') hd += '<path d="M31 62 Q30 28 60 28 Q90 28 89 62 L78 62 L78 50 Q60 44 42 50 L42 62Z" fill="#9AA8A2"' + sw + '/>';
+    if (hat === 'kasket') hd += '<path d="M31 56 Q32 28 60 28 Q88 28 89 56Z" fill="' + tc + '"' + sw + '/><path d="M56 52 Q90 46 108 58 Q84 62 56 58Z" fill="' + tc + '"' + sw + '/>';
+    if (hat === 'hue') hd += '<path d="M31 54 Q30 24 60 24 Q90 24 89 54Z" fill="' + tc + '"' + sw + '/><rect x="29" y="46" width="62" height="10" rx="5" fill="' + tc + '"' + sw + '/><rect x="29" y="46" width="62" height="10" rx="5" fill="#fff" opacity=".3"/>' + circ(60, 21, 6, '#fff', sw);
+    if (hat === 'lanternehat') hd += '<path d="M31 54 Q30 24 60 24 Q90 24 89 54Z" fill="' + tc + '"' + sw + '/><rect x="29" y="46" width="62" height="10" rx="5" fill="' + tc + '"' + sw + '/>' +
+      '<path d="M60 25 Q60 2 84 4" fill="none" stroke="#8B5E34" stroke-width="3" stroke-linecap="round"/>' + circ(86, 16, 14, '#FFE08A', ' opacity=".5"') +
+      '<rect x="79" y="8" width="14" height="17" rx="4" fill="#F2C94C"' + sw + '/><path d="M82 8 L90 8 L88 4 L84 4Z" fill="#8B5E34"' + sw + '/>' + circ(86, 16.5, 3.5, '#FFF3C4');
+    if (hat === 'krans') [[35, 46, '#E56FA5'], [45, 37, '#F2C94C'], [60, 33, '#fff'], [75, 37, '#E56FA5'], [85, 46, '#F2C94C']].forEach(function (c) { hd += circ(c[0], c[1], 6.5, c[2], ' stroke="' + o + '" stroke-width="1.5"') + circ(c[0], c[1], 2, '#E3A21A'); });
+    if (acc === 'naese') hd += circ(60, 71, 5.5, '#E24A4A', sw) + circ(58, 69, 1.5, '#fff');
+
+    /* ---- bag kroppen ---- */
+    if (bag) s += '<g transform="' + HOVED + '">' + bag + '</g>';
+    if (acc === 'rygsaek') s += '<rect x="20" y="70" width="22" height="38" rx="8" fill="#8B5E34"' + sw + '/><rect x="23" y="88" width="16" height="12" rx="4" fill="#A9773F"' + sw + '/>';
+    /* ---- ben og krop ---- */
+    s += '<rect x="46" y="112" width="11" height="20" rx="4" fill="#4A3B32"' + sw + '/><rect x="63" y="112" width="11" height="20" rx="4" fill="#4A3B32"' + sw + '/>' +
+      '<ellipse cx="50" cy="133" rx="9" ry="5" fill="#6B4226"' + sw + '/><ellipse cx="70" cy="133" rx="9" ry="5" fill="#6B4226"' + sw + '/>';
+    s += '<path d="' + CP + '" fill="' + h.cloak + '"' + sw + '/>';
+    if (pat !== 'ingen') {
+      s += '<clipPath id="' + cid + '"><path d="' + CP + '"/></clipPath><g clip-path="url(#' + cid + ')" fill="' + (pat === 'glimmer' ? '#FFE08A' : '#fff') + '" opacity="' + (pat === 'glimmer' ? '.95' : '.35') + '">';
+      if (pat === 'striber') [36, 48, 60, 72, 84].forEach(function (x) { s += '<rect x="' + (x - 3) + '" y="62" width="6" height="62"/>'; });
+      if (pat === 'prikker') [[44, 82], [60, 78], [76, 82], [50, 96], [70, 96], [40, 110], [60, 112], [80, 110]].forEach(function (c) { s += '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="3.5"/>'; });
+      function stjerne(x, y, r) { var q = r / 3; return '<path d="M' + x + ' ' + (y - r) + ' L' + (x + q) + ' ' + (y - q) + ' L' + (x + r) + ' ' + y + ' L' + (x + q) + ' ' + (y + q) + ' L' + x + ' ' + (y + r) + ' L' + (x - q) + ' ' + (y + q) + ' L' + (x - r) + ' ' + y + ' L' + (x - q) + ' ' + (y - q) + 'Z"/>'; }
+      if (pat === 'stjerner') [[46, 84], [74, 82], [60, 100], [42, 112], [80, 110]].forEach(function (c) { s += stjerne(c[0], c[1], 6); });
+      if (pat === 'glimmer') {
+        [[44, 80, 5], [72, 78, 4], [58, 94, 6], [40, 106, 4], [80, 104, 5], [62, 114, 4]].forEach(function (c) { s += stjerne(c[0], c[1], c[2]); });
+        [[52, 84], [66, 88], [48, 96], [74, 94], [54, 108], [70, 110], [36, 92], [84, 90]].forEach(function (c) { s += '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="1.6"/>'; });
+      }
+      s += '</g>';
+    }
+    s += '<path d="M50 66 Q60 74 70 66" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"/>';
+    if (acc === 'rygsaek') s += '<path d="M46 67 L44 104 M74 67 L76 104" stroke="#8B5E34" stroke-width="4" stroke-linecap="round"/>';
+    /* ---- arme ---- */
+    s += arm(37, HV[0], HV[1]) + arm(83, HH[0], HH[1]);
+    /* ---- ting i hænderne (hånden tegnes ovenpå, så det ser ud, som om helten holder om dem) ---- */
+    var x = HH[0], y = HH[1], vx = HV[0], vy = HV[1];
+    if (acc === 'stav') s += '<line x1="' + x + '" y1="44" x2="' + x + '" y2="136" stroke="' + o + '" stroke-width="7" stroke-linecap="round"/><line x1="' + x + '" y1="44" x2="' + x + '" y2="136" stroke="#8B5E34" stroke-width="4" stroke-linecap="round"/>' + circ(x, 38, 12, '#FFE08A', ' opacity=".45"') + circ(x, 38, 7, '#E3A21A', sw);
+    if (acc === 'svaerd') s += '<path d="M' + (x - 4) + ' 94 L' + (x - 4) + ' 54 Q' + x + ' 44 ' + (x + 4) + ' 54 L' + (x + 4) + ' 94Z" fill="#E2BC84"' + sw + '/><path d="M' + x + ' 54 L' + x + ' 90" stroke="#B98C55" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<rect x="' + (x - 11) + '" y="93" width="22" height="6" rx="3" fill="#8B5E34"' + sw + '/><rect x="' + (x - 3) + '" y="99" width="6" height="12" rx="2" fill="#6B4226"' + sw + '/>' + circ(x, 114, 4, '#F2C94C', sw);
+    if (acc === 'kikkert') s += '<g transform="rotate(-40 ' + x + ' ' + y + ')"><rect x="' + (x - 7) + '" y="' + (y - 4.5) + '" width="18" height="9" rx="2" fill="#8B5E34"' + sw + '/><rect x="' + (x + 10) + '" y="' + (y - 6) + '" width="16" height="12" rx="2" fill="#A9773F"' + sw + '/>' +
+      '<rect x="' + (x + 24) + '" y="' + (y - 7.5) + '" width="5" height="15" rx="2" fill="#C9A227"' + sw + '/><rect x="' + (x + 8) + '" y="' + (y - 5.5) + '" width="3" height="11" fill="#C9A227"/></g>';
+    if (acc === 'trylle') s += '<line x1="' + x + '" y1="' + (y + 4) + '" x2="' + (x + 8) + '" y2="' + (y - 26) + '" stroke="#6B4A9E" stroke-width="4" stroke-linecap="round"/>' + circ(x + 9, y - 32, 10, '#FFE08A', ' opacity=".45"') +
+      '<path d="M' + (x + 9) + ' ' + (y - 41) + ' L' + (x + 11.5) + ' ' + (y - 34.5) + ' L' + (x + 18) + ' ' + (y - 34) + ' L' + (x + 13) + ' ' + (y - 29.5) + ' L' + (x + 14.5) + ' ' + (y - 23) + ' L' + (x + 9) + ' ' + (y - 26.5) + ' L' + (x + 3.5) + ' ' + (y - 23) + ' L' + (x + 5) + ' ' + (y - 29.5) + ' L' + x + ' ' + (y - 34) + ' L' + (x + 6.5) + ' ' + (y - 34.5) + 'Z" fill="#F2C94C"' + sw + '/>';
+    if (acc === 'lup') s += '<line x1="' + x + '" y1="' + (y + 6) + '" x2="' + (x + 6) + '" y2="' + (y - 12) + '" stroke="#8B5E34" stroke-width="5" stroke-linecap="round"/>' + circ(x + 9, y - 21, 10, '#fff', ' fill-opacity=".5" stroke="' + o + '" stroke-width="3"');
+    if (acc === 'lanterne') s += '<path d="M' + (vx - 6) + ' ' + (vy + 8) + ' Q' + vx + ' ' + (vy - 4) + ' ' + (vx + 6) + ' ' + (vy + 8) + '" fill="none"' + sw + '/>' + circ(vx, vy + 18, 15, '#FFE08A', ' opacity=".45"') +
+      '<rect x="' + (vx - 8) + '" y="' + (vy + 8) + '" width="16" height="20" rx="5" fill="#E3A21A"' + sw + '/>' + circ(vx, vy + 18, 4, '#FFF3C4');
     if (acc === 'blomst') {
-      s += '<line x1="18" y1="138" x2="18" y2="104" stroke="#2C7A4B" stroke-width="3" stroke-linecap="round"/>';
-      [[18, 96], [24, 100], [12, 100], [22, 106], [14, 106]].forEach(function (c) { s += circ(c[0], c[1], 5, '#E56FA5', ' stroke="' + o + '" stroke-width="1.5"'); });
-      s += circ(18, 102, 4, '#F2C94C');
+      s += '<line x1="' + vx + '" y1="' + (vy + 6) + '" x2="' + vx + '" y2="' + (vy - 22) + '" stroke="#2C7A4B" stroke-width="3" stroke-linecap="round"/>';
+      [[0, -32], [6, -28], [-6, -28], [4, -22], [-4, -22]].forEach(function (c) { s += circ(vx + c[0], vy + c[1], 5, '#E56FA5', ' stroke="' + o + '" stroke-width="1.5"'); });
+      s += circ(vx, vy - 26, 4, '#F2C94C');
     }
+    /* ---- hænderne ---- */
+    s += circ(vx, vy, 5.5, skin, sw) + circ(x, y, 5.5, skin, sw);
+    /* ---- foran hånden: skjoldet sidder på venstre arm ---- */
+    if (acc === 'skjold') s += '<path d="M' + (vx - 14) + ' ' + (vy - 12) + ' L' + (vx + 12) + ' ' + (vy - 12) + ' L' + (vx + 12) + ' ' + (vy + 4) + ' Q' + (vx + 12) + ' ' + (vy + 18) + ' ' + (vx - 1) + ' ' + (vy + 24) + ' Q' + (vx - 14) + ' ' + (vy + 18) + ' ' + (vx - 14) + ' ' + (vy + 4) + 'Z" fill="' + tc + '"' + sw + '/>' + circ(vx - 1, vy + 3, 5, '#E3A21A', sw);
+    /* ---- hovedet ---- */
+    s += '<g transform="' + HOVED + '">' + hd + '</g>';
+    /* ---- Uffe på venstre skulder ---- */
+    if (ven === 'ugle') s += '<g transform="translate(25 60)">' +
+      '<path d="M-8 -6 L-6 -14 L-2 -8Z M8 -6 L6 -14 L2 -8Z" fill="#A86E3A"' + sw + '/><ellipse cx="0" cy="2" rx="10" ry="11" fill="#C68A4A"' + sw + '/><ellipse cx="0" cy="6" rx="6" ry="6.5" fill="#F1DDB8"/>' +
+      circ(-4, -2, 3.6, '#F7EBD0', sw) + circ(4, -2, 3.6, '#F7EBD0', sw) + circ(-4, -2, 1.7, o) + circ(4, -2, 1.7, o) + '<path d="M-1.6 1 L1.6 1 L0 4Z" fill="#E3A21A"/>' +
+      '<path d="M-4 12.5 L-4 14.5 M4 12.5 L4 14.5" stroke="#E3A21A" stroke-width="2" stroke-linecap="round"/></g>';
     return '<svg viewBox="0 0 120 140" width="' + px + '" height="' + Math.round(px * 140 / 120) + '" role="img" aria-label="Figur: ' + esc(h.name || 'helt') + '">' + s + '</svg>';
   }
 
@@ -1122,8 +1166,13 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
 
   var setup = { view: 'lib', edit: null, isNew: false, snap: null, cat: 'kraefter', comp: prefs.comp, story: null, confirmDel: false };
   if (!lib.heroes.length) { setup.view = 'builder'; setup.edit = makeHero(0); setup.isNew = true; setup.snap = zeroStats(); }
+  /* Et valg, der først låses op på et senere level, vises med en lås og kan ikke vælges endnu. */
   function chipsHtml(k, opts, cur) {
-    return '<div class="chips">' + opts.map(function (o) { return '<button type="button" class="chip" data-k="' + k + '" data-v="' + o[0] + '" aria-pressed="' + (cur === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div>';
+    var h = setup.edit;
+    return '<div class="chips">' + opts.map(function (o) {
+      if (h && laast(o[0], h)) return '<button type="button" class="chip laast" disabled title="Låses op på level ' + LAAS[o[0]] + '">🔒 ' + o[1] + ' · level ' + LAAS[o[0]] + '</button>';
+      return '<button type="button" class="chip" data-k="' + k + '" data-v="' + o[0] + '" aria-pressed="' + (cur === o[0]) + '">' + o[1] + '</button>';
+    }).join('') + '</div>';
   }
   function swHtml(k, arr, cur, label) {
     return '<div class="chips">' + arr.map(function (c) { return '<button type="button" class="sw" data-k="' + k + '" data-v="' + c + '" style="background:' + (c === 'none' ? 'var(--bg)' : c) + '" aria-label="' + label + (c === 'none' ? ' ingen' : '') + '" aria-pressed="' + (cur === c) + '">' + (c === 'none' ? '×' : '') + '</button>'; }).join('') + '</div>';
@@ -1216,7 +1265,7 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
         if (d < 0 && h.stats[k] <= setup.snap[k]) return;
         h.stats[k] += d; h.pts -= d; renderBuilder(); return;
       }
-      var kk = b.getAttribute('data-k'); if (!kk) return;
+      var kk = b.getAttribute('data-k'); if (!kk || b.disabled) return;
       h[kk] = b.getAttribute('data-v'); renderBuilder();
     };
     $('save').onclick = function () {
@@ -1248,7 +1297,8 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
 
   function renderBuilder() {
     var h = setup.edit, cat = setup.cat || 'ansigt';
-    $('ptsline').innerHTML = 'Point at bruge: <span class="badge">' + h.pts + '</span> <span class="lvl">Level ' + heroLevel(h) + '</span><span class="vnote">næste level om ' + storiesToLevel(h, heroLevel(h) + 1) + (storiesToLevel(h, heroLevel(h) + 1) === 1 ? ' eventyr' : ' eventyr') + '</span>';
+    $('ptsline').innerHTML = 'Point at bruge: <span class="badge">' + h.pts + '</span> <span class="lvl">Level ' + heroLevel(h) + '</span><span class="vnote">næste level om ' + storiesToLevel(h, heroLevel(h) + 1) + (storiesToLevel(h, heroLevel(h) + 1) === 1 ? ' eventyr' : ' eventyr') + '</span>' +
+      (naesteBeloenning(h) ? '<span class="vnote">🎁 Næste belønning: ' + LAAS_NAVN[naesteBeloenning(h)] + ' på level ' + naesteBeloenning(h) + '</span>' : '');
     var cats = '<div class="chips">' + CATS.map(function (c) { return '<button type="button" class="chip" data-cat="' + c[0] + '" aria-pressed="' + (cat === c[0]) + '">' + c[1] + '</button>'; }).join('') + '</div>';
     var body;
     if (cat === 'kraefter') {
@@ -1298,7 +1348,8 @@ button.st:hover .tx b { text-decoration: underline; text-decoration-color: var(-
     }
     var g = state.gotNow || [];
     var up = (state.levelNow || []).map(function (u) {
-      return '<div class="rew up">⭐ <b>Level op!</b> ' + esc(u.n) + ' er nu level ' + u.lv + '.' + (u.lv === SECOND_MAGIC_LEVEL ? ' Nu kan ' + esc(u.n) + ' vælge en ekstra magi under Forbedre helte.' : '') + '</div>';
+      return '<div class="rew up">⭐ <b>Level op!</b> ' + esc(u.n) + ' er nu level ' + u.lv + '.' + (u.lv === SECOND_MAGIC_LEVEL ? ' Nu kan ' + esc(u.n) + ' vælge en ekstra magi under Forbedre helte.' : '') +
+        (LAAS_NAVN[u.lv] ? ' 🎁 ' + esc(u.n) + ' har fået <b>' + LAAS_NAVN[u.lv] + '</b>. Find det under Forbedre helte.' : '') + '</div>';
     }).join('');
     if (g.length) return up + '<div class="rew"><b>Belønning:</b> ' + g.map(esc).join(', ') + ' fik 1 point. Brug det under Forbedre helte.</div>';
     return up + '<div class="rew">Månedens bonuspoint er allerede givet. Næste måned får heltene nye point.</div>';
